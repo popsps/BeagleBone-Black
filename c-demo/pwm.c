@@ -5,12 +5,9 @@
 #include "gpio.h"
 #include "pins.h"
 
-
-// GPIO1_28 = 1 * 32 + 18 = 60 P9_12
-
-// GPIO0_15 = 0 * 32 + 15 = 15 P9_24
-unsigned int BOTTOM_GPIO = 15;
-
+/**
+ * Blink GPIO 9_12 and GPIO 9_11 on 1 second interval for 5 times
+ **/
 int main(int argc, char* argv[]) {
   printf("Testing the GPIO pins\n");
   gpio_export(P9_12);
