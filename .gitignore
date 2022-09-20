@@ -22,6 +22,15 @@
 *.la
 *.lo
 
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
 # Shared objects (inc. Windows DLLs)
 *.dll
 *.so
