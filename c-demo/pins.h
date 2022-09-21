@@ -48,6 +48,49 @@
 
 // P8 Pins
 
-#define P8_13
+#define P8_03 38
+#define P8_04 39
+#define P8_05 34
+#define P8_06 35
+#define P8_07 66
+#define P8_08 67
+#define P8_09 69
+#define P8_10 68
+#define P8_11 45
+#define P8_12 44
+#define P8_13 23
+#define P8_14 26
+#define P8_15 47
+#define P8_16 46
+#define P8_17 27
+#define P8_18 65
+#define P8_19 22
+#define P8_20 63
+#define P8_21 62
+#define P8_22 37
+#define P8_23 36
+#define P8_24 33
+#define P8_25 32
+#define P8_26 61
+#define P8_27 86
+#define P8_28 88
+#define P8_29 87
+#define P8_30 89
+#define P8_31 10
+#define P8_32 11
+#define P8_33 9
+#define P8_34 81
+#define P8_35 8
+#define P8_36 80
+#define P8_37 78
+#define P8_38 79
+#define P8_39 76
+#define P8_40 77
+#define P8_41 74
+#define P8_42 75
+#define P8_43 72
+#define P8_44 73
+#define P8_45 70
+#define P8_46 71
 
 #endif
