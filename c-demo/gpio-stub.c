@@ -9,7 +9,6 @@
 #include "gpio.h"
 
 int gpio_export(unsigned int gpio) {
-  printf("Running GPIO Stub\n");
   return 0;
 }
 

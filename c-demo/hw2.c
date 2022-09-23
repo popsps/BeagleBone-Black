@@ -1,9 +1,11 @@
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
 #include "gpio.h"
 #include "pins.h"
+#include "signal.h"
 
 /**
  * Using GPIO 9_23 and GPIO 9_24 GPIO 2_25
@@ -19,11 +21,13 @@ void initilize(trafic_signal* signal);
 void makeSignalRed(trafic_signal* signal);
 void makeSignalYellow(trafic_signal* signal);
 void makeSignalGreen(trafic_signal* signal);
+void sig_handler(int sig);
+
+trafic_signal signal1;
+trafic_signal signal2;
 
 int main(int argc, char* argv[]) {
   printf("CS 695 HW2 Simple Intersection with Opposing Traffic Lights\n");
-  trafic_signal signal1;
-  trafic_signal signal2;
 
   // init pins that are being used for each trafic signal 1
   signal1.red_light = P9_11;
@@ -35,22 +39,25 @@ int main(int argc, char* argv[]) {
   signal2.yellow_light = P9_24;
   signal2.green_light = P9_26;
 
+  // init signal handler
+  registerSignals(sig_handler);
+
   cleanUp(&signal1);
   cleanUp(&signal2);
   initilize(&signal1);
   initilize(&signal2);
 
+  sleep(2);
   for (size_t i = 0; i < 5; i++) {
-    sleep(2);
     makeSignalGreen(&signal1);
     makeSignalRed(&signal2);
-    sleep(2);
+    sleep(4);
     makeSignalYellow(&signal1);
     makeSignalYellow(&signal2);
     sleep(2);
     makeSignalRed(&signal1);
     makeSignalGreen(&signal2);
-    sleep(2);
+    sleep(4);
   }
   // unset all GPIO pins
   gpio_set_value(signal1.red_light, LOW);
@@ -87,18 +94,32 @@ void initilize(trafic_signal* signal) {
   gpio_set_value(signal->green_light, LOW);
 }
 
-void makeSignalRed(trafic_signal* signal){
+void makeSignalRed(trafic_signal* signal) {
   gpio_set_value(signal->red_light, HIGH);
   gpio_set_value(signal->yellow_light, LOW);
   gpio_set_value(signal->green_light, LOW);
 }
-void makeSignalYellow(trafic_signal* signal){
+void makeSignalYellow(trafic_signal* signal) {
   gpio_set_value(signal->red_light, LOW);
   gpio_set_value(signal->yellow_light, HIGH);
   gpio_set_value(signal->green_light, LOW);
 }
-void makeSignalGreen(trafic_signal* signal){
+void makeSignalGreen(trafic_signal* signal) {
   gpio_set_value(signal->red_light, LOW);
   gpio_set_value(signal->yellow_light, LOW);
   gpio_set_value(signal->green_light, HIGH);
+}
+
+void sig_handler(int sig) {
+  if (sig == SIGINT) {
+    // printf("SIGINT\n");
+    shell_write("Recived SIGINT");
+    unset_signal(&signal1);
+    unset_signal(&signal2);
+    shell_write("Pins are cleaned up.");
+    _exit(EXIT_SUCCESS);
+  } else if (sig == SIGTSTP) {
+    printf("SIGTSTP\n");
+    _exit(EXIT_SUCCESS);
+  }
 }
