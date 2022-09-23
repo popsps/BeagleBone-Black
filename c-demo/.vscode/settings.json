@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "poll.h": "c",
+        "fcntl.h": "c",
+        "stdio.h": "c"
+    },
+    "C_Cpp.default.compilerPath": "/usr/arm-linux-gnueabihf/include"
