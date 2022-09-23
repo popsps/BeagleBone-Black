@@ -10,12 +10,14 @@ PWM.start(topOutPin, 0, 1000)
 PWM.start(bottomOutPin, 0, 1000)
 
 for i in range(0, 5):
-    V = input("Enter Voltage for the top LED[0 - 3.365]: ")
+    V = float(input("Enter Voltage for the top LED[0 - 3.365]: "))
     DC = V/3.365 * 100
     PWM.set_duty_cycle(topOutPin, DC)
-    V = input("Enter Voltage for the bottom LED[0 - 3.365]: ")
+    V = float(input("Enter Voltage for the bottom LED[0 - 3.365]: "))
     DC = V/3.365 * 100
-    PWM.set_duty_cycle(topOutPin, DC)
+    PWM.set_duty_cycle(bottomOutPin, DC)
 
-PWM.stop(myPWM)
+time.sleep(1)
+PWM.stop(topOutPin)
+PWM.stop(bottomOutPin)
 PWM.cleanup()

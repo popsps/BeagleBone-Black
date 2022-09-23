@@ -1,6 +1,6 @@
 # Digital reads allow pins to read true or false, or high or low (binary)
-# When doing digital reads from the pins that we have setup as inputs(P9_13, P9_15 in this case), 
-# the BeagleBone black wants to operate at 3.3 volts and 
+# When doing digital reads from the pins that we have setup as inputs(P9_13, P9_15 in this case),
+# the BeagleBone black wants to operate at 3.3 volts and
 # so we need to make sure that we're refrencing things to 3.3 volts and not 5 volts and so we're very careful that
 # our rail is established by pin P9_3 not P9_5
 
@@ -12,17 +12,18 @@ import time
 topButton = "P9_11"
 bottomButton = "P9_13"
 
+GPIO.cleanup()
 GPIO.setup(topButton, GPIO.IN)
 GPIO.setup(bottomButton, GPIO.IN)
 
-while(1):
-  if(GPIO.input(topButton)):
+while (1):
+  if (GPIO.input(topButton)):
     print("Top Button is pressed")
-   if(GPIO.input(bottomButton)):
+  if(GPIO.input(bottomButton)):
     print("Bottom Button is pressed")
-   if GPIO.input(topButton) and GPIO.input(bottomButton):
+  if GPIO.input(topButton) and GPIO.input(bottomButton):
     break;
-   sleep(.2)
+  time.sleep(.2)
 
 print("Goodby, Come again soon")
 GPIO.cleanup()
