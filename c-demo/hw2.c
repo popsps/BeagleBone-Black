@@ -60,16 +60,16 @@ int main(int argc, char* argv[]) {
   do {
     makeSignalGreen(&signal1);
     makeSignalRed(&signal2);
-    sleep(10);
+    sleep(2 * 60);
     makeSignalYellow(&signal1);
     makeSignalYellow(&signal2);
-    sleep(2.5);
+    sleep(5);
     makeSignalRed(&signal1);
     makeSignalGreen(&signal2);
-    sleep(10);
+    sleep(2 * 60);
     makeSignalYellow(&signal1);
     makeSignalYellow(&signal2);
-    sleep(2.5);
+    sleep(5);
   } while (1);
 
   // cleanUp(&signal1);

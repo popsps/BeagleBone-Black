@@ -70,22 +70,22 @@ int main(int argc, char* argv[]) {
     printf("\n");
     makeSignalRed(&signal2);
     printf("**************************************\n");
-    sleep(4);
+    sleep(2 * 60);
     makeSignalYellow(&signal1);
     printf("\n");
     makeSignalYellow(&signal2);
     printf("**************************************\n");
-    sleep(2);
+    sleep(5);
     makeSignalRed(&signal1);
     printf("\n");
     makeSignalGreen(&signal2);
     printf("**************************************\n");
-    sleep(4);
+    sleep(2 * 60);
     makeSignalYellow(&signal1);
     printf("\n");
     makeSignalYellow(&signal2);
     printf("**************************************\n");
-    sleep(2);
+    sleep(5);
   }
 
   // set all Used GPIO pins to low
