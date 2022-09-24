@@ -8,23 +8,6 @@
 #include <string.h>
 #include <unistd.h>
 
-int gpio_test_file(unsigned int gpio) {
-  int fd, len = 0;
-  char buf[MAX_BUF];
-  fd = open(
-      "random"
-      "/r.txt",
-      O_WRONLY | O_TRUNC);
-  if (fd < 0) {
-    perror("gpio/export error");
-    return EXIT_FAILURE;
-  }
-  len = snprintf(buf, sizeof(buf), "%d", gpio);
-  write(fd, buf, len);
-  close(fd);
-  return 0;
-}
-
 int gpio_export(unsigned int gpio) {
   int fd, len = 0;
   char path[MAX_BUF];

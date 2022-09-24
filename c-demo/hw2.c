@@ -75,6 +75,7 @@ int main(int argc, char* argv[]) {
   // cleanUp(&signal1);
   // cleanUp(&signal2);
   printf("CS 695 HW2 Simple Intersection with Opposing Traffic Lights Done\n");
+  return 0;
 }
 
 void cleanUp(trafic_signal* signal) {

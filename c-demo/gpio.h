@@ -9,8 +9,8 @@
 #define POLL_TIMEOUT (3 * 1000) /* 3 seconds */
 #define MAX_BUF 64
 
-typedef enum PIN_DIRECTION { INPUT_PIN = 0, OUTPUT_PIN = 1 } PIN_DIRECTION;
-typedef enum PIN_VALUE { LOW = 0, HIGH = 1 } PIN_VALUE;
+typedef enum PIN_DIRECTION_ENUM { INPUT_PIN = 0, OUTPUT_PIN = 1 } PIN_DIRECTION;
+typedef enum PIN_VALUE_ENUM { LOW = 0, HIGH = 1 } PIN_VALUE;
 
 /***************************************************************
  * Functions

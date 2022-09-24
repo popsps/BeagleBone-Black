@@ -66,12 +66,11 @@ int main(int argc, char* argv[]) {
   initilize(&signal2);
   printf("**************************************\n");
   for (size_t i = 0; i < 5; i++) {
-    sleep(2);
     makeSignalGreen(&signal1);
     printf("\n");
     makeSignalRed(&signal2);
     printf("**************************************\n");
-    sleep(2);
+    sleep(4);
     makeSignalYellow(&signal1);
     printf("\n");
     makeSignalYellow(&signal2);
@@ -81,6 +80,11 @@ int main(int argc, char* argv[]) {
     printf("\n");
     makeSignalGreen(&signal2);
     printf("**************************************\n");
+    sleep(4);
+    makeSignalYellow(&signal1);
+    printf("\n");
+    makeSignalYellow(&signal2);
+    printf("**************************************\n");
     sleep(2);
   }
 
@@ -89,7 +93,6 @@ int main(int argc, char* argv[]) {
   unset_signal(&signal2);
 
   printf("Clean up Pins...\n");
-  sleep(4);
   // cleanUp(&signal1);
   // cleanUp(&signal2);
   printf("CS 695 HW2 Simple Intersection with Opposing Traffic Lights Done\n");
