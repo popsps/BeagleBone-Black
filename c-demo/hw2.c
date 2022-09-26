@@ -29,8 +29,8 @@ void makeSignalYellow(trafic_signal* signal);
 void makeSignalGreen(trafic_signal* signal);
 void sig_handler(int sig);
 
-trafic_signal signal1;
-trafic_signal signal2;
+static trafic_signal signal1;
+static trafic_signal signal2;
 
 int main(int argc, char* argv[]) {
   printf("CS 695 HW2 Simple Intersection with Opposing Traffic Lights\n");

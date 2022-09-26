@@ -26,8 +26,8 @@ void makeSignalRed(trafic_signal* signal);
 void makeSignalYellow(trafic_signal* signal);
 void makeSignalGreen(trafic_signal* signal);
 
-trafic_signal signal1;
-trafic_signal signal2;
+static trafic_signal signal1;
+static trafic_signal signal2;
 
 void sig_handler(int sig) {
   if (sig == SIGINT) {
