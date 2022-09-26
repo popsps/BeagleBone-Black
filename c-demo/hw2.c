@@ -35,12 +35,12 @@ trafic_signal signal2;
 int main(int argc, char* argv[]) {
   printf("CS 695 HW2 Simple Intersection with Opposing Traffic Lights\n");
 
-  // init pins that are being used for each trafic signal 1
+  // init pins that are being used for trafic signal 1
   signal1.red_light = P9_11;
   signal1.yellow_light = P9_12;
   signal1.green_light = P9_13;
 
-  // init pins that are being used for each trafic signal 1
+  // init pins that are being used for trafic signal 2
   signal2.red_light = P9_23;
   signal2.yellow_light = P9_24;
   signal2.green_light = P9_26;
