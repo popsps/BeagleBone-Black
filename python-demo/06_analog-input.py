@@ -20,16 +20,10 @@ AIN4 = "P9_33"
 VDD_ADC = "P9_32"
 GND_ADC = "P9_34"
 
-GPIO.cleanup()
-GPIO.setup(topButton, GPIO.IN)
-GPIO.setup(bottomButton, GPIO.IN)
-
 while (1):
   potValue = ADC.read(AIN4)
   print("The Potentiometer value is: ", potValue)
   time.sleep(.5)
 
 print("Goodby, Come again soon")
-GPIO.cleanup()
-    
     
