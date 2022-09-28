@@ -4,7 +4,8 @@
 # so we need to make sure that we're refrencing things to 3.3 volts and not 5 volts and so we're very careful that
 # our rail is established by pin P9_3 not P9_5
 
-# p9_1 is ground. So we're making a 3.3 volt rail. use 1000ohm pull down resistor or above. but not belo.
+# p9_1 is ground. So we're making a 3.3 volt rail. use 1000ohm pull down resistor or above. 
+# but not below that.
 
 import Adafruit_BBIO.GPIO as GPIO
 import time
