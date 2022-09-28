@@ -1,7 +1,10 @@
 import Adafruit_BBIO.PWM as PWM
 import time
 
-# User purple pins for PWM
+'''
+User purple pins for PWM
+For most applications the frequency in PWM doesn't matter. But usuall 1000 works nicely.
+'''
 
 myPWM = "P8_13"
 # duty cycle 0 percent * 3.3v, frequency: 1000 Hz

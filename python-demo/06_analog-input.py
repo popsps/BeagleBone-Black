@@ -21,6 +21,7 @@ AIN4 = "P9_33"
 VDD_ADC = "P9_32"
 GND_ADC = "P9_34"
 
+ADC.setup()
 while (1):
     # read as percentage [0, 1]
     potValue = ADC.read(AIN4)
