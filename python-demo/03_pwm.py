@@ -12,7 +12,7 @@ PWM.start(myPWM, 0, 1000)
 
 for i in range(0, 5):
     # Duty cycle from 0% to 100%
-    DC = input("Enter Duty cycle: ")
+    DC = input("Enter Duty cycle [0 - 100]: ")
     PWM.set_duty_cycle(myPWM, DC)
 
 for i in range(0, 5):
