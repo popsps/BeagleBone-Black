@@ -22,6 +22,7 @@ VDD_ADC = "P9_32"
 GND_ADC = "P9_34"
 
 while (1):
+    # read as percentage [0, 1]
     potValue = ADC.read(AIN4)
     print("The Potentiometer [value, voltage] is: [{0}, {1}]".format(
         potValue, potValue * 1.8))
