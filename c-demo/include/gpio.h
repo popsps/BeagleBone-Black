@@ -20,13 +20,13 @@ typedef enum PIN_VALUE_ENUM { LOW = 0, HIGH = 1 } PIN_VALUE;
  * Initialize gpio_no to the board. This will create a directoy called
  * gpiogpio_no. For example gpio60.
  **/
-int gpio_export(unsigned int gpio_no);
-int gpio_unexport(unsigned int gpio_no);
-int gpio_set_direction(unsigned int gpio_no, PIN_DIRECTION out_flag);
-int gpio_set_value(unsigned int gpio_no, PIN_VALUE value);
-int gpio_get_value(unsigned int gpio_no, unsigned int* value);
-int gpio_set_edge(unsigned int gpio_no, char* edge);
-int gpio_fd_open(unsigned int gpio_no);
+int gpio_export(unsigned int gpio);
+int gpio_unexport(unsigned int gpio);
+int gpio_set_direction(unsigned int gpio, PIN_DIRECTION out_flag);
+int gpio_set_value(unsigned int gpio, PIN_VALUE value);
+unsigned int gpio_get_value(unsigned int gpio);
+int gpio_set_edge(unsigned int gpio, char* edge);
+int gpio_fd_open(unsigned int gpio);
 int gpio_fd_close(int fd);
 
 #endif
