@@ -1,5 +1,5 @@
-#ifndef SIGNAL_H
-#define SIGNAL_H
+#ifndef BBSIGNAL_H
+#define BBSIGNAL_H
 
 #define SIG_LOG_HEAD "[CS_695]"
 

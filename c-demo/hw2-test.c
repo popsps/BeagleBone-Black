@@ -7,7 +7,7 @@
 
 #include "gpio.h"
 #include "pins.h"
-#include "signal.h"
+#include "bbsignal.h"
 
 /**
  * Using GPIO 9_23 and GPIO 9_24 GPIO 2_25

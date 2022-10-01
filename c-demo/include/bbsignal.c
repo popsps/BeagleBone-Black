@@ -1,4 +1,4 @@
-#include "signal.h"
+#include "bbsignal.h"
 
 #include <signal.h>
 #include <stdio.h>

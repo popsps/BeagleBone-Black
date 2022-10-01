@@ -6,7 +6,7 @@
 
 #include "gpio.h"
 #include "pins.h"
-#include "signal.h"
+#include "bbsignal.h"
 
 /**
  * Each side gets green light for 2 minutes. The transition to the red light
