@@ -1,6 +1,6 @@
 all: hw2 hw2-test
 
-INC_DIR = ./include
+INC_DIR = ../include
 
 # CFLAG = -g -O3 -Wall -Werror -Wno-error=unused-variable -std=gnu99 -I$(INC_DIR)
 CFLAG = -g -O3 -Wall -Wno-unused-result -Werror -std=gnu99 -I$(INC_DIR)

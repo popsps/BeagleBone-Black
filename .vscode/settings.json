@@ -5,6 +5,7 @@
         "signal.h": "c",
         "unistd.h": "c",
         "string.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "gpio.h": "c"
     }
 }
