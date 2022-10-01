@@ -1,8 +1,8 @@
 all: hw2 hw2-test
 file:///home/must/Desktop/BeagleBone-Black/.gitignore
 
-CFLAG-TEST=-g -O3 -Wall -Werror -Wno-error=unused-variable -std=gnu99
-CC-TEST=gcc
+CFLAG=-g -O3 -Wall -Werror -Wno-error=unused-variable -std=gnu99
+CC=gcc
 CFLAG-TEST=-static -g -O3 -Wall -Werror -Wno-error=unused-variable -std=gnu99
 CC-TEST=arm-linux-gnueabihf-gcc
 
