@@ -29,7 +29,10 @@ int main(int argc, char *argv[]) {
 
 void *print_message(void *ptr) {
   char *message = (char *)ptr;
-  printf("Message: %s\n", message);
+  // long unsigned int pt = pthread_self();
+  pthread_t pt = pthread_self();
+
+  printf("[THREAD-%ld]: %s\n", pthread_self(), message);
   pthread_mutex_lock(&mutex1);
   counter++;
   pthread_mutex_unlock(&mutex1);
