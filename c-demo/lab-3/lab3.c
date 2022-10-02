@@ -41,6 +41,7 @@ typedef struct trafic_signal_struct {
   int isGreen;
   int isYellow;
   int isPressed;
+  int sensor_activated;
 } trafic_signal;
 
 void clean_up(trafic_signal* signal);
@@ -77,6 +78,7 @@ int main(int argc, char* argv[]) {
   signal1->isRed = 0;
   signal1->isYellow = 0;
   signal1->isGreen = 0;
+  signal1->sensor_activated = 0;
 
   // init pins that are being used for trafic signal 2
   signal2 = malloc(sizeof(trafic_signal));
@@ -89,6 +91,7 @@ int main(int argc, char* argv[]) {
   signal2->isRed = 0;
   signal2->isYellow = 0;
   signal2->isGreen = 0;
+  signal2->sensor_activated = 0;
 
   pthread_create(&sensor_thread, NULL, handle_sensors, NULL);
 
@@ -251,9 +254,15 @@ void* handle_sensors(void* ptr) {
       }
     } else {  // if gpv1 = 0 (not pressed)
       signal1->isPressed = 0;
+      signal1->sensor_activated = 0;
     }
     if (gpv1 && signal1->isRed && now - base >= SENSOR_ACTIVATION_TIME) {
-      printf("GPIO PIN_15 is held for 2 seconds and activated\n");
+      signal1->sensor_activated = 1;
+      if (signal1->sensor_activated) {
+        printf("GPIO PIN_15 is held for %d seconds and activated\n",
+               SENSOR_ACTIVATION_TIME);
+        signal1->sensor_activated = 0;
+      }
       pthread_mutex_lock(&signal_mutex);
       action = 6;
       pthread_mutex_unlock(&signal_mutex);
@@ -268,9 +277,17 @@ void* handle_sensors(void* ptr) {
       }
     } else {
       signal2->isPressed = 0;
+      signal2->sensor_activated = 0;
     }
     if (gpv2 && signal2->isRed && now - base >= SENSOR_ACTIVATION_TIME) {
-      printf("GPIO PIN_15 is held for 2 seconds and activated\n");
+      signal2->sensor_activated = 1;
+      if (signal2->sensor_activated) {
+        printf("GPIO PIN_27 is held for %d seconds and activated\n",
+               SENSOR_ACTIVATION_TIME);
+        signal2->sensor_activated = 0;
+      }
+
+      signal2->sensor_activated = 0;
       pthread_mutex_lock(&signal_mutex);
       action = 2;
       pthread_mutex_unlock(&signal_mutex);
