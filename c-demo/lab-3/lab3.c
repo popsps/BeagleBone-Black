@@ -29,6 +29,7 @@
 
 #define RG_WAIT_TIME 10
 #define Y_WAIT_TIME 2
+#define SENSOR_ACTIVATION_TIME 2
 
 typedef struct trafic_signal_struct {
   char* name;
@@ -40,7 +41,6 @@ typedef struct trafic_signal_struct {
   int isGreen;
   int isYellow;
   int isPressed;
-  int sensor_activated;
 } trafic_signal;
 
 void clean_up(trafic_signal* signal);
@@ -54,6 +54,7 @@ void sig_handler(int sig);
 static trafic_signal* signal1;
 static trafic_signal* signal2;
 static pthread_t sensor_thread;
+static int action = 0;
 
 void* handle_sensors(void* ptr);
 
@@ -76,7 +77,6 @@ int main(int argc, char* argv[]) {
   signal1->isRed = 0;
   signal1->isYellow = 0;
   signal1->isGreen = 0;
-  signal1->sensor_activated = 0;
 
   // init pins that are being used for trafic signal 2
   signal2 = malloc(sizeof(trafic_signal));
@@ -89,7 +89,6 @@ int main(int argc, char* argv[]) {
   signal2->isRed = 0;
   signal2->isYellow = 0;
   signal2->isGreen = 0;
-  signal2->sensor_activated = 0;
 
   pthread_create(&sensor_thread, NULL, handle_sensors, NULL);
 
@@ -107,34 +106,50 @@ int main(int argc, char* argv[]) {
   printf("[CS-699] Startinting Intersecion signals...\n");
   sleep(1);
   while (1) {
-    pthread_mutex_lock(&signal_mutex);
-    make_signal_green(signal1);
-    make_signal_red(signal2);
-    pthread_mutex_unlock(&signal_mutex);
-
-    sleep(RG_WAIT_TIME);
-
-    pthread_mutex_lock(&signal_mutex);
-    make_signal_yellow(signal1);
-    pthread_mutex_unlock(&signal_mutex);
-
-    sleep(Y_WAIT_TIME);
-
-    pthread_mutex_lock(&signal_mutex);
-    make_signal_red(signal1);
-    make_signal_green(signal2);
-    pthread_mutex_unlock(&signal_mutex);
-
-    sleep(RG_WAIT_TIME);
-
-    pthread_mutex_lock(&signal_mutex);
-    make_signal_yellow(signal2);
-    pthread_mutex_unlock(&signal_mutex);
-
-    sleep(Y_WAIT_TIME);
+    switch (action) {
+      case 0:
+        pthread_mutex_lock(&signal_mutex);
+        make_signal_green(signal1);
+        make_signal_red(signal2);
+        pthread_mutex_unlock(&signal_mutex);
+        break;
+      case 1:
+        sleep(RG_WAIT_TIME);
+        break;
+      case 2:
+        pthread_mutex_lock(&signal_mutex);
+        make_signal_yellow(signal1);
+        pthread_mutex_unlock(&signal_mutex);
+        break;
+      case 3:
+        sleep(Y_WAIT_TIME);
+        break;
+      case 4:
+        pthread_mutex_lock(&signal_mutex);
+        make_signal_red(signal1);
+        make_signal_green(signal2);
+        pthread_mutex_unlock(&signal_mutex);
+        break;
+      case 5:
+        sleep(RG_WAIT_TIME);
+        break;
+      case 6:
+        pthread_mutex_lock(&signal_mutex);
+        make_signal_yellow(signal2);
+        pthread_mutex_unlock(&signal_mutex);
+        break;
+      case 7:
+        sleep(Y_WAIT_TIME);
+        break;
+      default:
+        pthread_mutex_lock(&signal_mutex);
+        action = 0;
+        pthread_mutex_unlock(&signal_mutex);
+        break;
+    }
+    usleep(200000);
   }
-  // pthread_join(signal1->thread, NULL);
-  // pthread_join(signal2->thread, NULL);
+  pthread_join(sensor_thread, NULL);
   printf(
       "[CS-699] Lab3 Simple Intersection with Opposing Traffic Lights Done\n");
   return 0;
@@ -229,39 +244,38 @@ void* handle_sensors(void* ptr) {
     int gpv2 = gpio_get_value(signal2->sensor);
     now = time(0);
 
-    // handle sensor for the second signal
+    // handle sensor for the first signal
     if (gpv1 && signal1->isRed) {
-      printf("GPIO PIN_15 is pressed %d\n", gpv1);
       if (!signal1->isPressed) {
+        printf("GPIO PIN_15 is pressed %d\n", gpv1);
         signal1->isPressed = 1;
         base = now;
       }
-    } else { // if gpv1 = 0 (not pressed)
+    } else {  // if gpv1 = 0 (not pressed)
       signal1->isPressed = 0;
-      signal1->sensor_activated = 0;
     }
-    if (gpv1 && signal1->isRed && now - base >= 2) {
+    if (gpv1 && signal1->isRed && now - base >= SENSOR_ACTIVATION_TIME) {
       printf("GPIO PIN_15 is held for 2 seconds and activated\n");
-      // make_signal_yellow(signal2);
-      // sleep(Y_WAIT_TIME);
-      // make_signal_red(signal2);
-      // make_signal_green(signal1);
-      signal1->sensor_activated = 0;
-      // signal the main thread to start waiting and running the counter
+      pthread_mutex_lock(&signal_mutex);
+      action = 6;
+      pthread_mutex_unlock(&signal_mutex);
     }
 
     // handle sensor for the second signal
-
     if (gpv2 && signal2->isRed) {
-      printf("GPIO PIN_27 is pressed %d\n", gpv2);
-      // make_signal_yellow(signal1);
-      // sleep(Y_WAIT_TIME);
-      // make_signal_red(signal1);
-      // make_signal_green(signal2);
-      // signal the main thread to start waiting and running the counter
+      if (!signal2->isPressed) {
+        printf("GPIO PIN_27 is pressed %d\n", gpv2);
+        signal2->isPressed = 1;
+        base = now;
+      }
     } else {
       signal2->isPressed = 0;
-      signal2->sensor_activated = 0;
+    }
+    if (gpv2 && signal2->isRed && now - base >= SENSOR_ACTIVATION_TIME) {
+      printf("GPIO PIN_15 is held for 2 seconds and activated\n");
+      pthread_mutex_lock(&signal_mutex);
+      action = 2;
+      pthread_mutex_unlock(&signal_mutex);
     }
     usleep(200000);
   }
