@@ -25,82 +25,109 @@
  * (i.e. the button is pushed and held) for 5 seconds,
  * the light should cycle to green without waiting the full 2 minutes
  **/
+
+#define RG_WAIT_TIME 10
+#define Y_WAIT_TIME 2
+
 typedef struct trafic_signal_struct {
   char* name;
+  pthread_t thread;
   unsigned int red_light;
   unsigned int yellow_light;
   unsigned int green_light;
   unsigned int sensor;
+  int isRed;
+  int isGreen;
+  int isYellow;
 } trafic_signal;
 
-void cleanUp(trafic_signal* signal);
+void clean_up(trafic_signal* signal);
 void initilize(trafic_signal* signal);
 void unset_signal(trafic_signal* signal);
-void makeSignalRed(trafic_signal* signal);
-void makeSignalYellow(trafic_signal* signal);
-void makeSignalGreen(trafic_signal* signal);
+void make_signal_red(trafic_signal* signal);
+void make_signal_yellow(trafic_signal* signal);
+void make_signal_green(trafic_signal* signal);
 void sig_handler(int sig);
 
-static trafic_signal signal1;
-static trafic_signal signal2;
+static trafic_signal* signal1;
+static trafic_signal* signal2;
+
+void* handle_sensors(void* ptr);
+
+pthread_mutex_t signal_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t signal_cond_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t signal_cond = PTHREAD_COND_INITIALIZER;
 
 int main(int argc, char* argv[]) {
   printf("CS 695 Lab3 Simple Intersection with Opposing Traffic Lights\n");
 
-  // initializing threads. Each thread will handle a signal.
-  
   // init pins that are being used for trafic signal 1
-  signal1.name = "SIGNAL1";
-  signal1.red_light = P9_11;
-  signal1.yellow_light = P9_12;
-  signal1.green_light = P9_13;
-  signal1.sensor = P9_15;
+  // initializing threads. Each thread will handle a signal.
+  signal1 = malloc(sizeof(trafic_signal));
+  signal1->name = "SIGNAL-1";
+  signal1->red_light = P9_11;
+  signal1->yellow_light = P9_12;
+  signal1->green_light = P9_13;
+  signal1->sensor = P9_15;
 
   // init pins that are being used for trafic signal 2
-  signal2.name = "SIGNAL2";
-  signal2.red_light = P9_23;
-  signal2.yellow_light = P9_24;
-  signal2.green_light = P9_26;
-  signal2.sensor = P9_27;
+  signal2 = malloc(sizeof(trafic_signal));
+  signal2->name = "SIGNAL-2";
+  signal2->red_light = P9_23;
+  signal2->yellow_light = P9_24;
+  signal2->green_light = P9_26;
+  signal2->sensor = P9_27;
+
+  pthread_create(&(signal1->thread), NULL, handle_sensors, signal1);
 
   // init signal handler
   registerSignals(sig_handler);
 
-  cleanUp(&signal1);
-  cleanUp(&signal2);
-  initilize(&signal1);
-  initilize(&signal2);
-  unset_signal(&signal1);
-  unset_signal(&signal2);
+  clean_up(signal1);
+  clean_up(signal2);
+  initilize(signal1);
+  initilize(signal2);
+  unset_signal(signal1);
+  unset_signal(signal2);
 
   // start the signals for intersection
   printf("[CS-699] Startinting Intersecion signals...\n");
   sleep(2);
-  do {
-    // testing should be removed modified
-    int gpv = gpio_get_value(signal1.sensor);
-    if (gpv) {
-      printf("GPIO PIN_15 is pressed %d\n", gpv);
-    }
-    makeSignalGreen(&signal1);
-    makeSignalRed(&signal2);
-    sleep(10);
-    makeSignalYellow(&signal1);
-    sleep(2.5);
-    makeSignalRed(&signal1);
-    makeSignalGreen(&signal2);
-    sleep(10);
-    makeSignalYellow(&signal2);
-    sleep(2.5);
-  } while (1);
+  while (1) {
+    pthread_mutex_lock(&signal_mutex);
+    make_signal_green(signal1);
+    make_signal_red(signal2);
+    pthread_mutex_unlock(&signal_mutex);
 
-  // cleanUp(&signal1);
-  // cleanUp(&signal2);
-  printf("CS 695 Lab3 Simple Intersection with Opposing Traffic Lights Done\n");
+    sleep(RG_WAIT_TIME);
+
+    pthread_mutex_lock(&signal_mutex);
+    make_signal_yellow(signal1);
+    pthread_mutex_unlock(&signal_mutex);
+
+    sleep(Y_WAIT_TIME);
+
+    pthread_mutex_lock(&signal_mutex);
+    make_signal_red(signal1);
+    make_signal_green(signal2);
+    pthread_mutex_unlock(&signal_mutex);
+
+    sleep(RG_WAIT_TIME);
+
+    pthread_mutex_lock(&signal_mutex);
+    make_signal_yellow(signal2);
+    pthread_mutex_unlock(&signal_mutex);
+    
+    sleep(Y_WAIT_TIME);
+  }
+  pthread_join(signal1->thread, NULL);
+  pthread_join(signal2->thread, NULL);
+  printf(
+      "[CS-699] Lab3 Simple Intersection with Opposing Traffic Lights Done\n");
   return 0;
 }
 
-void cleanUp(trafic_signal* signal) {
+void clean_up(trafic_signal* signal) {
   gpio_unexport(signal->red_light);
   gpio_unexport(signal->yellow_light);
   gpio_unexport(signal->green_light);
@@ -124,17 +151,26 @@ void initilize(trafic_signal* signal) {
   gpio_set_value(signal->sensor, LOW);
 }
 
-void makeSignalRed(trafic_signal* signal) {
+void make_signal_red(trafic_signal* signal) {
+  signal->isRed = 1;
+  signal->isYellow = 0;
+  signal->isGreen = 0;
   gpio_set_value(signal->red_light, HIGH);
   gpio_set_value(signal->yellow_light, LOW);
   gpio_set_value(signal->green_light, LOW);
 }
-void makeSignalYellow(trafic_signal* signal) {
+void make_signal_yellow(trafic_signal* signal) {
+  signal->isRed = 0;
+  signal->isYellow = 1;
+  signal->isGreen = 0;
   gpio_set_value(signal->red_light, LOW);
   gpio_set_value(signal->yellow_light, HIGH);
   gpio_set_value(signal->green_light, LOW);
 }
-void makeSignalGreen(trafic_signal* signal) {
+void make_signal_green(trafic_signal* signal) {
+  signal->isRed = 0;
+  signal->isYellow = 0;
+  signal->isGreen = 1;
   gpio_set_value(signal->red_light, LOW);
   gpio_set_value(signal->yellow_light, LOW);
   gpio_set_value(signal->green_light, HIGH);
@@ -144,19 +180,54 @@ void unset_signal(trafic_signal* signal) {
   gpio_set_value(signal->yellow_light, LOW);
   gpio_set_value(signal->green_light, LOW);
   gpio_set_value(signal->sensor, LOW);
+  signal->isRed = 0;
+  signal->isYellow = 0;
+  signal->isGreen = 0;
 }
 void sig_handler(int sig) {
   if (sig == SIGINT) {
     shell_write("Recived SIGINT");
-    unset_signal(&signal1);
-    unset_signal(&signal2);
+    unset_signal(signal1);
+    unset_signal(signal2);
     shell_write("Pins are cleaned up.");
     _exit(EXIT_SUCCESS);
   } else if (sig == SIGTSTP) {
     shell_write("Recived SIGTSTP");
-    unset_signal(&signal1);
-    unset_signal(&signal2);
+    unset_signal(signal1);
+    unset_signal(signal2);
     shell_write("Pins are cleaned up.");
     _exit(EXIT_SUCCESS);
+  }
+}
+
+/**
+ * If the light is red and the sensor detected
+ * a presence of a car waiting(push button pressed for 5 seconds)
+ * then after 5 seconds or the remaining time of 2 min which ever comes first
+ *  this signal cycle to green and the other signal cycle to red
+ **/
+void* handle_sensors(void* ptr) {
+  // trafic_signal* signal = (trafic_signal*)ptr;
+  // printf("[%s:THREAD-%ld] starts working...\n", signal->name,
+  // signal->thread);
+  while (1) {
+    int gpv1 = gpio_get_value(signal1->sensor);
+    int gpv2 = gpio_get_value(signal2->sensor);
+    if (gpv1 && signal1->isRed) {
+      printf("GPIO PIN_15 is pressed %d\n", gpv1);
+      make_signal_yellow(signal2);
+      sleep(Y_WAIT_TIME);
+      make_signal_red(signal2);
+      make_signal_green(signal1);
+      // signal the main thread to start waiting and running the counter
+    } else if (gpv2 && signal2->isRed) {
+      printf("GPIO PIN_15 is pressed %d\n", gpv2);
+      make_signal_yellow(signal1);
+      sleep(Y_WAIT_TIME);
+      make_signal_red(signal1);
+      make_signal_green(signal2);
+      // signal the main thread to start waiting and running the counter
+    }
+    usleep(500000);
   }
 }

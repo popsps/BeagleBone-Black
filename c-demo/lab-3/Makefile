@@ -3,10 +3,10 @@ all: lab3 lab3-test
 INC_DIR = ../include
 
 # CFLAG = -g -O3 -Wall -Werror -Wno-error=unused-variable -std=gnu99 -I$(INC_DIR)
-CFLAG = -g -O3 -Wall -Wno-unused-result -Werror -std=gnu99 -I$(INC_DIR)
+CFLAG = -pthread -g -O3 -Wall -Wno-unused-result -Werror -std=gnu99 -I$(INC_DIR)
 CC = gcc
 
-CFLAG-TEST = -static -g -O3 -Wall -Werror -Wno-error=unused-variable -std=gnu99 -I$(INC_DIR)
+CFLAG-TEST = -static -pthread -g -O3 -Wall -Werror -Wno-error=unused-variable -std=gnu99 -I$(INC_DIR)
 CC-TEST = arm-linux-gnueabihf-gcc
 
 DEPS =  $(INC_DIR)/pins.h $(INC_DIR)/bbsignal.c $(INC_DIR)/gpio.c
