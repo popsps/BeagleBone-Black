@@ -31,7 +31,6 @@
 
 typedef struct trafic_signal_struct {
   char* name;
-  pthread_t thread;
   unsigned int red_light;
   unsigned int yellow_light;
   unsigned int green_light;
@@ -51,6 +50,7 @@ void sig_handler(int sig);
 
 static trafic_signal* signal1;
 static trafic_signal* signal2;
+static pthread_t sensor_thread;
 
 void* handle_sensors(void* ptr);
 
@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
   signal2->green_light = P9_26;
   signal2->sensor = P9_27;
 
-  pthread_create(&(signal1->thread), NULL, handle_sensors, signal1);
+  pthread_create(&sensor_thread, NULL, handle_sensors, NULL);
 
   // init signal handler
   registerSignals(sig_handler);
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
 
   // start the signals for intersection
   printf("[CS-699] Startinting Intersecion signals...\n");
-  sleep(2);
+  sleep(1);
   while (1) {
     pthread_mutex_lock(&signal_mutex);
     make_signal_green(signal1);
@@ -117,11 +117,11 @@ int main(int argc, char* argv[]) {
     pthread_mutex_lock(&signal_mutex);
     make_signal_yellow(signal2);
     pthread_mutex_unlock(&signal_mutex);
-    
+
     sleep(Y_WAIT_TIME);
   }
-  pthread_join(signal1->thread, NULL);
-  pthread_join(signal2->thread, NULL);
+  // pthread_join(signal1->thread, NULL);
+  // pthread_join(signal2->thread, NULL);
   printf(
       "[CS-699] Lab3 Simple Intersection with Opposing Traffic Lights Done\n");
   return 0;
@@ -208,24 +208,23 @@ void sig_handler(int sig) {
  **/
 void* handle_sensors(void* ptr) {
   // trafic_signal* signal = (trafic_signal*)ptr;
-  // printf("[%s:THREAD-%ld] starts working...\n", signal->name,
-  // signal->thread);
+  printf("[THREAD-%ld] starts sensor thread working...\n", sensor_thread);
   while (1) {
     int gpv1 = gpio_get_value(signal1->sensor);
     int gpv2 = gpio_get_value(signal2->sensor);
     if (gpv1 && signal1->isRed) {
       printf("GPIO PIN_15 is pressed %d\n", gpv1);
-      make_signal_yellow(signal2);
-      sleep(Y_WAIT_TIME);
-      make_signal_red(signal2);
-      make_signal_green(signal1);
+      // make_signal_yellow(signal2);
+      // sleep(Y_WAIT_TIME);
+      // make_signal_red(signal2);
+      // make_signal_green(signal1);
       // signal the main thread to start waiting and running the counter
     } else if (gpv2 && signal2->isRed) {
-      printf("GPIO PIN_15 is pressed %d\n", gpv2);
-      make_signal_yellow(signal1);
-      sleep(Y_WAIT_TIME);
-      make_signal_red(signal1);
-      make_signal_green(signal2);
+      printf("GPIO PIN_27 is pressed %d\n", gpv2);
+      // make_signal_yellow(signal1);
+      // sleep(Y_WAIT_TIME);
+      // make_signal_red(signal1);
+      // make_signal_green(signal2);
       // signal the main thread to start waiting and running the counter
     }
     usleep(500000);

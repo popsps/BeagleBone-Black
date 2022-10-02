@@ -14,7 +14,7 @@ int gpio_export(unsigned int gpio) {
 
   fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY | O_TRUNC);
   if (fd < 0) {
-    perror("gpio/export error");
+    perror("[BB-ERROR]: gpio/export error");
     return EXIT_FAILURE;
   }
   len = snprintf(path, sizeof(path), "%d", gpio);
@@ -29,7 +29,7 @@ int gpio_unexport(unsigned int gpio) {
 
   fd = open(SYSFS_GPIO_DIR "/unexport", O_WRONLY | O_TRUNC);
   if (fd < 0) {
-    perror("gpio/unexport error");
+    perror("[BB-ERROR]: gpio/unexport error");
     return EXIT_FAILURE;
   }
   len = snprintf(path, sizeof(path), "%d", gpio);
@@ -43,7 +43,7 @@ int gpio_set_direction(unsigned int gpio, PIN_DIRECTION out_flag) {
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/direction", gpio);
   int fd = open(path, O_WRONLY);
   if (fd < 0) {
-    perror("gpio/direction");
+    perror("[BB-ERROR]: gpio/set-direction");
     return fd;
   }
   if (out_flag == OUTPUT_PIN)
@@ -58,7 +58,7 @@ int gpio_set_value(unsigned int gpio, PIN_VALUE value) {
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
   int fd = open(path, O_WRONLY);
   if (fd < 0) {
-    perror("gpio/set-value");
+    fprintf(stderr, "[BB-ERROR]: gpio-%d/set-value\n", gpio);
     return fd;
   }
   if (value == LOW)
@@ -74,7 +74,7 @@ int gpio_get_value(unsigned int gpio) {
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
   int fd = open(path, O_RDONLY);
   if (fd < 0) {
-    perror("gpio/get-value fd\n");
+    fprintf(stderr, "[BB-ERROR]: gpio-%d/get-value\n", gpio);
     return -1;
   } else {
     char res = {0};
@@ -88,7 +88,7 @@ char* gpio_get_direction(unsigned int gpio) {
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/direction", gpio);
   int fd = open(path, O_RDONLY);
   if (fd < 0) {
-    perror("gpio/direction");
+    fprintf(stderr, "[BB-ERROR]: gpio-%d/get-direction\n", gpio);
     return 0;
   } else {
     char* res = malloc(sizeof(char) * 5);
