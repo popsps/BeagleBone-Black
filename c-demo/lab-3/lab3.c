@@ -142,11 +142,9 @@ int main(int argc, char* argv[]) {
         sleep(Y_WAIT_TIME);
         break;
       default:
-        pthread_mutex_lock(&signal_mutex);
-        action = 0;
-        pthread_mutex_unlock(&signal_mutex);
         break;
     }
+    action = (action >= 7) ? 0 : action + 1;
     usleep(200000);
   }
   pthread_join(sensor_thread, NULL);
