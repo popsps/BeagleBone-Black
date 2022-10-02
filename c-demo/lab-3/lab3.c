@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "bbsignal.h"
@@ -38,6 +39,8 @@ typedef struct trafic_signal_struct {
   int isRed;
   int isGreen;
   int isYellow;
+  int isPressed;
+  int sensor_activated;
 } trafic_signal;
 
 void clean_up(trafic_signal* signal);
@@ -69,6 +72,11 @@ int main(int argc, char* argv[]) {
   signal1->yellow_light = P9_12;
   signal1->green_light = P9_13;
   signal1->sensor = P9_15;
+  signal1->isPressed = 0;
+  signal1->isRed = 0;
+  signal1->isYellow = 0;
+  signal1->isGreen = 0;
+  signal1->sensor_activated = 0;
 
   // init pins that are being used for trafic signal 2
   signal2 = malloc(sizeof(trafic_signal));
@@ -77,6 +85,11 @@ int main(int argc, char* argv[]) {
   signal2->yellow_light = P9_24;
   signal2->green_light = P9_26;
   signal2->sensor = P9_27;
+  signal2->isPressed = 0;
+  signal2->isRed = 0;
+  signal2->isYellow = 0;
+  signal2->isGreen = 0;
+  signal2->sensor_activated = 0;
 
   pthread_create(&sensor_thread, NULL, handle_sensors, NULL);
 
@@ -209,24 +222,42 @@ void sig_handler(int sig) {
 void* handle_sensors(void* ptr) {
   // trafic_signal* signal = (trafic_signal*)ptr;
   printf("[THREAD-%ld] starts sensor thread working...\n", sensor_thread);
+  time_t base = time(0);
+  time_t now = base;
   while (1) {
     int gpv1 = gpio_get_value(signal1->sensor);
     int gpv2 = gpio_get_value(signal2->sensor);
+    now = time(0);
     if (gpv1 && signal1->isRed) {
       printf("GPIO PIN_15 is pressed %d\n", gpv1);
+      if (!signal1->isPressed) {
+        signal1->isPressed = 1;
+        base = now;
+      }
+    } else {
+      signal1->isPressed = 0;
+      signal1->sensor_activated = 0;
+    }
+    if (gpv1 && signal1->isRed && now - base >= 2) {
+      printf("GPIO PIN_15 is hold for 2 seconds and activated\n");
       // make_signal_yellow(signal2);
       // sleep(Y_WAIT_TIME);
       // make_signal_red(signal2);
       // make_signal_green(signal1);
       // signal the main thread to start waiting and running the counter
-    } else if (gpv2 && signal2->isRed) {
+    }
+
+    if (gpv2 && signal2->isRed) {
       printf("GPIO PIN_27 is pressed %d\n", gpv2);
       // make_signal_yellow(signal1);
       // sleep(Y_WAIT_TIME);
       // make_signal_red(signal1);
       // make_signal_green(signal2);
       // signal the main thread to start waiting and running the counter
+    } else {
+      signal2->isPressed = 0;
+      signal2->sensor_activated = 0;
     }
-    usleep(500000);
+    usleep(200000);
   }
 }
