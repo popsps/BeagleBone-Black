@@ -25,9 +25,11 @@
  * the light should cycle to green without waiting the full 2 minutes
  **/
 typedef struct trafic_signal_struct {
+  char *name;
   int red_light;
   int yellow_light;
   int green_light;
+  int sensor;
 } trafic_signal;
 
 void cleanUp(trafic_signal* signal);
@@ -45,6 +47,7 @@ int main(int argc, char* argv[]) {
   printf("CS 695 Lab3 Simple Intersection with Opposing Traffic Lights\n");
 
   // init pins that are being used for trafic signal 1
+  
   signal1.red_light = P9_11;
   signal1.yellow_light = P9_12;
   signal1.green_light = P9_13;
@@ -67,8 +70,8 @@ int main(int argc, char* argv[]) {
   // start the signals for intersection
   sleep(1);
   do {
-    printf('GPIO PIN_15 is pressed\n');
-    printf('GPIO PIN_41 is pressed\n');
+    printf("GPIO PIN_15 is pressed\n");
+    printf("GPIO PIN_41 is pressed\n");
     sleep(.5);
   } while (1);
   

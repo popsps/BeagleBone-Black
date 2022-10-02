@@ -25,9 +25,11 @@
  * the light should cycle to green without waiting the full 2 minutes
  **/
 typedef struct trafic_signal_struct {
-  int red_light;
-  int yellow_light;
-  int green_light;
+  char* name;
+  unsigned int red_light;
+  unsigned int yellow_light;
+  unsigned int green_light;
+  unsigned int sensor;
 } trafic_signal;
 
 void cleanUp(trafic_signal* signal);
@@ -45,14 +47,18 @@ int main(int argc, char* argv[]) {
   printf("CS 695 Lab3 Simple Intersection with Opposing Traffic Lights\n");
 
   // init pins that are being used for trafic signal 1
+  signal1.name = "SIGNAL1";
   signal1.red_light = P9_11;
   signal1.yellow_light = P9_12;
   signal1.green_light = P9_13;
+  signal1.sensor = P9_15;
 
   // init pins that are being used for trafic signal 2
+  signal2.name = "SIGNAL2";
   signal2.red_light = P9_23;
   signal2.yellow_light = P9_24;
   signal2.green_light = P9_26;
+  signal2.sensor = P9_17;
 
   // init signal handler
   registerSignals(sig_handler);
@@ -67,6 +73,11 @@ int main(int argc, char* argv[]) {
   // start the signals for intersection
   sleep(1);
   do {
+    // testing should be removed modified
+    int gpv = gpio_get_value(signal1.sensor);
+    if (gpv) {
+      printf("GPIO PIN_15 is pressed %d\n", gpv);
+    }
     makeSignalGreen(&signal1);
     makeSignalRed(&signal2);
     sleep(20);
@@ -89,6 +100,7 @@ void cleanUp(trafic_signal* signal) {
   gpio_unexport(signal->red_light);
   gpio_unexport(signal->yellow_light);
   gpio_unexport(signal->green_light);
+  gpio_unexport(signal->sensor);
 }
 void initilize(trafic_signal* signal) {
   gpio_export(signal->red_light);
@@ -102,6 +114,10 @@ void initilize(trafic_signal* signal) {
   gpio_export(signal->green_light);
   gpio_set_direction(signal->green_light, OUTPUT_PIN);
   gpio_set_value(signal->green_light, LOW);
+
+  gpio_export(signal->sensor);
+  gpio_set_direction(signal->sensor, INPUT_PIN);
+  gpio_set_value(signal->sensor, LOW);
 }
 
 void makeSignalRed(trafic_signal* signal) {
@@ -123,6 +139,7 @@ void unset_signal(trafic_signal* signal) {
   gpio_set_value(signal->red_light, LOW);
   gpio_set_value(signal->yellow_light, LOW);
   gpio_set_value(signal->green_light, LOW);
+  gpio_set_value(signal->sensor, LOW);
 }
 void sig_handler(int sig) {
   if (sig == SIGINT) {

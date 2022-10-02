@@ -37,12 +37,16 @@ void *func1() {
       pthread_cond_wait(&condition_cond, &condition_mutex);
     }
     pthread_mutex_unlock(&condition_mutex);
+    if (count >= COUNT_HALT1 && count <= COUNT_HALT2) {
+      printf("Attempting to increase counter value func1: %d\n", count);
+    } else {
+      // write into the shared variable
+      pthread_mutex_lock(&count_mutex);
+      count++;
+      printf("Counter value func1: %d\n", count);
+      pthread_mutex_unlock(&count_mutex);
+    }
 
-    // write into the shared variable
-    pthread_mutex_lock(&count_mutex);
-    count++;
-    printf("Counter value func1: %d\n", count);
-    pthread_mutex_unlock(&count_mutex);
     if (count >= COUNT_DONE) return NULL;
   }
 }
@@ -56,11 +60,16 @@ void *func2() {
     }
     pthread_mutex_unlock(&condition_mutex);
 
-    // write into the shared variable
-    pthread_mutex_lock(&count_mutex);
-    count++;
-    printf("Counter value func2: %d\n", count);
-    pthread_mutex_unlock(&count_mutex);
+    if (count < COUNT_HALT1 || count > COUNT_HALT2) {
+      printf("Attempting to increase counter value func2: %d\n", count);
+    } else {
+      // write into the shared variable
+      pthread_mutex_lock(&count_mutex);
+      count++;
+      printf("Counter value func2: %d\n", count);
+      pthread_mutex_unlock(&count_mutex);
+    }
+
     if (count >= COUNT_DONE) return NULL;
   }
 }

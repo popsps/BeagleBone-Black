@@ -69,17 +69,32 @@ int gpio_set_value(unsigned int gpio, PIN_VALUE value) {
   return 0;
 }
 
-unsigned int gpio_get_value(unsigned int gpio) {
-  unsigned int value = 0;
+ int gpio_get_value(unsigned int gpio) {
   char path[MAX_BUF];
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
   int fd = open(path, O_RDONLY);
   if (fd < 0) {
-    perror("gpio/set-value");
-    return fd;
+    perror("gpio/set-value fd\n");
+    return -1;
   } else {
-    char res;
+    char res = {0};
     read(fd, &res, 1);
     return (res == '0') ? 0 : 1;
+  }
+}
+
+char* gpio_get_direction(unsigned int gpio) {
+  char path[MAX_BUF];
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/direction", gpio);
+  int fd = open(path, O_RDONLY);
+  if (fd < 0) {
+    perror("gpio/direction");
+    return 0;
+  } else {
+    char* res = malloc(sizeof(char) * 5);
+    memset(res, 0, sizeof(*res) * 5);
+    read(fd, res, 5);
+    close(fd);
+    return res;
   }
 }
