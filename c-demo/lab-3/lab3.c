@@ -1,3 +1,4 @@
+#include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,6 +47,8 @@ static trafic_signal signal2;
 int main(int argc, char* argv[]) {
   printf("CS 695 Lab3 Simple Intersection with Opposing Traffic Lights\n");
 
+  // initializing threads. Each thread will handle a signal.
+  
   // init pins that are being used for trafic signal 1
   signal1.name = "SIGNAL1";
   signal1.red_light = P9_11;
@@ -71,7 +74,8 @@ int main(int argc, char* argv[]) {
   unset_signal(&signal2);
 
   // start the signals for intersection
-  sleep(1);
+  printf("[CS-699] Startinting Intersecion signals...\n");
+  sleep(2);
   do {
     // testing should be removed modified
     int gpv = gpio_get_value(signal1.sensor);
@@ -80,12 +84,12 @@ int main(int argc, char* argv[]) {
     }
     makeSignalGreen(&signal1);
     makeSignalRed(&signal2);
-    sleep(20);
+    sleep(10);
     makeSignalYellow(&signal1);
     sleep(2.5);
     makeSignalRed(&signal1);
     makeSignalGreen(&signal2);
-    sleep(20);
+    sleep(10);
     makeSignalYellow(&signal2);
     sleep(2.5);
   } while (1);

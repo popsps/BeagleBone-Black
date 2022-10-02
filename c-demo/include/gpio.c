@@ -69,12 +69,12 @@ int gpio_set_value(unsigned int gpio, PIN_VALUE value) {
   return 0;
 }
 
- int gpio_get_value(unsigned int gpio) {
+int gpio_get_value(unsigned int gpio) {
   char path[MAX_BUF];
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
   int fd = open(path, O_RDONLY);
   if (fd < 0) {
-    perror("gpio/set-value fd\n");
+    perror("gpio/get-value fd\n");
     return -1;
   } else {
     char res = {0};
