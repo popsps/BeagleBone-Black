@@ -20,4 +20,5 @@ void registerSignals(void (*sig_handler)(int)) {
   new.sa_handler = sig_handler;
   sigaction(SIGINT, &new, NULL);
   sigaction(SIGTSTP, &new, NULL);
+  sigaction(SIGUSR1, &new, NULL);
 }

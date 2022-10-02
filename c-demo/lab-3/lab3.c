@@ -55,9 +55,11 @@ void sig_handler(int sig);
 static trafic_signal* signal1;
 static trafic_signal* signal2;
 static pthread_t sensor_thread;
+static pthread_t intersection_thread;
 static int action = 0;
 
 void* handle_sensors(void* ptr);
+void* handle_intersection(void* ptr);
 
 pthread_mutex_t signal_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t signal_cond_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -94,6 +96,7 @@ int main(int argc, char* argv[]) {
   signal2->sensor_activated = 0;
 
   pthread_create(&sensor_thread, NULL, handle_sensors, NULL);
+  pthread_create(&intersection_thread, NULL, handle_intersection, NULL);
 
   // init signal handler
   registerSignals(sig_handler);
@@ -105,55 +108,8 @@ int main(int argc, char* argv[]) {
   unset_signal(signal1);
   unset_signal(signal2);
 
-  // start the signals for intersection
-  printf("[CS-699] Startinting Intersecion signals...\n");
-  sleep(1);
-  while (1) {
-    printf("case %d\n", action);
-    switch (action) {
-      case 0:
-        pthread_mutex_lock(&signal_mutex);
-        make_signal_green(signal1);
-        make_signal_red(signal2);
-        pthread_mutex_unlock(&signal_mutex);
-        break;
-      case 1:
-        sleep(RG_WAIT_TIME);
-        break;
-      case 2:
-        pthread_mutex_lock(&signal_mutex);
-        make_signal_yellow(signal1);
-        pthread_mutex_unlock(&signal_mutex);
-        break;
-      case 3:
-        sleep(Y_WAIT_TIME);
-        break;
-      case 4:
-        pthread_mutex_lock(&signal_mutex);
-        make_signal_red(signal1);
-        make_signal_green(signal2);
-        pthread_mutex_unlock(&signal_mutex);
-        break;
-      case 5:
-        sleep(RG_WAIT_TIME);
-        break;
-      case 6:
-        pthread_mutex_lock(&signal_mutex);
-        make_signal_yellow(signal2);
-        pthread_mutex_unlock(&signal_mutex);
-        break;
-      case 7:
-        sleep(Y_WAIT_TIME);
-        break;
-      default:
-        break;
-    }
-    pthread_mutex_lock(&signal_mutex);
-    action = (action >= 7) ? 0 : action + 1;
-    pthread_mutex_unlock(&signal_mutex);
-    usleep(200000);
-  }
   pthread_join(sensor_thread, NULL);
+  pthread_join(intersection_thread, NULL);
   printf(
       "[CS-699] Lab3 Simple Intersection with Opposing Traffic Lights Done\n");
   return 0;
@@ -216,6 +172,13 @@ void unset_signal(trafic_signal* signal) {
   signal->isYellow = 0;
   signal->isGreen = 0;
 }
+
+/**
+ * handle OS signals
+ * handle SIGINT CTRL+C
+ * handle SIGTSTP CTRL+Z
+ * handle SIGUSR1 custom signal to bypass sleep on a thread
+ **/
 void sig_handler(int sig) {
   if (sig == SIGINT) {
     shell_write("Recived SIGINT");
@@ -229,9 +192,65 @@ void sig_handler(int sig) {
     unset_signal(signal2);
     shell_write("Pins are cleaned up.");
     _exit(EXIT_SUCCESS);
+  } else if (sig == SIGUSR1) {
+    shell_write("Recived SIGUSR1");
   }
 }
 
+/**
+ *
+ **/
+void* handle_intersection(void* ptr) {
+  // start the signals for intersection
+  printf("[THREAD-%ld] Starting the intersecion thread...\n",
+         intersection_thread);
+  sleep(1);
+  while (1) {
+    printf("case %d\n", action);
+    switch (action) {
+      case 0:
+        pthread_mutex_lock(&signal_mutex);
+        make_signal_green(signal1);
+        make_signal_red(signal2);
+        pthread_mutex_unlock(&signal_mutex);
+        break;
+      case 1:
+        sleep(RG_WAIT_TIME);
+        break;
+      case 2:
+        pthread_mutex_lock(&signal_mutex);
+        make_signal_yellow(signal1);
+        pthread_mutex_unlock(&signal_mutex);
+        break;
+      case 3:
+        sleep(Y_WAIT_TIME);
+        break;
+      case 4:
+        pthread_mutex_lock(&signal_mutex);
+        make_signal_red(signal1);
+        make_signal_green(signal2);
+        pthread_mutex_unlock(&signal_mutex);
+        break;
+      case 5:
+        sleep(RG_WAIT_TIME);
+        break;
+      case 6:
+        pthread_mutex_lock(&signal_mutex);
+        make_signal_yellow(signal2);
+        pthread_mutex_unlock(&signal_mutex);
+        break;
+      case 7:
+        sleep(Y_WAIT_TIME);
+        break;
+      default:
+        break;
+    }
+    pthread_mutex_lock(&signal_mutex);
+    action = (action >= 7) ? 0 : action + 1;
+    pthread_mutex_unlock(&signal_mutex);
+    usleep(200000);
+  }
+}
 /**
  * If the light is red and the sensor detected
  * a presence of a car waiting(push button pressed for 5 seconds)
@@ -240,7 +259,7 @@ void sig_handler(int sig) {
  **/
 void* handle_sensors(void* ptr) {
   // trafic_signal* signal = (trafic_signal*)ptr;
-  printf("[THREAD-%ld] starts sensor thread working...\n", sensor_thread);
+  printf("[THREAD-%ld] starting sensor thread...\n", sensor_thread);
   time_t base = time(0);
   time_t now = base;
   while (1) {
@@ -267,6 +286,7 @@ void* handle_sensors(void* ptr) {
         pthread_mutex_lock(&signal_mutex);
         action = 6;
         pthread_mutex_unlock(&signal_mutex);
+        pthread_kill(intersection_thread, SIGUSR1);
       }
     }
 
@@ -289,6 +309,7 @@ void* handle_sensors(void* ptr) {
         pthread_mutex_lock(&signal_mutex);
         action = 2;
         pthread_mutex_unlock(&signal_mutex);
+        pthread_kill(intersection_thread, SIGUSR1);
       }
     }
     usleep(200000);

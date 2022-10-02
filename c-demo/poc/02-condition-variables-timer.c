@@ -1,4 +1,5 @@
 #include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -13,11 +14,20 @@ int count = 0;
 pthread_mutex_t count_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t condition_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t condition_cond = PTHREAD_COND_INITIALIZER;
+pthread_t thread1, thread2;
 void *func1();
 void *func2();
 
+void sig_handler(int sig) {
+  if (sig == SIGUSR1) {
+    printf("Recived SIGUSR1\n");
+  }
+}
 int main(int argc, char *argv[]) {
-  pthread_t thread1, thread2;
+  struct sigaction new;
+  new.sa_handler = sig_handler;
+  sigaction(SIGUSR1, &new, NULL);
+
   char *message1 = "Thread 1";
   char *message2 = "Thread 2";
 
@@ -42,9 +52,11 @@ void *func1() {
       pthread_mutex_unlock(&condition_mutex);
       base = now;
       printf("Done [func 1] %ld...\n", now - base);
+      // raise(SIGUSR1);
+      pthread_kill(thread2, SIGUSR1);
     }
 
-    usleep(300000);
+    usleep(400000);
   }
 }
 
@@ -54,6 +66,7 @@ void *func2() {
     pthread_mutex_lock(&condition_mutex);
     pthread_cond_wait(&condition_cond, &condition_mutex);
     pthread_mutex_unlock(&condition_mutex);
+    sleep(50);
     printf("func 2 recieved a signal\n");
   }
 }
