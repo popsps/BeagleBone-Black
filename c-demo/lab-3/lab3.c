@@ -228,24 +228,29 @@ void* handle_sensors(void* ptr) {
     int gpv1 = gpio_get_value(signal1->sensor);
     int gpv2 = gpio_get_value(signal2->sensor);
     now = time(0);
+
+    // handle sensor for the second signal
     if (gpv1 && signal1->isRed) {
       printf("GPIO PIN_15 is pressed %d\n", gpv1);
       if (!signal1->isPressed) {
         signal1->isPressed = 1;
         base = now;
       }
-    } else {
+    } else { // if gpv1 = 0 (not pressed)
       signal1->isPressed = 0;
       signal1->sensor_activated = 0;
     }
     if (gpv1 && signal1->isRed && now - base >= 2) {
-      printf("GPIO PIN_15 is hold for 2 seconds and activated\n");
+      printf("GPIO PIN_15 is held for 2 seconds and activated\n");
       // make_signal_yellow(signal2);
       // sleep(Y_WAIT_TIME);
       // make_signal_red(signal2);
       // make_signal_green(signal1);
+      signal1->sensor_activated = 0;
       // signal the main thread to start waiting and running the counter
     }
+
+    // handle sensor for the second signal
 
     if (gpv2 && signal2->isRed) {
       printf("GPIO PIN_27 is pressed %d\n", gpv2);
