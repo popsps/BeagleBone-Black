@@ -27,8 +27,8 @@
  * the light should cycle to green without waiting the full 2 minutes
  **/
 
-#define RG_WAIT_TIME 10
-#define Y_WAIT_TIME 2
+#define RG_WAIT_TIME 30
+#define Y_WAIT_TIME 4
 #define SENSOR_ACTIVATION_TIME 2
 
 typedef struct trafic_signal_struct {
@@ -109,6 +109,7 @@ int main(int argc, char* argv[]) {
   printf("[CS-699] Startinting Intersecion signals...\n");
   sleep(1);
   while (1) {
+    printf("case %d\n", action);
     switch (action) {
       case 0:
         pthread_mutex_lock(&signal_mutex);
@@ -147,7 +148,9 @@ int main(int argc, char* argv[]) {
       default:
         break;
     }
+    pthread_mutex_lock(&signal_mutex);
     action = (action >= 7) ? 0 : action + 1;
+    pthread_mutex_unlock(&signal_mutex);
     usleep(200000);
   }
   pthread_join(sensor_thread, NULL);
@@ -257,15 +260,14 @@ void* handle_sensors(void* ptr) {
       signal1->sensor_activated = 0;
     }
     if (gpv1 && signal1->isRed && now - base >= SENSOR_ACTIVATION_TIME) {
-      signal1->sensor_activated = 1;
-      if (signal1->sensor_activated) {
+      if (!signal1->sensor_activated) {
+        signal1->sensor_activated = 1;
         printf("GPIO PIN_15 is held for %d seconds and activated\n",
                SENSOR_ACTIVATION_TIME);
-        signal1->sensor_activated = 0;
+        pthread_mutex_lock(&signal_mutex);
+        action = 6;
+        pthread_mutex_unlock(&signal_mutex);
       }
-      pthread_mutex_lock(&signal_mutex);
-      action = 6;
-      pthread_mutex_unlock(&signal_mutex);
     }
 
     // handle sensor for the second signal
@@ -280,17 +282,14 @@ void* handle_sensors(void* ptr) {
       signal2->sensor_activated = 0;
     }
     if (gpv2 && signal2->isRed && now - base >= SENSOR_ACTIVATION_TIME) {
-      signal2->sensor_activated = 1;
-      if (signal2->sensor_activated) {
+      if (!signal2->sensor_activated) {
+        signal2->sensor_activated = 1;
         printf("GPIO PIN_27 is held for %d seconds and activated\n",
                SENSOR_ACTIVATION_TIME);
-        signal2->sensor_activated = 0;
+        pthread_mutex_lock(&signal_mutex);
+        action = 2;
+        pthread_mutex_unlock(&signal_mutex);
       }
-
-      signal2->sensor_activated = 0;
-      pthread_mutex_lock(&signal_mutex);
-      action = 2;
-      pthread_mutex_unlock(&signal_mutex);
     }
     usleep(200000);
   }
