@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
   signal2.red_light = P9_23;
   signal2.yellow_light = P9_24;
   signal2.green_light = P9_26;
-  signal2.sensor = P9_17;
+  signal2.sensor = P9_27;
 
   // init signal handler
   registerSignals(sig_handler);
