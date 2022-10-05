@@ -1,10 +1,5 @@
 #include "bbsignal.h"
 
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 
 void shell_write(char* s) {
   char output[255] = {0};
@@ -22,3 +17,28 @@ void registerSignals(void (*sig_handler)(int)) {
   sigaction(SIGTSTP, &new, NULL);
   sigaction(SIGUSR1, &new, NULL);
 }
+
+/**
+ * Registers signal required by Beaglebone programs
+ **/
+void register_sigpromask() {
+  sigfillset(&mask_all);
+  sigemptyset(&custom_set);
+  sigaddset(&custom_set, SIGUSR1);
+  sigaddset(&custom_set, SIGINT);
+  sigaddset(&custom_set, SIGTSTP);
+}
+
+/**
+ * block signals for the custom set of signals
+ * block signnal using multithreaded compatible versioon of sigprocmask
+ **/
+void block_signals() { pthread_sigmask(SIG_BLOCK, &custom_set, NULL); }
+
+/**
+ * unblock signals for the custom set of signals
+ **/
+void unblock_signals() { pthread_sigmask(SIG_UNBLOCK, &custom_set, NULL); }
+
+// void block_signals() { sigprocmask(SIG_BLOCK, &mask_one, &prev_one); }
+// void unblock_signals() { sigprocmask(SIG_SETMASK, &prev_one, NULL); }
