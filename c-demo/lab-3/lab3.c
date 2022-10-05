@@ -42,7 +42,7 @@ typedef struct trafic_signal_struct {
   int isYellow;
   int isPressed;
   int sensor_activated;
-  pthread_rwlock_t rwlock
+  pthread_rwlock_t rwlock;
 } trafic_signal;
 
 void clean_up(trafic_signal* signal);
