@@ -1,6 +1,14 @@
 #ifndef GPIO_H
 #define GPIO_H
 
+#include <errno.h>
+#include <fcntl.h>
+#include <poll.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 /***************************************************************
  * Constants
  ***************************************************************/

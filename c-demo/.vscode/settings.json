@@ -7,7 +7,10 @@
         "pthread.h": "c",
         "stdlib.h": "c",
         "unistd.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "errno.h": "c",
+        "stab.h": "c",
+        "logging.h": "c"
     },
     "C_Cpp.default.compilerPath": "/usr/arm-linux-gnueabihf/include"
 }

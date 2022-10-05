@@ -26,3 +26,4 @@
 // typedef enum COLOR_ENUM { KNRM = "\x1B[0m", KRED = "\x1B[31m" } COLOR;
 
 void shell_write(const char* color, const char* fmt, ...);
+void shell_print(const char* color, const char* fmt, ...);

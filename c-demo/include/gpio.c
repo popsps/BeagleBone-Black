@@ -1,13 +1,5 @@
 #include "gpio.h"
 
-#include <errno.h>
-#include <fcntl.h>
-#include <poll.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
 int gpio_export(unsigned int gpio) {
   int fd, len = 0;
   char path[MAX_BUF];

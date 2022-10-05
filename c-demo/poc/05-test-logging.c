@@ -41,5 +41,16 @@ int main(int argc, char* argv[]) {
   shell_write(BRED, "Hello");
   printf("hooo\n");
   shell_write(BBLACK, "Hello");
+  int a = 0;
+
+  char buffer[5] = {0};
+  if (fgets(buffer, 5, stdin) != NULL) {
+    a = atoi(buffer);
+  }
+  printf("buffer: %s", buffer);
+  printf("a: %d\n", a);
+
+  scanf("%d", &a);
+  printf("a: %d\n", a);
   exit(0);
 }
