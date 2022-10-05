@@ -5,7 +5,6 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #define SIG_LOG_HEAD "[BB-SIGNAL]"
 
 sigset_t mask_all, mask_one, prev_one;

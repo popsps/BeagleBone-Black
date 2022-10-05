@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
 #define KNRM "\x1B[0m"
@@ -10,5 +11,8 @@
 #define KMAG "\x1B[35m"
 #define KCYN "\x1B[36m"
 #define KWHT "\x1B[37m"
+#define BRED "\033[1;31m"
 
-void log(const char* fmt, ...);
+// typedef enum COLOR_ENUM { KNRM = "\x1B[0m", KRED = "\x1B[31m" } COLOR;
+
+void shell_write(const char* color, const char* fmt, ...);
