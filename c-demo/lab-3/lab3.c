@@ -66,7 +66,11 @@ void* handle_intersection(void* ptr);
 pthread_rwlock_t signal_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 
 int main(int argc, char* argv[]) {
-  printf("[MAIN]: Lab3 Simple Intersection with Opposing Traffic Lights\n");
+  pthread_t current_thread = pthread_self();
+  shell_write(
+      BBLACK,
+      "[THREAD%ld]: Lab3 Simple Intersection with Opposing Traffic Lights",
+      current_thread);
 
   // init signal handler for SIGUSR1, SIGINT, and SIGTSTP
   register_signal_handler(sig_handler);
@@ -118,8 +122,10 @@ int main(int argc, char* argv[]) {
   pthread_join(intersection_thread, NULL);
   pthread_join(sensor_thread, NULL);
 
-  printf(
-      "[MAIN]: Lab3 Simple Intersection with Opposing Traffic Lights Done\n");
+  shell_write(
+      BBLACK,
+      "[THREAD%ld]: Lab3 Simple Intersection with Opposing Traffic Lights Done",
+      current_thread);
   return 0;
 }
 
@@ -196,20 +202,21 @@ void unset_signal(trafic_signal* signal) {
  * handle SIGUSR1 custom signal to bypass sleep on a thread
  **/
 void sig_handler(int sig) {
+  pthread_t current_thread = pthread_self();
   if (sig == SIGINT) {
-    shell_write(BRED, "Recived SIGINT");
+    shell_write(BPURPLE, "[THREAD%ld]: Recived SIGINT", current_thread);
     unset_signal(signal1);
     unset_signal(signal2);
-    shell_write(BRED, "Pins are cleaned up.");
+    shell_write(BPURPLE, "[THREAD%ld]: Pins are cleaned up.", current_thread);
     _exit(EXIT_SUCCESS);
   } else if (sig == SIGTSTP) {
-    shell_write(BRED, "Recived SIGTSTP");
+    shell_write(BPURPLE, "[THREAD%ld]: Recived SIGTSTP", current_thread);
     unset_signal(signal1);
     unset_signal(signal2);
-    shell_write(BRED, "Pins are cleaned up.");
+    shell_write(BPURPLE, "[THREAD%ld]: Pins are cleaned up.", current_thread);
     _exit(EXIT_SUCCESS);
   } else if (sig == SIGUSR1) {
-    shell_write(BRED, "Recived SIGUSR1");
+    shell_write(BPURPLE, "[THREAD%ld]: Recived SIGUSR1", current_thread);
   }
 }
 
@@ -218,8 +225,8 @@ void sig_handler(int sig) {
  **/
 void* handle_intersection(void* ptr) {
   // start the signals for intersection
-  printf("[THREAD%ld]: Starting the intersecion thread...\n",
-         intersection_thread);
+  shell_write(KDEF, "[THREAD%ld]: Starting the intersecion thread...",
+              intersection_thread);
   sleep(1);
   while (1) {
     pthread_rwlock_wrlock(&signal_rwlock);
@@ -230,16 +237,16 @@ void* handle_intersection(void* ptr) {
       case 1:
         make_signal_green(signal1);
         make_signal_red(signal2);
-        printf("[THREAD%ld]: { Signal1: GREEN }, { Signal2: RED }\n",
-               intersection_thread);
+        shell_write(KDEF, "[THREAD%ld]: { Signal1: GREEN }, { Signal2: RED }",
+                    intersection_thread);
         break;
       case 2:
         sleep(RG_WAIT_TIME);
         break;
       case 3:
         make_signal_yellow(signal1);
-        printf("[THREAD%ld]: { Signal1: YELLOW }, { Signal2: RED }\n",
-               intersection_thread);
+        shell_write(KDEF, "[THREAD%ld]: { Signal1: YELLOW }, { Signal2: RED }",
+                    intersection_thread);
         break;
       case 4:
         sleep(Y_WAIT_TIME);
@@ -247,16 +254,16 @@ void* handle_intersection(void* ptr) {
       case 5:
         make_signal_red(signal1);
         make_signal_green(signal2);
-        printf("[THREAD%ld]: { Signal1: RED }, { Signal2: GREEN }\n",
-               intersection_thread);
+        shell_write(KDEF, "[THREAD%ld]: { Signal1: RED }, { Signal2: GREEN }",
+                    intersection_thread);
         break;
       case 6:
         sleep(RG_WAIT_TIME);
         break;
       case 7:
         make_signal_yellow(signal2);
-        printf("[THREAD%ld]: { Signal1: RED }, { Signal2: YELLOW }\n",
-               intersection_thread);
+        shell_write(KDEF, "[THREAD%ld]: { Signal1: RED }, { Signal2: YELLOW }",
+                    intersection_thread);
         break;
       case 8:
         sleep(Y_WAIT_TIME);
@@ -275,7 +282,7 @@ void* handle_intersection(void* ptr) {
  **/
 void* handle_sensors(void* ptr) {
   // trafic_signal* signal = (trafic_signal*)ptr;
-  printf("[THREAD%ld]: starting sensor thread...\n", sensor_thread);
+  shell_write(BRED, "[THREAD%ld]: starting sensor thread...", sensor_thread);
   time_t base = time(0);
   time_t now = base;
   while (1) {
@@ -292,8 +299,8 @@ void* handle_sensors(void* ptr) {
     // handle the sensor logic for the first signal
     if (isSensor1Pressed && isSignal1Red) {
       if (!signal1->isPressed) {
-        printf("[THREAD%ld]: GPIO PIN_15 is pressed %d\n", sensor_thread,
-               isSensor1Pressed);
+        shell_write(BRED, "[THREAD%ld]: GPIO PIN_15 is pressed %d",
+                    sensor_thread, isSensor1Pressed);
         signal1->isPressed = 1;
         base = now;
       }
@@ -305,8 +312,9 @@ void* handle_sensors(void* ptr) {
         now - base >= SENSOR_ACTIVATION_TIME) {
       if (!signal1->sensor_activated) {
         signal1->sensor_activated = 1;
-        printf(
-            "[THREAD%ld]: GPIO PIN_15 is held for %d seconds and activated\n",
+        shell_write(
+            BRED,
+            "[THREAD%ld]: GPIO PIN_15 is held for %d seconds and activated",
             sensor_thread, SENSOR_ACTIVATION_TIME);
 
         pthread_rwlock_wrlock(&signal_rwlock);
@@ -321,8 +329,8 @@ void* handle_sensors(void* ptr) {
     // handle the sensor logic for the second signal
     if (isSensor2Pressed && isSignal2Red) {
       if (!signal2->isPressed) {
-        printf("[THREAD%ld]: GPIO PIN_27 is pressed %d\n", sensor_thread,
-               isSensor2Pressed);
+        shell_write(BRED, "[THREAD%ld]: GPIO PIN_27 is pressed %d",
+                    sensor_thread, isSensor2Pressed);
         signal2->isPressed = 1;
         base = now;
       }
@@ -334,8 +342,9 @@ void* handle_sensors(void* ptr) {
         now - base >= SENSOR_ACTIVATION_TIME) {
       if (!signal2->sensor_activated) {
         signal2->sensor_activated = 1;
-        printf(
-            "[THREAD%ld]: GPIO PIN_27 is held for %d seconds and activated\n",
+        shell_write(
+            BRED,
+            "[THREAD%ld]: GPIO PIN_27 is held for %d seconds and activated",
             sensor_thread, SENSOR_ACTIVATION_TIME);
 
         pthread_rwlock_wrlock(&signal_rwlock);
