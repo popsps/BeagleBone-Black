@@ -217,7 +217,7 @@ void sig_handler(int sig) {
  **/
 void* handle_intersection(void* ptr) {
   // start the signals for intersection
-  printf("[THREAD%ld] Starting the intersecion thread...\n",
+  printf("[THREAD%ld]: Starting the intersecion thread...\n",
          intersection_thread);
   sleep(1);
   while (1) {
@@ -225,18 +225,20 @@ void* handle_intersection(void* ptr) {
     action = (action > 8) ? 1 : action + 1;
     int _action = action;
     pthread_rwlock_unlock(&signal_rwlock);
-    printf("[DEBUG] case: %d\n", _action);
-
     switch (_action) {
       case 1:
         make_signal_green(signal1);
         make_signal_red(signal2);
+        printf("[THREAD%ld]: { Signal1: GREEN }, { Signal2: RED } \n",
+               intersection_thread, _action);
         break;
       case 2:
         sleep(RG_WAIT_TIME);
         break;
       case 3:
         make_signal_yellow(signal1);
+        printf("[THREAD%ld]: { Signal1: YELLOW }, { Signal2: RED } \n",
+               intersection_thread, _action);
         break;
       case 4:
         sleep(Y_WAIT_TIME);
@@ -244,12 +246,16 @@ void* handle_intersection(void* ptr) {
       case 5:
         make_signal_red(signal1);
         make_signal_green(signal2);
+        printf("[THREAD%ld]: { Signal1: RED }, { Signal2: GREEN } \n",
+               intersection_thread, _action);
         break;
       case 6:
         sleep(RG_WAIT_TIME);
         break;
       case 7:
         make_signal_yellow(signal2);
+        printf("[THREAD%ld]: { Signal1: RED }, { Signal2: YELLOW } \n",
+               intersection_thread, _action);
         break;
       case 8:
         sleep(Y_WAIT_TIME);
