@@ -15,7 +15,7 @@ sigset_t custom_set;
 
 void shell_write(char* s);
 
-void registerSignals(void (*sig_handler)(int));
+void register_signal_handler(void (*sig_handler)(int));
 void register_sigpromask();
 void block_signals();
 void unblock_signals();

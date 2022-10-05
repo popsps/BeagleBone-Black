@@ -1,6 +1,5 @@
 #include "bbsignal.h"
 
-
 void shell_write(char* s) {
   char output[255] = {0};
   sprintf(output, "\033[1;31m%s: %s\n\033[0m", SIG_LOG_HEAD, s);
@@ -10,7 +9,7 @@ void shell_write(char* s) {
   }
 }
 
-void registerSignals(void (*sig_handler)(int)) {
+void register_signal_handler(void (*sig_handler)(int)) {
   struct sigaction new;
   new.sa_handler = sig_handler;
   sigaction(SIGINT, &new, NULL);

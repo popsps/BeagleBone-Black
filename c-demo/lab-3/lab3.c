@@ -42,6 +42,7 @@ typedef struct trafic_signal_struct {
   int isYellow;
   int isPressed;
   int sensor_activated;
+  pthread_rwlock_t rwlock
 } trafic_signal;
 
 void clean_up(trafic_signal* signal);
@@ -61,12 +62,15 @@ static int action = 0;
 void* handle_sensors(void* ptr);
 void* handle_intersection(void* ptr);
 
-pthread_mutex_t signal_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t signal_cond_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t signal_cond = PTHREAD_COND_INITIALIZER;
+pthread_rwlock_t signal_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 
 int main(int argc, char* argv[]) {
   printf("[MAIN]: Lab3 Simple Intersection with Opposing Traffic Lights\n");
+
+  // init signal handler for SIGUSR1, SIGINT, and SIGTSTP
+  register_signal_handler(sig_handler);
+  // init signal blocker
+  register_sigpromask();
 
   // init pins that are being used for trafic signal 1
   // initializing threads. Each thread will handle a signal.
@@ -81,6 +85,7 @@ int main(int argc, char* argv[]) {
   signal1->isYellow = 0;
   signal1->isGreen = 0;
   signal1->sensor_activated = 0;
+  pthread_rwlock_init(&signal1->rwlock, NULL);
 
   // init pins that are being used for trafic signal 2
   signal2 = malloc(sizeof(trafic_signal));
@@ -94,19 +99,20 @@ int main(int argc, char* argv[]) {
   signal2->isYellow = 0;
   signal2->isGreen = 0;
   signal2->sensor_activated = 0;
+  pthread_rwlock_init(&signal2->rwlock, NULL);
 
-  pthread_create(&intersection_thread, NULL, handle_intersection, NULL);
-  pthread_create(&sensor_thread, NULL, handle_sensors, NULL);
-
-  // init signal handler
-  registerSignals(sig_handler);
-
+  // clean up and unset any previous state of GPIOs and re-initialize them again
   clean_up(signal1);
   clean_up(signal2);
   initilize(signal1);
   initilize(signal2);
   unset_signal(signal1);
   unset_signal(signal2);
+
+  // thread responsible for handling the general intersection logic
+  pthread_create(&intersection_thread, NULL, handle_intersection, NULL);
+  // thread responsible for handling sensor logic
+  pthread_create(&sensor_thread, NULL, handle_sensors, NULL);
 
   pthread_join(intersection_thread, NULL);
   pthread_join(sensor_thread, NULL);
@@ -141,37 +147,45 @@ void initilize(trafic_signal* signal) {
 }
 
 void make_signal_red(trafic_signal* signal) {
+  pthread_rwlock_wrlock(&signal->rwlock);
   signal->isRed = 1;
   signal->isYellow = 0;
   signal->isGreen = 0;
   gpio_set_value(signal->red_light, HIGH);
   gpio_set_value(signal->yellow_light, LOW);
   gpio_set_value(signal->green_light, LOW);
+  pthread_rwlock_unlock(&signal->rwlock);
 }
 void make_signal_yellow(trafic_signal* signal) {
+  pthread_rwlock_wrlock(&signal->rwlock);
   signal->isRed = 0;
   signal->isYellow = 1;
   signal->isGreen = 0;
   gpio_set_value(signal->red_light, LOW);
   gpio_set_value(signal->yellow_light, HIGH);
   gpio_set_value(signal->green_light, LOW);
+  pthread_rwlock_unlock(&signal->rwlock);
 }
 void make_signal_green(trafic_signal* signal) {
+  pthread_rwlock_wrlock(&signal->rwlock);
   signal->isRed = 0;
   signal->isYellow = 0;
   signal->isGreen = 1;
   gpio_set_value(signal->red_light, LOW);
   gpio_set_value(signal->yellow_light, LOW);
   gpio_set_value(signal->green_light, HIGH);
+  pthread_rwlock_unlock(&signal->rwlock);
 }
 void unset_signal(trafic_signal* signal) {
+  pthread_rwlock_wrlock(&signal->rwlock);
+  signal->isRed = 0;
+  signal->isYellow = 0;
+  signal->isGreen = 0;
   gpio_set_value(signal->red_light, LOW);
   gpio_set_value(signal->yellow_light, LOW);
   gpio_set_value(signal->green_light, LOW);
   gpio_set_value(signal->sensor, LOW);
-  signal->isRed = 0;
-  signal->isYellow = 0;
-  signal->isGreen = 0;
+  pthread_rwlock_unlock(&signal->rwlock);
 }
 
 /**
@@ -207,43 +221,35 @@ void* handle_intersection(void* ptr) {
          intersection_thread);
   sleep(1);
   while (1) {
-    pthread_mutex_lock(&signal_mutex);
+    pthread_rwlock_wrlock(&signal_rwlock);
     action = (action > 8) ? 1 : action + 1;
     int _action = action;
-    pthread_mutex_unlock(&signal_mutex);
-    printf("case %d\n", _action);
-    usleep(200000);
+    pthread_rwlock_unlock(&signal_rwlock);
+    printf("[DEBUG] case: %d\n", _action);
+
     switch (_action) {
       case 1:
-        pthread_mutex_lock(&signal_mutex);
         make_signal_green(signal1);
         make_signal_red(signal2);
-        pthread_mutex_unlock(&signal_mutex);
         break;
       case 2:
         sleep(RG_WAIT_TIME);
         break;
       case 3:
-        pthread_mutex_lock(&signal_mutex);
         make_signal_yellow(signal1);
-        pthread_mutex_unlock(&signal_mutex);
         break;
       case 4:
         sleep(Y_WAIT_TIME);
         break;
       case 5:
-        pthread_mutex_lock(&signal_mutex);
         make_signal_red(signal1);
         make_signal_green(signal2);
-        pthread_mutex_unlock(&signal_mutex);
         break;
       case 6:
         sleep(RG_WAIT_TIME);
         break;
       case 7:
-        pthread_mutex_lock(&signal_mutex);
         make_signal_yellow(signal2);
-        pthread_mutex_unlock(&signal_mutex);
         break;
       case 8:
         sleep(Y_WAIT_TIME);
@@ -251,6 +257,7 @@ void* handle_intersection(void* ptr) {
       default:
         break;
     }
+    usleep(200000);
   }
 }
 /**
@@ -261,42 +268,54 @@ void* handle_intersection(void* ptr) {
  **/
 void* handle_sensors(void* ptr) {
   // trafic_signal* signal = (trafic_signal*)ptr;
-  printf("[THREAD%ld] starting sensor thread...\n", sensor_thread);
+  printf("[THREAD%ld]: starting sensor thread...\n", sensor_thread);
   time_t base = time(0);
   time_t now = base;
   while (1) {
-    int gpv1 = gpio_get_value(signal1->sensor);
-    int gpv2 = gpio_get_value(signal2->sensor);
+    int isSensor1Pressed = gpio_get_value(signal1->sensor);
+    int isSensor2Pressed = gpio_get_value(signal2->sensor);
+    pthread_rwlock_rdlock(&signal1->rwlock);
+    int isSignal1Red = signal1->isRed;
+    pthread_rwlock_unlock(&signal1->rwlock);
+    pthread_rwlock_rdlock(&signal2->rwlock);
+    int isSignal2Red = signal2->isRed;
+    pthread_rwlock_unlock(&signal2->rwlock);
     now = time(0);
 
-    // handle sensor for the first signal
-    if (gpv1 && signal1->isRed) {
+    // handle the sensor logic for the first signal
+    if (isSensor1Pressed && isSignal1Red) {
       if (!signal1->isPressed) {
-        printf("GPIO PIN_15 is pressed %d\n", gpv1);
+        printf("[THREAD%ld]: GPIO PIN_15 is pressed %d\n", sensor_thread,
+               isSensor1Pressed);
         signal1->isPressed = 1;
         base = now;
       }
-    } else {  // if gpv1 = 0 (not pressed)
+    } else {  // if isSensor1Pressed = 0 (not pressed)
       signal1->isPressed = 0;
       signal1->sensor_activated = 0;
     }
-    if (gpv1 && signal1->isRed && now - base >= SENSOR_ACTIVATION_TIME) {
+    if (isSensor1Pressed && isSignal1Red &&
+        now - base >= SENSOR_ACTIVATION_TIME) {
       if (!signal1->sensor_activated) {
         signal1->sensor_activated = 1;
-        printf("GPIO PIN_15 is held for %d seconds and activated\n",
-               SENSOR_ACTIVATION_TIME);
-        pthread_mutex_lock(&signal_mutex);
+        printf(
+            "[THREAD%ld]: GPIO PIN_15 is held for %d seconds and activated\n",
+            sensor_thread, SENSOR_ACTIVATION_TIME);
+
+        pthread_rwlock_wrlock(&signal_rwlock);
         // this technically set to action=7
         action = 6;
-        pthread_mutex_unlock(&signal_mutex);
+        pthread_rwlock_unlock(&signal_rwlock);
+        // if the signal-thread is sleep it, wake it up
         pthread_kill(intersection_thread, SIGUSR1);
       }
     }
 
-    // handle sensor for the second signal
-    if (gpv2 && signal2->isRed) {
+    // handle the sensor logic for the second signal
+    if (isSensor2Pressed && isSignal2Red) {
       if (!signal2->isPressed) {
-        printf("GPIO PIN_27 is pressed %d\n", gpv2);
+        printf("[THREAD%ld]: GPIO PIN_27 is pressed %d\n", sensor_thread,
+               isSensor2Pressed);
         signal2->isPressed = 1;
         base = now;
       }
@@ -304,15 +323,19 @@ void* handle_sensors(void* ptr) {
       signal2->isPressed = 0;
       signal2->sensor_activated = 0;
     }
-    if (gpv2 && signal2->isRed && now - base >= SENSOR_ACTIVATION_TIME) {
+    if (isSensor2Pressed && isSignal2Red &&
+        now - base >= SENSOR_ACTIVATION_TIME) {
       if (!signal2->sensor_activated) {
         signal2->sensor_activated = 1;
-        printf("GPIO PIN_27 is held for %d seconds and activated\n",
-               SENSOR_ACTIVATION_TIME);
-        pthread_mutex_lock(&signal_mutex);
+        printf(
+            "[THREAD%ld]: GPIO PIN_27 is held for %d seconds and activated\n",
+            sensor_thread, SENSOR_ACTIVATION_TIME);
+
+        pthread_rwlock_wrlock(&signal_rwlock);
         // this technically set to action=3
         action = 2;
-        pthread_mutex_unlock(&signal_mutex);
+        pthread_rwlock_unlock(&signal_rwlock);
+        // if the signal-thread is sleep it, wake it up
         pthread_kill(intersection_thread, SIGUSR1);
       }
     }
