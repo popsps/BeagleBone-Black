@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#define SIG_LOG_HEAD "[CS_695]"
+#define SIG_LOG_HEAD "[BB-SIGNAL]"
 
 sigset_t mask_all, mask_one, prev_one;
 sigset_t mask_alls, mask_ones, prev_ones;
