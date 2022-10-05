@@ -229,16 +229,16 @@ void* handle_intersection(void* ptr) {
       case 1:
         make_signal_green(signal1);
         make_signal_red(signal2);
-        printf("[THREAD%ld]: { Signal1: GREEN }, { Signal2: RED } \n",
-               intersection_thread, _action);
+        printf("[THREAD%ld]: { Signal1: GREEN }, { Signal2: RED }\n",
+               intersection_thread);
         break;
       case 2:
         sleep(RG_WAIT_TIME);
         break;
       case 3:
         make_signal_yellow(signal1);
-        printf("[THREAD%ld]: { Signal1: YELLOW }, { Signal2: RED } \n",
-               intersection_thread, _action);
+        printf("[THREAD%ld]: { Signal1: YELLOW }, { Signal2: RED }\n",
+               intersection_thread);
         break;
       case 4:
         sleep(Y_WAIT_TIME);
@@ -246,16 +246,16 @@ void* handle_intersection(void* ptr) {
       case 5:
         make_signal_red(signal1);
         make_signal_green(signal2);
-        printf("[THREAD%ld]: { Signal1: RED }, { Signal2: GREEN } \n",
-               intersection_thread, _action);
+        printf("[THREAD%ld]: { Signal1: RED }, { Signal2: GREEN }\n",
+               intersection_thread);
         break;
       case 6:
         sleep(RG_WAIT_TIME);
         break;
       case 7:
         make_signal_yellow(signal2);
-        printf("[THREAD%ld]: { Signal1: RED }, { Signal2: YELLOW } \n",
-               intersection_thread, _action);
+        printf("[THREAD%ld]: { Signal1: RED }, { Signal2: YELLOW }\n",
+               intersection_thread);
         break;
       case 8:
         sleep(Y_WAIT_TIME);
