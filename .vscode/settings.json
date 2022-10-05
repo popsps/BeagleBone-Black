@@ -6,6 +6,8 @@
         "unistd.h": "c",
         "string.h": "c",
         "stdlib.h": "c",
-        "gpio.h": "c"
+        "gpio.h": "c",
+        "logging.h": "c",
+        "bbsignal.h": "c"
     }
 }

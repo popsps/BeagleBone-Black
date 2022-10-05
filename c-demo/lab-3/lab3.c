@@ -9,6 +9,7 @@
 #include "bbsignal.h"
 #include "gpio.h"
 #include "pins.h"
+#include "logging.h"
 
 /**
  * Each side gets green light for 2 minutes. The transition to the red light
@@ -196,19 +197,19 @@ void unset_signal(trafic_signal* signal) {
  **/
 void sig_handler(int sig) {
   if (sig == SIGINT) {
-    shell_write("Recived SIGINT");
+    log("Recived SIGINT");
     unset_signal(signal1);
     unset_signal(signal2);
-    shell_write("Pins are cleaned up.");
+    log("Pins are cleaned up.");
     _exit(EXIT_SUCCESS);
   } else if (sig == SIGTSTP) {
-    shell_write("Recived SIGTSTP");
+    log("Recived SIGTSTP");
     unset_signal(signal1);
     unset_signal(signal2);
-    shell_write("Pins are cleaned up.");
+    log("Pins are cleaned up.");
     _exit(EXIT_SUCCESS);
   } else if (sig == SIGUSR1) {
-    shell_write("Recived SIGUSR1");
+    log("Recived SIGUSR1");
   }
 }
 

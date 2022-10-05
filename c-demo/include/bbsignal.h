@@ -6,14 +6,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #define SIG_LOG_HEAD "[BB-SIGNAL]"
 
 sigset_t mask_all, mask_one, prev_one;
 sigset_t mask_alls, mask_ones, prev_ones;
 sigset_t custom_set;
-
-void shell_write(char* s);
 
 void register_signal_handler(void (*sig_handler)(int));
 void register_sigpromask();
