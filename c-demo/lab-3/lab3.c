@@ -66,7 +66,7 @@ pthread_mutex_t signal_cond_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t signal_cond = PTHREAD_COND_INITIALIZER;
 
 int main(int argc, char* argv[]) {
-  printf("CS 695 Lab3 Simple Intersection with Opposing Traffic Lights\n");
+  printf("[MAIN]: Lab3 Simple Intersection with Opposing Traffic Lights\n");
 
   // init pins that are being used for trafic signal 1
   // initializing threads. Each thread will handle a signal.
@@ -95,8 +95,8 @@ int main(int argc, char* argv[]) {
   signal2->isGreen = 0;
   signal2->sensor_activated = 0;
 
-  pthread_create(&sensor_thread, NULL, handle_sensors, NULL);
   pthread_create(&intersection_thread, NULL, handle_intersection, NULL);
+  pthread_create(&sensor_thread, NULL, handle_sensors, NULL);
 
   // init signal handler
   registerSignals(sig_handler);
@@ -108,10 +108,11 @@ int main(int argc, char* argv[]) {
   unset_signal(signal1);
   unset_signal(signal2);
 
-  pthread_join(sensor_thread, NULL);
   pthread_join(intersection_thread, NULL);
+  pthread_join(sensor_thread, NULL);
+
   printf(
-      "[CS-699] Lab3 Simple Intersection with Opposing Traffic Lights Done\n");
+      "[MAIN]: Lab3 Simple Intersection with Opposing Traffic Lights Done\n");
   return 0;
 }
 
@@ -198,57 +199,58 @@ void sig_handler(int sig) {
 }
 
 /**
- *
+ * handle the intersection logic for two signals.
  **/
 void* handle_intersection(void* ptr) {
   // start the signals for intersection
-  printf("[THREAD-%ld] Starting the intersecion thread...\n",
+  printf("[THREAD%ld] Starting the intersecion thread...\n",
          intersection_thread);
   sleep(1);
   while (1) {
-    printf("case %d\n", action);
-    switch (action) {
-      case 0:
+    pthread_mutex_lock(&signal_mutex);
+    action = (action > 8) ? 1 : action + 1;
+    int _action = action;
+    pthread_mutex_unlock(&signal_mutex);
+    printf("case %d\n", _action);
+    usleep(200000);
+    switch (_action) {
+      case 1:
         pthread_mutex_lock(&signal_mutex);
         make_signal_green(signal1);
         make_signal_red(signal2);
         pthread_mutex_unlock(&signal_mutex);
         break;
-      case 1:
+      case 2:
         sleep(RG_WAIT_TIME);
         break;
-      case 2:
+      case 3:
         pthread_mutex_lock(&signal_mutex);
         make_signal_yellow(signal1);
         pthread_mutex_unlock(&signal_mutex);
         break;
-      case 3:
+      case 4:
         sleep(Y_WAIT_TIME);
         break;
-      case 4:
+      case 5:
         pthread_mutex_lock(&signal_mutex);
         make_signal_red(signal1);
         make_signal_green(signal2);
         pthread_mutex_unlock(&signal_mutex);
         break;
-      case 5:
+      case 6:
         sleep(RG_WAIT_TIME);
         break;
-      case 6:
+      case 7:
         pthread_mutex_lock(&signal_mutex);
         make_signal_yellow(signal2);
         pthread_mutex_unlock(&signal_mutex);
         break;
-      case 7:
+      case 8:
         sleep(Y_WAIT_TIME);
         break;
       default:
         break;
     }
-    pthread_mutex_lock(&signal_mutex);
-    action = (action >= 7) ? 0 : action + 1;
-    pthread_mutex_unlock(&signal_mutex);
-    usleep(200000);
   }
 }
 /**
@@ -259,7 +261,7 @@ void* handle_intersection(void* ptr) {
  **/
 void* handle_sensors(void* ptr) {
   // trafic_signal* signal = (trafic_signal*)ptr;
-  printf("[THREAD-%ld] starting sensor thread...\n", sensor_thread);
+  printf("[THREAD%ld] starting sensor thread...\n", sensor_thread);
   time_t base = time(0);
   time_t now = base;
   while (1) {
@@ -284,6 +286,7 @@ void* handle_sensors(void* ptr) {
         printf("GPIO PIN_15 is held for %d seconds and activated\n",
                SENSOR_ACTIVATION_TIME);
         pthread_mutex_lock(&signal_mutex);
+        // this technically set to action=7
         action = 6;
         pthread_mutex_unlock(&signal_mutex);
         pthread_kill(intersection_thread, SIGUSR1);
@@ -307,6 +310,7 @@ void* handle_sensors(void* ptr) {
         printf("GPIO PIN_27 is held for %d seconds and activated\n",
                SENSOR_ACTIVATION_TIME);
         pthread_mutex_lock(&signal_mutex);
+        // this technically set to action=3
         action = 2;
         pthread_mutex_unlock(&signal_mutex);
         pthread_kill(intersection_thread, SIGUSR1);

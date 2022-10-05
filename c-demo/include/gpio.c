@@ -79,6 +79,7 @@ int gpio_get_value(unsigned int gpio) {
   } else {
     char res = {0};
     read(fd, &res, 1);
+    close(fd);
     return (res == '0') ? 0 : 1;
   }
 }
