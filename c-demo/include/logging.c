@@ -9,5 +9,5 @@ void shell_write(const char* color, const char* fmt, ...) {
   va_end(_args);
 
   sprintf(output, "%s%s\n" KNRM, color, buffer);
-  ssize_t res = write(STDOUT_FILENO, output, strlen(output));
+  write(STDOUT_FILENO, output, strlen(output));
 }
