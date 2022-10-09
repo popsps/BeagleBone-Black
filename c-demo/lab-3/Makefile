@@ -20,10 +20,6 @@ lab3: lab3.c $(DEPS)
 lab3-test: lab3.c $(DEPS-TEST)
 	$(CC-TEST) $(CFLAG-TEST) -o $@ $^
 
-lab3-semi-test: lab3.c $(DEPS-TEST)
-	$(CC) $(CFLAG) -o $@ $^
-
-
 
 clean:
 	rm -rf lab3 lab3-semi-test lab3-test

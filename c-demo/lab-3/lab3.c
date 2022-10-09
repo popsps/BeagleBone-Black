@@ -30,6 +30,7 @@
 
 #define RG_WAIT_TIME 30
 #define Y_WAIT_TIME 4
+#define SMALL_WAIT_TIME 1
 #define SENSOR_ACTIVATION_TIME 2
 
 typedef struct trafic_signal_struct {
@@ -236,6 +237,7 @@ void* handle_intersection(void* ptr) {
     switch (_action) {
       case 1:
         make_signal_green(signal1);
+        sleep(SMALL_WAIT_TIME);
         make_signal_red(signal2);
         shell_print(KDEF, "[THREAD%ld]: { Signal1: GREEN }, { Signal2: RED }",
                     intersection_thread);
@@ -253,6 +255,7 @@ void* handle_intersection(void* ptr) {
         break;
       case 5:
         make_signal_red(signal1);
+        sleep(SMALL_WAIT_TIME);
         make_signal_green(signal2);
         shell_print(KDEF, "[THREAD%ld]: { Signal1: RED }, { Signal2: GREEN }",
                     intersection_thread);
@@ -323,7 +326,7 @@ void* handle_sensors(void* ptr) {
         shell_print(BRED, "[THREAD%ld]: Loading...", sensor_thread,
                     SENSOR_ACTIVATION_TIME);
         usleep(500000);
-        // if the signal-thread is sleep it, wake it up
+        // if the signal-thread is sleep ,it'll wake it up
         pthread_kill(intersection_thread, SIGUSR1);
       }
     }

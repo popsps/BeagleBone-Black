@@ -4,6 +4,10 @@ import serial
 import Adafruit_BBIO.UART as UART
 import time
 
+'''
+
+'''
+
 UART.setup("UART1")
 GPS = serial.Serial('/dev/ttyO1', 9600)
 
