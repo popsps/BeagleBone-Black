@@ -10,6 +10,7 @@ void register_signal_handler(void (*sig_handler)(int)) {
 
 /**
  * Registers signal required by Beaglebone programs
+ * Currently supporting SIGUSR1, SIGINT, SIGTSTP
  **/
 void register_sigpromask() {
   sigfillset(&mask_all);

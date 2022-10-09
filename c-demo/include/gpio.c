@@ -1,5 +1,9 @@
 #include "gpio.h"
 
+/**
+ * Initialize gpio_no to the board. This will create a directoy called
+ * gpiogpio_no. For example gpio60.
+ **/
 int gpio_export(unsigned int gpio) {
   int fd, len = 0;
   char path[MAX_BUF];

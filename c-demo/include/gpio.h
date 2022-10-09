@@ -1,3 +1,6 @@
+/**
+ * libary for working with GPIO pinout in Beaglebone.
+ */
 #ifndef GPIO_H
 #define GPIO_H
 
@@ -24,10 +27,6 @@ typedef enum PIN_VALUE_ENUM { LOW = 0, HIGH = 1 } PIN_VALUE;
  * Functions
  ***************************************************************/
 
-/**
- * Initialize gpio_no to the board. This will create a directoy called
- * gpiogpio_no. For example gpio60.
- **/
 int gpio_export(unsigned int gpio);
 int gpio_unexport(unsigned int gpio);
 int gpio_set_direction(unsigned int gpio, PIN_DIRECTION out_flag);

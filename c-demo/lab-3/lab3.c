@@ -79,7 +79,6 @@ int main(int argc, char* argv[]) {
   register_sigpromask();
 
   // init pins that are being used for trafic signal 1
-  // initializing threads. Each thread will handle a signal.
   signal1 = malloc(sizeof(trafic_signal));
   signal1->name = "SIGNAL-1";
   signal1->red_light = P9_11;
@@ -105,6 +104,7 @@ int main(int argc, char* argv[]) {
   signal2->isYellow = 0;
   signal2->isGreen = 0;
   signal2->sensor_activated = 0;
+  // initialize the read write lock for the shared actions between threads
   pthread_rwlock_init(&signal2->rwlock, NULL);
 
   // clean up and unset any previous state of GPIOs and re-initialize them again

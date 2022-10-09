@@ -1,3 +1,6 @@
+/**
+ * the pin layout
+*/
 #ifndef PINS_H
 #define PINS_H
 

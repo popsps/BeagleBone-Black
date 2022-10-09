@@ -1,3 +1,6 @@
+/**
+ * Stub implemention of GPIO.c. this should be used for testings.
+*/
 #include "gpio.h"
 
 int gpio_export(unsigned int gpio) { return 0; }
