@@ -33,7 +33,7 @@
 #define SMALL_WAIT_TIME 1
 #define SENSOR_ACTIVATION_TIME 2
 
-typedef struct trafic_signal_struct {
+typedef struct traffic_signal_struct {
   char* name;
   unsigned int red_light;
   unsigned int yellow_light;
@@ -45,18 +45,18 @@ typedef struct trafic_signal_struct {
   int isPressed;
   int sensor_activated;
   pthread_rwlock_t rwlock;
-} trafic_signal;
+} traffic_signal;
 
-void clean_up(trafic_signal* signal);
-void initilize(trafic_signal* signal);
-void unset_signal(trafic_signal* signal);
-void make_signal_red(trafic_signal* signal);
-void make_signal_yellow(trafic_signal* signal);
-void make_signal_green(trafic_signal* signal);
+void clean_up(traffic_signal* signal);
+void initialize(traffic_signal* signal);
+void unset_signal(traffic_signal* signal);
+void make_signal_red(traffic_signal* signal);
+void make_signal_yellow(traffic_signal* signal);
+void make_signal_green(traffic_signal* signal);
 void sig_handler(int sig);
 
-static trafic_signal* signal1;
-static trafic_signal* signal2;
+static traffic_signal* signal1;
+static traffic_signal* signal2;
 static pthread_t sensor_thread;
 static pthread_t intersection_thread;
 static int action = 0;
@@ -78,8 +78,8 @@ int main(int argc, char* argv[]) {
   // init signal blocker
   register_sigpromask();
 
-  // init pins that are being used for trafic signal 1
-  signal1 = malloc(sizeof(trafic_signal));
+  // init pins that are being used for traffic signal 1
+  signal1 = malloc(sizeof(traffic_signal));
   signal1->name = "SIGNAL-1";
   signal1->red_light = P9_11;
   signal1->yellow_light = P9_12;
@@ -92,8 +92,8 @@ int main(int argc, char* argv[]) {
   signal1->sensor_activated = 0;
   pthread_rwlock_init(&signal1->rwlock, NULL);
 
-  // init pins that are being used for trafic signal 2
-  signal2 = malloc(sizeof(trafic_signal));
+  // init pins that are being used for traffic signal 2
+  signal2 = malloc(sizeof(traffic_signal));
   signal2->name = "SIGNAL-2";
   signal2->red_light = P9_23;
   signal2->yellow_light = P9_24;
@@ -110,8 +110,8 @@ int main(int argc, char* argv[]) {
   // clean up and unset any previous state of GPIOs and re-initialize them again
   clean_up(signal1);
   clean_up(signal2);
-  initilize(signal1);
-  initilize(signal2);
+  initialize(signal1);
+  initialize(signal2);
   unset_signal(signal1);
   unset_signal(signal2);
 
@@ -130,13 +130,13 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
-void clean_up(trafic_signal* signal) {
+void clean_up(traffic_signal* signal) {
   gpio_unexport(signal->red_light);
   gpio_unexport(signal->yellow_light);
   gpio_unexport(signal->green_light);
   gpio_unexport(signal->sensor);
 }
-void initilize(trafic_signal* signal) {
+void initialize(traffic_signal* signal) {
   gpio_export(signal->red_light);
   gpio_set_direction(signal->red_light, OUTPUT_PIN);
   gpio_set_value(signal->red_light, LOW);
@@ -154,7 +154,7 @@ void initilize(trafic_signal* signal) {
   gpio_set_value(signal->sensor, LOW);
 }
 
-void make_signal_red(trafic_signal* signal) {
+void make_signal_red(traffic_signal* signal) {
   pthread_rwlock_wrlock(&signal->rwlock);
   signal->isRed = 1;
   signal->isYellow = 0;
@@ -164,7 +164,7 @@ void make_signal_red(trafic_signal* signal) {
   gpio_set_value(signal->green_light, LOW);
   pthread_rwlock_unlock(&signal->rwlock);
 }
-void make_signal_yellow(trafic_signal* signal) {
+void make_signal_yellow(traffic_signal* signal) {
   pthread_rwlock_wrlock(&signal->rwlock);
   signal->isRed = 0;
   signal->isYellow = 1;
@@ -174,7 +174,7 @@ void make_signal_yellow(trafic_signal* signal) {
   gpio_set_value(signal->green_light, LOW);
   pthread_rwlock_unlock(&signal->rwlock);
 }
-void make_signal_green(trafic_signal* signal) {
+void make_signal_green(traffic_signal* signal) {
   pthread_rwlock_wrlock(&signal->rwlock);
   signal->isRed = 0;
   signal->isYellow = 0;
@@ -184,7 +184,7 @@ void make_signal_green(trafic_signal* signal) {
   gpio_set_value(signal->green_light, HIGH);
   pthread_rwlock_unlock(&signal->rwlock);
 }
-void unset_signal(trafic_signal* signal) {
+void unset_signal(traffic_signal* signal) {
   pthread_rwlock_wrlock(&signal->rwlock);
   signal->isRed = 0;
   signal->isYellow = 0;
@@ -284,7 +284,7 @@ void* handle_intersection(void* ptr) {
  *  this signal cycle to green and the other signal cycle to red
  **/
 void* handle_sensors(void* ptr) {
-  // trafic_signal* signal = (trafic_signal*)ptr;
+  // traffic_signal* signal = (traffic_signal*)ptr;
   shell_print(BRED, "[THREAD%ld]: starting sensor thread...", sensor_thread);
   time_t base = time(0);
   time_t now = base;

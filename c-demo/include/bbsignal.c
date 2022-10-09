@@ -22,7 +22,7 @@ void register_sigpromask() {
 
 /**
  * block signals for the custom set of signals
- * block signnal using multithreaded compatible versioon of sigprocmask
+ * block signal using multithreaded compatible version of sigprocmask
  **/
 void block_signals() { pthread_sigmask(SIG_BLOCK, &custom_set, NULL); }
 

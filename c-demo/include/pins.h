@@ -1,5 +1,5 @@
 /**
- * the pin layout
+ * The pin numbers for BeagleBone black 
 */
 #ifndef PINS_H
 #define PINS_H
