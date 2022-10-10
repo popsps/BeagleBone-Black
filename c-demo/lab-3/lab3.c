@@ -236,9 +236,9 @@ void* handle_intersection(void* ptr) {
     pthread_rwlock_unlock(&signal_rwlock);
     switch (_action) {
       case 1:
-        make_signal_green(signal1);
-        sleep(SMALL_WAIT_TIME);
         make_signal_red(signal2);
+        sleep(SMALL_WAIT_TIME);
+        make_signal_green(signal1);
         shell_print(KDEF, "[THREAD%ld]: { Signal1: GREEN }, { Signal2: RED }",
                     intersection_thread);
         break;
@@ -323,7 +323,7 @@ void* handle_sensors(void* ptr) {
         // this technically set to action=7
         action = 6;
         pthread_rwlock_unlock(&signal_rwlock);
-        shell_print(BRED, "[THREAD%ld]: Loading...", sensor_thread,
+        shell_print(BRED, "[THREAD%ld]: Loading Sensor...", sensor_thread,
                     SENSOR_ACTIVATION_TIME);
         usleep(500000);
         // if the signal-thread is sleep ,it'll wake it up
