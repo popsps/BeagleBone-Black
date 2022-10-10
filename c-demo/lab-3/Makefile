@@ -16,9 +16,13 @@ lab3: lab3.c $(DEPS)
 	$(CC) $(CFLAG) -o $@ $^
 
 # run the stub version on armvf compiler. This will be used for testing and cross-compilations.
+lab3-semi-test: lab3.c $(DEPS-TEST)
+	$(CC) $(CFLAG) -o $@ $^
+
+# run the stub version on armvf compiler. This will be used for testing and cross-compilations.
 lab3-test: lab3.c $(DEPS-TEST)
 	$(CC-TEST) $(CFLAG-TEST) -o $@ $^
 
 
 clean:
-	rm -rf lab3 lab3-test
+	rm -rf lab3 lab3-semi-test lab3-test
