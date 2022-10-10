@@ -2,7 +2,6 @@ all: lab3 lab3-test
 
 INC_DIR = ../include
 
-# CFLAG = -g -O3 -Wall -Werror -Wno-error=unused-variable -std=gnu99 -I$(INC_DIR)
 CFLAG = -pthread -g -O3 -Wall -Wno-unused-result -Werror -std=gnu99 -I$(INC_DIR)
 CC = gcc
 
@@ -22,4 +21,4 @@ lab3-test: lab3.c $(DEPS-TEST)
 
 
 clean:
-	rm -rf lab3 lab3-semi-test lab3-test
+	rm -rf lab3 lab3-test
