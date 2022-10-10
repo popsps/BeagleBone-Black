@@ -1,9 +1,10 @@
 /**
  * libary for handling logging in the program.
-*/
+ */
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #define KDEF 0
@@ -28,13 +29,6 @@
 
 // typedef enum COLOR_ENUM { KNRM = "\x1B[0m", KRED = "\x1B[31m" } COLOR;
 
-/**
- * write to STD_OUT using write
- * async signal safe
-*/
 void shell_write(const char* color, const char* fmt, ...);
-/**
- * write to STD_OUT using printf
- * not async signal safe 
-*/
+
 void shell_print(const char* color, const char* fmt, ...);

@@ -16,16 +16,17 @@ int main(int argc, char* argv[]) {
   timeInfo = localtime(&now);
   utcTimeInfo = gmtime(&now);
   char buff[20];
+  printf("Current local time and date timeInfo time-zone: %s\n",
+         timeInfo->tm_zone);
   printf("Current local time and date: %s\n", asctime(timeInfo));
   printf("Event occurred at (UTC): %s\n", asctime(utcTimeInfo));
   strftime(buff, sizeof(buff), "%Y-%m-%d %H:%M:%S", utcTimeInfo);
   printf("Event occurred at (UTC): %s\n", buff);
 
   // printf("Current local time and date: %s", now);
-  // printf("Current local time and date: %s", timeInfo);
 
   time_t now2 = base;
-  
+
   while (now2 - base < 5) now2 = time(0);
   printf("now2: %ld\n", now2);
 

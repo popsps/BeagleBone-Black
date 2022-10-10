@@ -1,5 +1,8 @@
 #include "bbsignal.h"
 
+/**
+ * Register signal handler for SIGINT, SIGTSTP, and SIGUSR1
+ **/
 void register_signal_handler(void (*sig_handler)(int)) {
   struct sigaction new;
   new.sa_handler = sig_handler;

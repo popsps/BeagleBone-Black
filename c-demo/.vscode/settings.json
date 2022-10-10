@@ -10,7 +10,8 @@
         "string.h": "c",
         "errno.h": "c",
         "stab.h": "c",
-        "logging.h": "c"
+        "logging.h": "c",
+        "time.h": "c"
     },
     "C_Cpp.default.compilerPath": "/usr/arm-linux-gnueabihf/include"
 }
