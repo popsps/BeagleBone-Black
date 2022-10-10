@@ -11,7 +11,8 @@
         "errno.h": "c",
         "stab.h": "c",
         "logging.h": "c",
-        "time.h": "c"
+        "time.h": "c",
+        "bbsignal.h": "c"
     },
     "C_Cpp.default.compilerPath": "/usr/arm-linux-gnueabihf/include"
 }

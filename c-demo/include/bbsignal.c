@@ -1,5 +1,8 @@
 #include "bbsignal.h"
 
+sigset_t mask_all, mask_one, prev_one;
+sigset_t mask_alls, mask_ones, prev_ones;
+sigset_t custom_set;
 /**
  * Register signal handler for SIGINT, SIGTSTP, and SIGUSR1
  **/
