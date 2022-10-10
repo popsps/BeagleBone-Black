@@ -37,28 +37,26 @@ class GPS:
         GPRMC_GPGGA = "$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n"
         SEND_ALL = "$PMTK314,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n"  # Send All Sentences
         SEND_NOTHING = "$PMTK314,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n"  # Send Nothing
-        ser.write(BAUD_57600)  # Set Baud Rate to 57600
-        time.sleep(1)  # Paulse
-        ser.baudrate = 57600  # IMPORTANT Since change ser baudrate to match GPS
-        ser.write(UPDATE_200_msec)  # Set update rate
-        time.sleep(1)
-        ser.write(MEAS_200_msec)  # Set measurement rate
-        time.sleep(1)
-        ser.write(GPRMC_GPGGA)  # Ask for only GPRMC and GPGGA Sentences
-        time.sleep(1)
-        ser.flushInput()  # clear buffers
-        ser.flushOutput()
-        print("GPS is Initialized")  # Print message
 
 
 myGPS = GPS()
+print("Initializing GPS...")
+ser.flushInput()
+# communication speed
+ser.write(BAUD_57600)
+time.sleep(1)
+# serial port is capable of transferring a maximum of 57600 bits per second
+ser.baudrate = 57600
 # How often it reports
-ser.write(myGPS.UPDATE_10_sec)
+ser.write(myGPS.UPDATE_200_msec)
 time.sleep(1)
 # How often the GPS makes measurements
-ser.write(myGPS.MEAS_10_sec)
+ser.write(myGPS.MEAS_200_msec)
 time.sleep(1)
-
+# ser.write(myGPS.GPRMC_ONLY)
+ser.write(myGPS.GPRMC_GPGGA)
+time.sleep(1)
+print("GPS is Initialized")
 while (1):
     # clear buffers
     ser.flushInput()
