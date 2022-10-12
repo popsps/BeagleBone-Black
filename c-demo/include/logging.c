@@ -28,11 +28,11 @@ void shell_print(const char* color, const char* fmt, ...) {
   current_time = time(0);
   utcTimeInfo = gmtime(&current_time);
   char timeInfoBuffer[25] = {0};
-  char buffer[256] = {0};
-  char output[512] = {0};
-
   strftime(timeInfoBuffer, sizeof(timeInfoBuffer), "%Y-%m-%d %H:%M:%S",
            utcTimeInfo);
+
+  char buffer[256] = {0};
+  char output[512] = {0};
 
   va_list _args;
   va_start(_args, fmt);
@@ -43,5 +43,5 @@ void shell_print(const char* color, const char* fmt, ...) {
   else
     sprintf(output, "%s%s  INFO  %s\n" KNRM, color, timeInfoBuffer, buffer);
   printf("%s", output);
-  fflush(NULL);
+  fflush(stdout);
 }

@@ -1,6 +1,6 @@
 /**
  * Stub implemention of GPIO.c. this should be used for testings.
-*/
+ */
 #include "gpio.h"
 
 int gpio_export(unsigned int gpio) { return 0; }
@@ -16,6 +16,9 @@ int gpio_get_value(unsigned int gpio) {
   if (fgets(buffer, MAX_BUF, stdin) != NULL) {
     isHold = atoi(buffer);
   }
+  // pthread_t current_thread = pthread_self();
+  // printf("[THREAD%ld]:sensor %d: ", current_thread, gpio);
+  // scanf("%d", &isHold);
   return isHold;
 }
 
