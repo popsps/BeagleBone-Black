@@ -351,13 +351,11 @@ void* handle_sensor1(void* ptr) {
     if (isSensor1Pressed && isSignal1Red && now - base >= SENSOR_ACTIVATION_TIME) {
       if (!signal1->sensor_activated) {
         signal1->sensor_activated = 1;
-        shell_print(BRED,
-                    "[THREAD%ld-SENSOR-1]: GPIO INPUT_1 is held for %d seconds "
-                    "and activated",
-                    sensor1_thread, SENSOR_ACTIVATION_TIME);
+        shell_print(BRED, "[THREAD%ld-SENSOR-1]: GPIO INPUT_1 is held for %d seconds and activated", sensor1_thread,
+                    SENSOR_ACTIVATION_TIME);
         pthread_rwlock_wrlock(&signal_rwlock);
-        // this technically set to action=7
-        action = 6;
+        // signal-2 goes yellow
+        action = 11;
         pthread_rwlock_unlock(&signal_rwlock);
         shell_print(BRED, "[THREAD%ld-SENSOR-1]: Loading Sensor...", sensor1_thread, SENSOR_ACTIVATION_TIME);
         usleep(500000);
@@ -405,8 +403,8 @@ void* handle_sensor2(void* ptr) {
         shell_print(BPURPLE, "[THREAD%ld-SENSOR-2]: GPIO INPUT_2 is held for %d seconds and activated", sensor2_thread,
                     SENSOR_ACTIVATION_TIME);
         pthread_rwlock_wrlock(&signal_rwlock);
-        // this technically set to action=3
-        action = 2;
+        // signal-1 goes yellow
+        action = 5;
         pthread_rwlock_unlock(&signal_rwlock);
         shell_print(BPURPLE, "[THREAD%ld-SENSOR-2]: Loading...", sensor2_thread, SENSOR_ACTIVATION_TIME);
         usleep(500000);
