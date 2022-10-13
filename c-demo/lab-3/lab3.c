@@ -223,10 +223,12 @@ void sig_handler(int sig) {
   }
 }
 
-void incrementAction() {
-  pthread_rwlock_wrlock(&signal_rwlock);
-  action = (action >= 12) ? 1 : action + 1;
-  pthread_rwlock_unlock(&signal_rwlock);
+void incrementAction(int _action) {
+  if (action == _action) {
+    pthread_rwlock_wrlock(&signal_rwlock);
+    action = (action >= 12) ? 1 : action + 1;
+    pthread_rwlock_unlock(&signal_rwlock);
+  }
 }
 /**
  * handle the intersection logic for signal 1.
@@ -243,29 +245,29 @@ void* handle_signal1(void* ptr) {
       case 2:
         make_signal_green(signal1);
         shell_print(BBLUE, "[THREAD%ld-SIGNAL-1]: { Signal1: GREEN }, { Signal2: RED }", signal1_thread);
-        incrementAction();
+        incrementAction(2);
         break;
       case 3:
-        incrementAction();
+        incrementAction(3);
         sleep(RG_WAIT_TIME);
         break;
       case 5:
         make_signal_yellow(signal1);
         shell_print(BBLUE, "[THREAD%ld-SIGNAL-1]: { Signal1: YELLOW }, { Signal2: RED }", signal1_thread);
-        incrementAction();
+        incrementAction(5);
         break;
       case 6:
         sleep(Y_WAIT_TIME);
-        incrementAction();
+        incrementAction(6);
         break;
       case 7:
         make_signal_red(signal1);
         sleep(SMALL_WAIT_TIME);
-        incrementAction();
+        incrementAction(7);
         break;
       case 10:
         sleep(RG_WAIT_TIME);
-        incrementAction();
+        incrementAction(10);
       default:
         break;
     }
@@ -288,29 +290,29 @@ void* handle_signal2(void* ptr) {
       case 1:
         make_signal_red(signal2);
         sleep(SMALL_WAIT_TIME);
-        incrementAction();
+        incrementAction(1);
         break;
       case 4:
         sleep(RG_WAIT_TIME);
-        incrementAction();
+        incrementAction(4);
         break;
       case 8:
         make_signal_green(signal2);
         shell_print(KDEF, "[THREAD%ld-SIGNAL-2]: { Signal1: RED }, { Signal2: GREEN }", signal2_thread);
-        incrementAction();
+        incrementAction(8);
         break;
       case 9:
-        incrementAction();
+        incrementAction(9);
         sleep(RG_WAIT_TIME);
         break;
       case 11:
         make_signal_yellow(signal2);
         shell_print(KDEF, "[THREAD%ld-SIGNAL-2]: { Signal1: RED }, { Signal2: YELLOW }", signal2_thread);
-        incrementAction();
+        incrementAction(11);
         break;
       case 12:
         sleep(Y_WAIT_TIME);
-        incrementAction();
+        incrementAction(12);
         break;
       default:
         break;
