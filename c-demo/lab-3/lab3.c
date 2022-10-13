@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
   pthread_t current_thread = pthread_self();
   shell_print(
       BBLACK,
-      "[THREAD%ld]: Lab3 Simple Intersection with Opposing Traffic Lights",
+      "[THREAD%ld-MAIN]: Lab3 Simple Intersection with Opposing Traffic Lights",
       current_thread);
 
   // init signal handler for SIGUSR1, SIGINT, and SIGTSTP
@@ -128,10 +128,10 @@ int main(int argc, char* argv[]) {
   pthread_join(sensor1_thread, NULL);
   pthread_join(sensor2_thread, NULL);
 
-  shell_print(
-      BBLACK,
-      "[THREAD%ld]: Lab3 Simple Intersection with Opposing Traffic Lights Done",
-      current_thread);
+  shell_print(BBLACK,
+              "[THREAD%ld-MAIN]: Lab3 Simple Intersection with Opposing "
+              "Traffic Lights Done",
+              current_thread);
   return 0;
 }
 
@@ -236,7 +236,7 @@ void incrementAction() {
  **/
 void* handle_signal1(void* ptr) {
   // start the signals for intersection
-  shell_print(BGREEN, "[THREAD%ld]: Starting the Signal 1 thread...",
+  shell_print(BGREEN, "[THREAD%ld-SIGNAL-1]: Starting the Signal 1 thread...",
               signal1_thread);
   sleep(1);
   while (1) {
@@ -246,8 +246,10 @@ void* handle_signal1(void* ptr) {
     switch (_action) {
       case 2:
         make_signal_green(signal1);
-        shell_print(BGREEN, "[THREAD%ld]: { Signal1: GREEN }, { Signal2: RED }",
-                    signal1_thread);
+        shell_print(
+            BGREEN,
+            "[THREAD%ld-SIGNAL-1]: { Signal1: GREEN }, { Signal2: RED }",
+            signal1_thread);
         incrementAction();
         break;
       case 3:
@@ -256,9 +258,10 @@ void* handle_signal1(void* ptr) {
         break;
       case 5:
         make_signal_yellow(signal1);
-        shell_print(BGREEN,
-                    "[THREAD%ld]: { Signal1: YELLOW }, { Signal2: RED }",
-                    signal1_thread);
+        shell_print(
+            BGREEN,
+            "[THREAD%ld-SIGNAL-1]: { Signal1: YELLOW }, { Signal2: RED }",
+            signal1_thread);
         incrementAction();
         break;
       case 6:
@@ -285,7 +288,7 @@ void* handle_signal1(void* ptr) {
  */
 void* handle_signal2(void* ptr) {
   // start the signals for intersection
-  shell_print(KDEF, "[THREAD%ld]: Starting the Signal 2 thread...",
+  shell_print(KDEF, "[THREAD%ld-SIGNAL-2]: Starting the Signal 2 thread...",
               signal2_thread);
   sleep(1);
   while (1) {
@@ -304,8 +307,9 @@ void* handle_signal2(void* ptr) {
         break;
       case 8:
         make_signal_green(signal2);
-        shell_print(KDEF, "[THREAD%ld]: { Signal1: RED }, { Signal2: GREEN }",
-                    signal2_thread);
+        shell_print(
+            KDEF, "[THREAD%ld-SIGNAL-2]: { Signal1: RED }, { Signal2: GREEN }",
+            signal2_thread);
         incrementAction();
         break;
       case 9:
@@ -314,8 +318,9 @@ void* handle_signal2(void* ptr) {
         break;
       case 11:
         make_signal_yellow(signal2);
-        shell_print(KDEF, "[THREAD%ld]: { Signal1: RED }, { Signal2: YELLOW }",
-                    signal2_thread);
+        shell_print(
+            KDEF, "[THREAD%ld-SIGNAL-2]: { Signal1: RED }, { Signal2: YELLOW }",
+            signal2_thread);
         incrementAction();
         break;
       case 12:
@@ -337,24 +342,21 @@ void* handle_signal2(void* ptr) {
  **/
 void* handle_sensor1(void* ptr) {
   // traffic_signal* signal = (traffic_signal*)ptr;
-  shell_print(BRED, "[THREAD%ld]: starting sensor thread...", sensor1_thread);
+  shell_print(BRED, "[THREAD%ld-SENSOR-1]: starting sensor-1 thread...",
+              sensor1_thread);
   time_t base = time(0);
   time_t now = base;
   while (1) {
     int isSensor1Pressed = gpio_get_value(signal1->sensor);
-    int isSensor2Pressed = gpio_get_value(signal2->sensor);
     pthread_rwlock_rdlock(&signal1->rwlock);
     int isSignal1Red = signal1->isRed;
     pthread_rwlock_unlock(&signal1->rwlock);
-    pthread_rwlock_rdlock(&signal2->rwlock);
-    int isSignal2Red = signal2->isRed;
-    pthread_rwlock_unlock(&signal2->rwlock);
     now = time(0);
 
     // handle the sensor logic for the first signal
     if (isSensor1Pressed && isSignal1Red) {
       if (!signal1->isPressed) {
-        shell_print(BRED, "[THREAD%ld]: GPIO INPUT_1 is pressed %d",
+        shell_print(BRED, "[THREAD%ld-SENSOR-1]: GPIO INPUT_1 is pressed %d",
                     sensor1_thread, isSensor1Pressed);
         signal1->isPressed = 1;
         base = now;
@@ -367,50 +369,19 @@ void* handle_sensor1(void* ptr) {
         now - base >= SENSOR_ACTIVATION_TIME) {
       if (!signal1->sensor_activated) {
         signal1->sensor_activated = 1;
-        shell_print(
-            BRED,
-            "[THREAD%ld]: GPIO INPUT_1 is held for %d seconds and activated",
-            sensor1_thread, SENSOR_ACTIVATION_TIME);
+        shell_print(BRED,
+                    "[THREAD%ld-SENSOR-1]: GPIO INPUT_1 is held for %d seconds "
+                    "and activated",
+                    sensor1_thread, SENSOR_ACTIVATION_TIME);
         pthread_rwlock_wrlock(&signal_rwlock);
         // this technically set to action=7
         action = 6;
         pthread_rwlock_unlock(&signal_rwlock);
-        shell_print(BRED, "[THREAD%ld]: Loading Sensor...", sensor1_thread,
-                    SENSOR_ACTIVATION_TIME);
+        shell_print(BRED, "[THREAD%ld-SENSOR-1]: Loading Sensor...",
+                    sensor1_thread, SENSOR_ACTIVATION_TIME);
         usleep(500000);
         // if the signal-thread is sleep ,it'll wake it up
         pthread_kill(signal1_thread, SIGUSR1);
-      }
-    }
-
-    // handle the sensor logic for the second signal
-    if (isSensor2Pressed && isSignal2Red) {
-      if (!signal2->isPressed) {
-        shell_print(BRED, "[THREAD%ld]: GPIO INPUT_2 is pressed %d",
-                    sensor2_thread, isSensor2Pressed);
-        signal2->isPressed = 1;
-        base = now;
-      }
-    } else {
-      signal2->isPressed = 0;
-      signal2->sensor_activated = 0;
-    }
-    if (isSensor2Pressed && isSignal2Red &&
-        now - base >= SENSOR_ACTIVATION_TIME) {
-      if (!signal2->sensor_activated) {
-        signal2->sensor_activated = 1;
-        shell_print(
-            BRED,
-            "[THREAD%ld]: GPIO INPUT_2 is held for %d seconds and activated",
-            sensor2_thread, SENSOR_ACTIVATION_TIME);
-        pthread_rwlock_wrlock(&signal_rwlock);
-        // this technically set to action=3
-        action = 2;
-        pthread_rwlock_unlock(&signal_rwlock);
-        shell_print(BRED, "[THREAD%ld]: Loading...", sensor2_thread,
-                    SENSOR_ACTIVATION_TIME);
-        usleep(500000);
-        // if the signal-thread is sleep it, wake it up
         pthread_kill(signal2_thread, SIGUSR1);
       }
     }
@@ -426,56 +397,21 @@ void* handle_sensor1(void* ptr) {
  **/
 void* handle_sensor2(void* ptr) {
   // traffic_signal* signal = (traffic_signal*)ptr;
-  shell_print(BRED, "[THREAD%ld]: starting sensor thread...", sensor1_thread);
+  shell_print(BRED, "[THREAD-%ld-SENSOR-2]: starting sensor thread...",
+              sensor2_thread);
   time_t base = time(0);
   time_t now = base;
   while (1) {
-    int isSensor1Pressed = gpio_get_value(signal1->sensor);
     int isSensor2Pressed = gpio_get_value(signal2->sensor);
-    pthread_rwlock_rdlock(&signal1->rwlock);
-    int isSignal1Red = signal1->isRed;
-    pthread_rwlock_unlock(&signal1->rwlock);
     pthread_rwlock_rdlock(&signal2->rwlock);
     int isSignal2Red = signal2->isRed;
     pthread_rwlock_unlock(&signal2->rwlock);
     now = time(0);
 
-    // handle the sensor logic for the first signal
-    if (isSensor1Pressed && isSignal1Red) {
-      if (!signal1->isPressed) {
-        shell_print(BRED, "[THREAD%ld]: GPIO INPUT_1 is pressed %d",
-                    sensor1_thread, isSensor1Pressed);
-        signal1->isPressed = 1;
-        base = now;
-      }
-    } else {  // if isSensor1Pressed = 0 (not pressed)
-      signal1->isPressed = 0;
-      signal1->sensor_activated = 0;
-    }
-    if (isSensor1Pressed && isSignal1Red &&
-        now - base >= SENSOR_ACTIVATION_TIME) {
-      if (!signal1->sensor_activated) {
-        signal1->sensor_activated = 1;
-        shell_print(
-            BRED,
-            "[THREAD%ld]: GPIO INPUT_1 is held for %d seconds and activated",
-            sensor1_thread, SENSOR_ACTIVATION_TIME);
-        pthread_rwlock_wrlock(&signal_rwlock);
-        // this technically set to action=7
-        action = 6;
-        pthread_rwlock_unlock(&signal_rwlock);
-        shell_print(BRED, "[THREAD%ld]: Loading Sensor...", sensor1_thread,
-                    SENSOR_ACTIVATION_TIME);
-        usleep(500000);
-        // if the signal-thread is sleep ,it'll wake it up
-        pthread_kill(signal1_thread, SIGUSR1);
-      }
-    }
-
     // handle the sensor logic for the second signal
     if (isSensor2Pressed && isSignal2Red) {
       if (!signal2->isPressed) {
-        shell_print(BRED, "[THREAD%ld]: GPIO INPUT_2 is pressed %d",
+        shell_print(BRED, "[THREAD%ld-SENSOR-2]: GPIO INPUT_2 is pressed %d",
                     sensor2_thread, isSensor2Pressed);
         signal2->isPressed = 1;
         base = now;
@@ -488,18 +424,19 @@ void* handle_sensor2(void* ptr) {
         now - base >= SENSOR_ACTIVATION_TIME) {
       if (!signal2->sensor_activated) {
         signal2->sensor_activated = 1;
-        shell_print(
-            BRED,
-            "[THREAD%ld]: GPIO INPUT_2 is held for %d seconds and activated",
-            sensor2_thread, SENSOR_ACTIVATION_TIME);
+        shell_print(BRED,
+                    "[THREAD%ld-SENSOR-2]: GPIO INPUT_2 is held for %d seconds "
+                    "and activated",
+                    sensor2_thread, SENSOR_ACTIVATION_TIME);
         pthread_rwlock_wrlock(&signal_rwlock);
         // this technically set to action=3
         action = 2;
         pthread_rwlock_unlock(&signal_rwlock);
-        shell_print(BRED, "[THREAD%ld]: Loading...", sensor2_thread,
+        shell_print(BRED, "[THREAD%ld-SENSOR-2]: Loading...", sensor2_thread,
                     SENSOR_ACTIVATION_TIME);
         usleep(500000);
         // if the signal-thread is sleep it, wake it up
+        pthread_kill(signal1_thread, SIGUSR1);
         pthread_kill(signal2_thread, SIGUSR1);
       }
     }
