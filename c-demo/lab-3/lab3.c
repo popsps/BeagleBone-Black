@@ -29,9 +29,9 @@
  **/
 
 #define RG_WAIT_TIME 30
-#define Y_WAIT_TIME 4
+#define Y_WAIT_TIME 5
 #define SMALL_WAIT_TIME 1
-#define SENSOR_ACTIVATION_TIME 2
+#define SENSOR_ACTIVATION_TIME 5
 
 typedef struct traffic_signal_struct {
   char* name;
