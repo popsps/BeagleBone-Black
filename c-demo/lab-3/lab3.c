@@ -227,8 +227,8 @@ void incrementAction(int _action) {
   pthread_rwlock_wrlock(&signal_rwlock);
   if (action == _action) {
     action = (action >= 12) ? 1 : action + 1;
-    pthread_rwlock_unlock(&signal_rwlock);
   }
+  pthread_rwlock_unlock(&signal_rwlock);
 }
 
 /**
