@@ -230,6 +230,7 @@ void incrementAction(int _action) {
     pthread_rwlock_unlock(&signal_rwlock);
   }
 }
+
 /**
  * handle the intersection logic for signal 1.
  **/
