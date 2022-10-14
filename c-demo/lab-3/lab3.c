@@ -28,7 +28,7 @@
  * the light should cycle to green without waiting the full 2 minutes
  **/
 
-#define RG_WAIT_TIME 30
+#define RG_WAIT_TIME 120
 #define Y_WAIT_TIME 5
 #define SMALL_WAIT_TIME 1
 #define SENSOR_ACTIVATION_TIME 5
