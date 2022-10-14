@@ -329,7 +329,7 @@ void* handle_signal2(void* ptr) {
  **/
 void* handle_sensor1(void* ptr) {
   // traffic_signal* signal = (traffic_signal*)ptr;
-  shell_print(BRED, "[THREAD%ld-SENSOR-1]: starting sensor-1 thread...", sensor1_thread);
+  shell_print(BRED, "[THREAD%ld-SENSOR-1]: starting SENSOR-1 thread...", sensor1_thread);
   time_t base = time(0);
   time_t now = base;
   while (1) {
@@ -378,7 +378,7 @@ void* handle_sensor1(void* ptr) {
  **/
 void* handle_sensor2(void* ptr) {
   // traffic_signal* signal = (traffic_signal*)ptr;
-  shell_print(BPURPLE, "[THREAD-%ld-SENSOR-2]: starting sensor thread...", sensor2_thread);
+  shell_print(BPURPLE, "[THREAD-%ld-SENSOR-2]: starting SENSOR-2 thread...", sensor2_thread);
   time_t base = time(0);
   time_t now = base;
   while (1) {
