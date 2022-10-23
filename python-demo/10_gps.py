@@ -43,7 +43,7 @@ myGPS = GPS()
 print("Initializing GPS...")
 ser.flushInput()
 # communication speed
-ser.write(BAUD_57600)
+ser.write(myGPS.BAUD_57600)
 time.sleep(1)
 # serial port is capable of transferring a maximum of 57600 bits per second
 ser.baudrate = 57600
