@@ -10,7 +10,6 @@ type,time,active or void,latitude,hemisphere(N/S), longitude, hemisphere, knots(
 
 
 '''
-from asyncore import write
 import logging
 import serial
 
