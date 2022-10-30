@@ -38,7 +38,7 @@
 #define SMALL_WAIT_TIME 1
 #define SENSOR_ACTIVATION_TIME 5
 
-#define START_LIGHT_PIN P9_13
+#define START_LIGHT_PIN P9_12
 #define STOP_LIGHT_PIN P9_11
 #define START_STOP_BUTTON_PIN P9_15
 #define RESET_BUTTON_PIN P9_27
@@ -52,6 +52,8 @@ void sig_handler(int sig);
 
 static uint64_t counter = 0;
 static int isRunning = 0;
+static int isStartStopButtonPressed = 0;
+static int isResetButtonPressed = 0;
 static pthread_t timer_thread, action_thread, terminal_thread;
 
 void* handle_timer(void* ptr);
@@ -108,7 +110,7 @@ void unset_pins() {
 void initialize() {
   gpio_export(STOP_LIGHT_PIN);
   gpio_set_direction(STOP_LIGHT_PIN, OUTPUT_PIN);
-  gpio_set_value(STOP_LIGHT_PIN, LOW);
+  gpio_set_value(STOP_LIGHT_PIN, HIGH);
 
   gpio_export(START_LIGHT_PIN);
   gpio_set_direction(START_LIGHT_PIN, OUTPUT_PIN);
@@ -153,32 +155,45 @@ void* handle_timer(void* ptr) {
   sleep(1);
   // time_t base = time(0);
   // time_t now = base;
-  struct timespec base, now;
-  clock_gettime(CLOCK_MONOTONIC_RAW, &base);
+  // struct timespec base, now;
+  // clock_gettime(CLOCK_MONOTONIC_RAW, &base);
   // do stuff
   while (1) {
     sleep(1);
     // usleep(10000);
     // now = time(0);
     // printf("now: %ld, base: %ld, now - base: %ld\n", now, base, now - base);
-    clock_gettime(CLOCK_MONOTONIC_RAW, &now);
-    uint64_t delta_us = (now.tv_sec - base.tv_sec) * 1000000 + (now.tv_nsec - base.tv_nsec) / 1000;
+    // clock_gettime(CLOCK_MONOTONIC_RAW, &now);
+    // uint64_t delta_us = (now.tv_sec - base.tv_sec) * 1000000 + (now.tv_nsec - base.tv_nsec) / 1000;
     // printf("base [%ld, %ld]: \n", base.tv_sec, base.tv_nsec);
     // printf("now [%ld, %ld]:\n", now.tv_sec, now.tv_nsec);
-    printf("delta_us: %ld\n", delta_us);
+    // printf("delta_us: %lld\n", delta_us);
+    shell_print(BBLUE, "[THREAD%ld-TIMER]: %lld", timer_thread, counter);
+    if(isRunning) {
+      counter++;
+    }
   }
 }
 void* handle_action(void* ptr) {
   shell_print(BRED, "[THREAD%ld-ACTION]: starting ACTION thread...", action_thread);
   while (1) {
-    int isStartStopButtonPressed = gpio_get_value(START_STOP_BUTTON_PIN);
-    if (isStartStopButtonPressed) {
+    int _isStartStopButtonPressed = gpio_get_value(START_STOP_BUTTON_PIN);
+    if (_isStartStopButtonPressed && !isStartStopButtonPressed) {
+      isStartStopButtonPressed = 1;
+      shell_print(BRED, "[THREAD%ld-ACTION]: start/stop button is pressed...", action_thread);
       toggle_running();
       toggle_lights();
+    } 
+    if(!_isStartStopButtonPressed) {
+      isStartStopButtonPressed = 0;
     }
-    int isResetButtonPressed = gpio_get_value(RESET_BUTTON_PIN);
-    if (isResetButtonPressed) {
+    int _isResetButtonPressed = gpio_get_value(RESET_BUTTON_PIN);
+    if (_isResetButtonPressed&& !isResetButtonPressed) {
+      isResetButtonPressed = 1;
       reset_timer();
+    }
+    if(!_isResetButtonPressed) {
+      isResetButtonPressed = 0;
     }
     // Read buttons every 10ms
     usleep(10000);
@@ -199,7 +214,14 @@ void* handle_terminal(void* ptr) {
   }
 }
 
-void toggle_running() { isRunning = !isRunning; }
+void toggle_running() {
+  isRunning = !isRunning;
+  if(isRunning) {
+    shell_print(BRED, "[THREAD%ld-ACTION]: timer is started.", action_thread);
+  } else {
+    shell_print(BRED, "[THREAD%ld-ACTION]: timer is stopped.", action_thread);
+  }
+ }
 void toggle_lights() {
   if (isRunning) {
     gpio_set_value(STOP_LIGHT_PIN, LOW);
