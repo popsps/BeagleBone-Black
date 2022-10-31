@@ -91,7 +91,8 @@ int main(int argc, char* argv[]) {
   printf("=================%d\n", s_param.sched_priority);
   pthread_attr_setschedparam(&tattr, &s_param);
   // threads responsible for handling the general intersection logic
-  pthread_create(&timer_thread, &tattr, handle_timer, NULL);
+  // pthread_create(&timer_thread, &tattr, handle_timer, NULL);
+  pthread_create(&timer_thread, NULL, handle_timer, NULL);
   pthread_create(&terminal_thread, NULL, handle_terminal, NULL);
   pthread_create(&action_thread, NULL, handle_action, NULL);
 
@@ -162,15 +163,15 @@ void sig_handler(int sig) {
 }
 
 void* handle_timer(void* ptr) {
-  shell_print(BBLUE, "[THREAD%ld-TIMER]: Starting the TIMER thread...", timer_thread);
+  shell_print(KDEF, "[THREAD%ld-TIMER]: Starting the TIMER thread...", timer_thread);
   while (1) {
     // compute time in Mili-seconds
     if (isRunning) {
       counter = (counter >= TWENTY_FOUR_HOURS_MS) ? 0 : counter + 10;
-      usleep(TEN_MS);
     } else {
       counter = (counter >= TWENTY_FOUR_HOURS_MS) ? 0 : counter;
     }
+     usleep(TEN_MS);
   }
 }
 void* handle_action(void* ptr) {
