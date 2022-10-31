@@ -164,12 +164,16 @@ void* handle_timer(void* ptr) {
   shell_print(KDEF, "[THREAD%ld-TIMER]: Starting the TIMER thread...", timer_thread);
   while (1) {
     // compute time in Mili-seconds
+    pthread_rwlock_rdlock(&isRunning_rwlock);
+    pthread_rwlock_wrlock(&counter_rwlock);
     if (isRunning) {
       counter = (counter >= TWENTY_FOUR_HOURS_MS) ? 0 : counter + 10;
     } else {
       counter = (counter >= TWENTY_FOUR_HOURS_MS) ? 0 : counter;
     }
-     usleep(TEN_MS);
+    pthread_rwlock_unlock(&counter_rwlock);
+    pthread_rwlock_unlock(&isRunning_rwlock);
+    usleep(TEN_MS);
   }
 }
 void* handle_action(void* ptr) {
@@ -179,8 +183,10 @@ void* handle_action(void* ptr) {
     if (_isStartStopButtonPressed && !isStartStopButtonPressed) {
       isStartStopButtonPressed = 1;
       shell_print(BRED, "[THREAD%ld-ACTION]: start/stop button is pressed...", action_thread);
+      pthread_rwlock_wrlock(&isRunning_rwlock);
       toggle_running();
       toggle_lights();
+      pthread_rwlock_unlock(&isRunning_rwlock);
     }
     if (!_isStartStopButtonPressed) {
       isStartStopButtonPressed = 0;
@@ -188,7 +194,9 @@ void* handle_action(void* ptr) {
     int _isResetButtonPressed = gpio_get_value(RESET_BUTTON_PIN);
     if (_isResetButtonPressed && !isResetButtonPressed) {
       isResetButtonPressed = 1;
+      pthread_rwlock_wrlock(&counter_rwlock);
       reset_timer();
+      pthread_rwlock_unlock(&isRunning_rwlock);
     }
     if (!_isResetButtonPressed) {
       isResetButtonPressed = 0;
@@ -200,14 +208,16 @@ void* handle_action(void* ptr) {
 void* handle_terminal(void* ptr) {
   shell_print(BBLUE, "[THREAD%ld-TERMINAL]: Starting the TIMER thread...", terminal_thread);
   while (1) {
-    // printf("\rValue of COUNTER: %lu", counter);
-    // fflush(stdout);
+    pthread_rwlock_rdlock(&isRunning_rwlock);
+    pthread_rwlock_rdlock(&counter_rwlock);
     double timer_value = counter / 1000.0;
     if (isRunning) {
       shell_print(BBLUE, "[THREAD%ld-TERMINAL]: TIMER: %.3f seconds", timer_thread, timer_value);
     } else {
       shell_print(BBLUE, "[THREAD%ld-TERMINAL]: TIMER: %.2f seconds", timer_thread, timer_value);
     }
+    pthread_rwlock_unlock(&counter_rwlock);
+    pthread_rwlock_unlock(&isRunning_rwlock);
     usleep(HUNDRED_MS);
   }
 }

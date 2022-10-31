@@ -21,6 +21,8 @@ int main(int argc, char* argv[]) {
     printf("base [%ld, %ld]: \n", base.tv_sec, base.tv_nsec);
     printf("now [%ld, %ld]:\n", now.tv_sec, now.tv_nsec);
     printf("delta_us: %ld\n", delta_us);
+    printf("\rValue of COUNTER: %lu", delta_us);
+    fflush(stdout);
   }
 
   return 0;
