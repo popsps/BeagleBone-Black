@@ -43,8 +43,6 @@
 #define START_STOP_BUTTON_PIN P9_15
 #define RESET_BUTTON_PIN P9_27
 
-pthread_rwlock_t timer_rwlock = PTHREAD_RWLOCK_INITIALIZER;
-
 void clean_up();
 void initialize();
 void unset_signal();
@@ -64,7 +62,8 @@ void toggle_running();
 void toggle_lights();
 void reset_timer();
 
-pthread_rwlock_t signal_rwlock = PTHREAD_RWLOCK_INITIALIZER;
+pthread_rwlock_t isRunning_rwlock = PTHREAD_RWLOCK_INITIALIZER;
+pthread_rwlock_t counter_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 
 int main(int argc, char* argv[]) {
   pthread_t current_thread = pthread_self();
