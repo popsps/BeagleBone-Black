@@ -17,6 +17,7 @@ int main(int argc, char* argv[]) {
     // printf("now: %ld, base: %ld, now - base: %ld\n", now, base, now - base);
     clock_gettime(CLOCK_MONOTONIC_RAW, &now);
     uint64_t delta_us = (now.tv_sec - base.tv_sec) * 1000000 + (now.tv_nsec - base.tv_nsec) / 1000;
+    uint64_t delta_ms = (now.tv_sec - base.tv_sec) * 1000 + (now.tv_nsec - base.tv_nsec) / 1000000;
     printf("base [%ld, %ld]: \n", base.tv_sec, base.tv_nsec);
     printf("now [%ld, %ld]:\n", now.tv_sec, now.tv_nsec);
     printf("delta_us: %ld\n", delta_us);

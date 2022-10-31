@@ -33,10 +33,10 @@
  * time_t type as a signed integer
  **/
 
-#define RG_WAIT_TIME 120
-#define Y_WAIT_TIME 5
-#define SMALL_WAIT_TIME 1
-#define SENSOR_ACTIVATION_TIME 5
+#define TEN_MS 10000
+#define HUNDRED_MS 100000
+#define TWENTY_FOUR_HOURS_S 86400
+#define TWENTY_FOUR_HOURS_MS 86400000
 
 #define START_LIGHT_PIN P9_12
 #define STOP_LIGHT_PIN P9_11
@@ -79,9 +79,20 @@ int main(int argc, char* argv[]) {
   clean_up();
   initialize();
 
+  pthread_attr_t tattr;
+  struct sched_param s_param;
+  pthread_attr_init(&tattr);
+  int policy;
+  pthread_attr_getschedpolicy(&tattr, &policy);
+  pthread_attr_setschedpolicy(&tattr, SCHED_FIFO);
+  pthread_attr_getschedparam(&tattr, &s_param);
+  s_param.sched_priority = sched_get_priority_max(SCHED_FIFO);
+  pthread_attr_getschedpolicy(&tattr, &policy);
+  printf("=================%d\n", s_param.sched_priority);
+  pthread_attr_setschedparam(&tattr, &s_param);
   // threads responsible for handling the general intersection logic
-  pthread_create(&timer_thread, NULL, handle_timer, NULL);
-  pthread_create(&terminal_thread, NULL, handle_action, NULL);
+  pthread_create(&timer_thread, &tattr, handle_timer, NULL);
+  pthread_create(&terminal_thread, NULL, handle_terminal, NULL);
   pthread_create(&action_thread, NULL, handle_action, NULL);
 
   pthread_join(timer_thread, NULL);
@@ -152,25 +163,13 @@ void sig_handler(int sig) {
 
 void* handle_timer(void* ptr) {
   shell_print(BBLUE, "[THREAD%ld-TIMER]: Starting the TIMER thread...", timer_thread);
-  sleep(1);
-  // time_t base = time(0);
-  // time_t now = base;
-  // struct timespec base, now;
-  // clock_gettime(CLOCK_MONOTONIC_RAW, &base);
-  // do stuff
   while (1) {
-    sleep(1);
-    // usleep(10000);
-    // now = time(0);
-    // printf("now: %ld, base: %ld, now - base: %ld\n", now, base, now - base);
-    // clock_gettime(CLOCK_MONOTONIC_RAW, &now);
-    // uint64_t delta_us = (now.tv_sec - base.tv_sec) * 1000000 + (now.tv_nsec - base.tv_nsec) / 1000;
-    // printf("base [%ld, %ld]: \n", base.tv_sec, base.tv_nsec);
-    // printf("now [%ld, %ld]:\n", now.tv_sec, now.tv_nsec);
-    // printf("delta_us: %lld\n", delta_us);
-    shell_print(BBLUE, "[THREAD%ld-TIMER]: %lld", timer_thread, counter);
-    if(isRunning) {
-      counter++;
+    // compute time in Mili-seconds
+    if (isRunning) {
+      counter = (counter >= TWENTY_FOUR_HOURS_MS) ? 0 : counter + 10;
+      usleep(TEN_MS);
+    } else {
+      counter = (counter >= TWENTY_FOUR_HOURS_MS) ? 0 : counter;
     }
   }
 }
@@ -183,45 +182,45 @@ void* handle_action(void* ptr) {
       shell_print(BRED, "[THREAD%ld-ACTION]: start/stop button is pressed...", action_thread);
       toggle_running();
       toggle_lights();
-    } 
-    if(!_isStartStopButtonPressed) {
+    }
+    if (!_isStartStopButtonPressed) {
       isStartStopButtonPressed = 0;
     }
     int _isResetButtonPressed = gpio_get_value(RESET_BUTTON_PIN);
-    if (_isResetButtonPressed&& !isResetButtonPressed) {
+    if (_isResetButtonPressed && !isResetButtonPressed) {
       isResetButtonPressed = 1;
       reset_timer();
     }
-    if(!_isResetButtonPressed) {
+    if (!_isResetButtonPressed) {
       isResetButtonPressed = 0;
     }
     // Read buttons every 10ms
-    usleep(10000);
+    usleep(TEN_MS);
   }
 }
 void* handle_terminal(void* ptr) {
   shell_print(BBLUE, "[THREAD%ld-TERMINAL]: Starting the TIMER thread...", terminal_thread);
-  sleep(1);
-  // uint64_t u = 4294967293;
   while (1) {
-    // shell_print(BBLUE, "[THREAD%ld-TIMMER]: %zu", timer_thread, u);
-    shell_print(BBLUE, "\r[THREAD%ld-TERMINAL]: %u", terminal_thread, counter);
     // printf("\rValue of COUNTER: %lu", counter);
     // fflush(stdout);
-    usleep(10000);
-    // sleep(1);
-    counter++;
+    double timer_value = counter / 1000.0;
+    if (isRunning) {
+      shell_print(BBLUE, "[THREAD%ld-TERMINAL]: TIMER: %.3f seconds", timer_thread, timer_value);
+    } else {
+      shell_print(BBLUE, "[THREAD%ld-TERMINAL]: TIMER: %.2f seconds", timer_thread, timer_value);
+    }
+    usleep(HUNDRED_MS);
   }
 }
 
 void toggle_running() {
   isRunning = !isRunning;
-  if(isRunning) {
+  if (isRunning) {
     shell_print(BRED, "[THREAD%ld-ACTION]: timer is started.", action_thread);
   } else {
     shell_print(BRED, "[THREAD%ld-ACTION]: timer is stopped.", action_thread);
   }
- }
+}
 void toggle_lights() {
   if (isRunning) {
     gpio_set_value(STOP_LIGHT_PIN, LOW);
