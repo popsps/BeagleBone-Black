@@ -196,7 +196,7 @@ void* handle_action(void* ptr) {
       isResetButtonPressed = 1;
       pthread_rwlock_wrlock(&counter_rwlock);
       reset_timer();
-      pthread_rwlock_unlock(&isRunning_rwlock);
+      pthread_rwlock_unlock(&counter_rwlock);
     }
     if (!_isResetButtonPressed) {
       isResetButtonPressed = 0;
