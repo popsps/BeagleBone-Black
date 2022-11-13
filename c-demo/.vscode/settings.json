@@ -12,7 +12,8 @@
         "stab.h": "c",
         "logging.h": "c",
         "time.h": "c",
-        "bbsignal.h": "c"
+        "bbsignal.h": "c",
+        "sched.h": "c"
     },
     "C_Cpp.default.compilerPath": "/usr/arm-linux-gnueabihf/include"
 }

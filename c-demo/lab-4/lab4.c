@@ -78,21 +78,34 @@ int main(int argc, char* argv[]) {
   clean_up();
   initialize();
 
-  pthread_attr_t tattr;
-  struct sched_param s_param;
-  pthread_attr_init(&tattr);
-  int policy;
-  pthread_attr_getschedpolicy(&tattr, &policy);
-  pthread_attr_setschedpolicy(&tattr, SCHED_FIFO);
-  pthread_attr_getschedparam(&tattr, &s_param);
-  s_param.sched_priority = sched_get_priority_max(SCHED_FIFO);
-  pthread_attr_getschedpolicy(&tattr, &policy);
-  printf("=================%d\n", s_param.sched_priority);
-  pthread_attr_setschedparam(&tattr, &s_param);
+  pthread_attr_t timer_attr, terminal_attr, action_attr;
+  struct sched_param timer_param, terminal_param, action_param;
+
+  pthread_attr_init(&timer_attr);
+  pthread_attr_setschedpolicy(&timer_attr, SCHED_FIFO);
+  // pthread_attr_getschedparam(&timer_attr, &timer_param);
+  timer_param.sched_priority = sched_get_priority_max(SCHED_FIFO);
+  // pthread_attr_getschedpolicy(&timer_attr, &policy);
+  pthread_attr_setschedparam(&timer_attr, &timer_param);
+
+  pthread_attr_init(&terminal_attr);
+  pthread_attr_setschedpolicy(&terminal_attr, SCHED_FIFO);
+  terminal_param.sched_priority = 20;
+  pthread_attr_setschedparam(&terminal_attr, &terminal_param);
+
+  pthread_attr_init(&action_attr);
+  pthread_attr_setschedpolicy(&action_attr, SCHED_FIFO);
+  action_param.sched_priority = 45;
+  pthread_attr_setschedparam(&action_attr, &action_param);
+
+  shell_print(BBLACK, "[THREAD%ld-MAIN]: TIMER THREAD PRIORITY: %d", current_thread, timer_param.sched_priority);
+  shell_print(BBLACK, "[THREAD%ld-MAIN]: ACTION THREAD PRIORITY: %d", current_thread, action_param.sched_priority);
+  shell_print(BBLACK, "[THREAD%ld-MAIN]: TERMINAL THREAD PRIORITY: %d", current_thread, terminal_param.sched_priority);
+
   // threads responsible for handling the stopwatch logic
-  pthread_create(&timer_thread, &tattr, handle_timer, NULL);
-  pthread_create(&terminal_thread, NULL, handle_terminal, NULL);
-  pthread_create(&action_thread, NULL, handle_action, NULL);
+  pthread_create(&timer_thread, &timer_attr, handle_timer, NULL);
+  pthread_create(&terminal_thread, &terminal_attr, handle_terminal, NULL);
+  pthread_create(&action_thread, &action_attr, handle_action, NULL);
 
   pthread_join(timer_thread, NULL);
   pthread_join(terminal_thread, NULL);
