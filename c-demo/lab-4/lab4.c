@@ -53,7 +53,7 @@ pthread_rwlock_t counter_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 
 int main(int argc, char* argv[]) {
   pthread_t current_thread = pthread_self();
-  shell_print(BBLACK, "[THREAD%ld-MAIN]: lab4 Simple Intersection with Opposing Traffic Lights", current_thread);
+  shell_print(BBLACK, "[THREAD%ld-MAIN]: lab4 Stopwatch", current_thread);
 
   // init signal handler for SIGUSR1, SIGINT, and SIGTSTP
   register_signal_handler(sig_handler);
