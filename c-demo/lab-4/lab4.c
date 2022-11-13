@@ -205,7 +205,7 @@ void* handle_action(void* ptr) {
     int _isResetButtonPressed = gpio_get_value(RESET_BUTTON_PIN);
     if (_isResetButtonPressed && !isResetButtonPressed) {
       isResetButtonPressed = 1;
-      shell_print(BRED, "[THREAD%ld-ACTION]: start/stop button is pressed...", action_thread);
+      shell_print(BRED, "[THREAD%ld-ACTION]: reset button is pressed...", action_thread);
       pthread_rwlock_wrlock(&counter_rwlock);
       reset_timer();
       shell_print(BRED, "[THREAD%ld-ACTION]: timer is reset", action_thread);
