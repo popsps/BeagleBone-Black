@@ -200,9 +200,9 @@ void* handle_action(void* ptr) {
       toggle_running();
       if (isRunning) {
         shell_print(BRED, "[THREAD%ld-ACTION]: timer is started.", action_thread);
-        } else {
-    shell_print(BRED, "[THREAD%ld-ACTION]: timer is stopped.", action_thread);
-  }
+      } else {
+        shell_print(BRED, "[THREAD%ld-ACTION]: timer is stopped.", action_thread);
+      }
       toggle_lights();
       pthread_rwlock_unlock(&isRunning_rwlock);
     }
@@ -212,7 +212,7 @@ void* handle_action(void* ptr) {
     int _isResetButtonPressed = gpio_get_value(RESET_BUTTON_PIN);
     if (_isResetButtonPressed && !isResetButtonPressed) {
       isResetButtonPressed = 1;
-       shell_print(BRED, "[THREAD%ld-ACTION]: start/stop button is pressed...", action_thread);
+      shell_print(BRED, "[THREAD%ld-ACTION]: start/stop button is pressed...", action_thread);
       pthread_rwlock_wrlock(&counter_rwlock);
       reset_timer();
       shell_print(BRED, "[THREAD%ld-ACTION]: timer is reset", action_thread);
@@ -242,9 +242,7 @@ void* handle_terminal(void* ptr) {
   }
 }
 
-void toggle_running() {
-  isRunning = !isRunning;
-}
+void toggle_running() { isRunning = !isRunning; }
 void toggle_lights() {
   if (isRunning) {
     gpio_set_value(STOP_LIGHT_PIN, LOW);
