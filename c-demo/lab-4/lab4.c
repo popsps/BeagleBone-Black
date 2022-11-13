@@ -14,20 +14,6 @@
 #include "pins.h"
 
 /**
- * Each side gets green light for 2 minutes. The transition to the red light
- * should have a 5 second yellow signal.
- *
- * Using GPIO 9_11 and GPIO 9_12 GPIO 9_13 as out pins for signal 1
- * Using GPIO 9_23 and GPIO 9_24 GPIO 9_26 as out pins for signal 2
- * Using GPIO 9_15 as in pin for signal 1
- * Using GPIO 9_41 as int pin for signal 2
- *
- * One thread for each of the traffic signals
- * Add a wait sensor sensor at each direction
- * there should be one thread for these as well Implement this with a
- * push-button If a light is red but the corresponding wait sensor is triggered
- * (i.e. the button is pushed and held) for 5 seconds,
- * the light should cycle to green without waiting the full 2 minutes
  * 10ms usleep(10000)
  * 100ms usleep(100000)
  * time_t type as a signed integer
@@ -173,6 +159,9 @@ void sig_handler(int sig) {
   }
 }
 
+/**
+ * Handles the counter. The counter will be used in the terminal thread to display counter in the stopwatch
+ */
 void* handle_timer(void* ptr) {
   shell_print(KDEF, "[THREAD%ld-TIMER]: Starting the TIMER thread...", timer_thread);
   while (1) {
@@ -189,6 +178,10 @@ void* handle_timer(void* ptr) {
     usleep(TEN_MS);
   }
 }
+/**
+ * handle read buttons. this includes start/stop and reset buttons.
+ * Set lights accordingly
+ */
 void* handle_action(void* ptr) {
   shell_print(BRED, "[THREAD%ld-ACTION]: starting ACTION thread...", action_thread);
   while (1) {
@@ -225,6 +218,10 @@ void* handle_action(void* ptr) {
     usleep(TEN_MS);
   }
 }
+
+/**
+ * Handle printing to the terminal. Updates every 100 MS.
+ */
 void* handle_terminal(void* ptr) {
   shell_print(BBLUE, "[THREAD%ld-TERMINAL]: Starting the TIMER thread...", terminal_thread);
   while (1) {
