@@ -20,6 +20,9 @@ int readAnalog(int pin) {
   return value;
 }
 
+/**
+ * 
+*/
 int readTemperature(int analogValue) {
   double millivolts = analogValue / 4096.0f * 1800;
   double temp_c = (millivolts - 500) / 10.0;
