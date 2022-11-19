@@ -27,5 +27,5 @@ while True:
     millivolts = reading * 1800  # 1.8V reference = 1800 mV
     temp_c = (millivolts - 500) / 10
     temp_f = (temp_c * 9/5) + 32
-    print('mv=%d C=%d F=%d' % (millivolts, temp_c, temp_f))
+    print('v=%s, mv=%d C=%d F=%d' % (reading, millivolts, temp_c, temp_f))
     time.sleep(1)
