@@ -8,6 +8,11 @@ type,time,active or void,latitude,hemisphere(N/S), longitude, hemisphere, knots(
 30 deg(rest)
 51.8007 min(last 7)
 
+My Latitude: 30 Degrees 51.8066 minuets N
+My Longitude: 100 Degrees 36.0005 minuets W
+-->
+
+Google earth: 30 51.8066, -100 36.0005
 
 '''
 import logging

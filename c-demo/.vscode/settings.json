@@ -15,7 +15,8 @@
         "bbsignal.h": "c",
         "sched.h": "c",
         "stdint.h": "c",
-        "termio.h": "c"
+        "termio.h": "c",
+        "stdarg.h": "c"
     },
     "C_Cpp.default.compilerPath": "/usr/arm-linux-gnueabihf/include"
 }

@@ -69,6 +69,7 @@ int main(int argc, char* argv[]) {
     return -1;
   }
   close(file);
+  fclose(fp);
   printf("Finished sending the message, exiting %d.\n", count);
   return 0;
 }

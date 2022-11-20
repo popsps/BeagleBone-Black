@@ -1,0 +1,22 @@
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+<Style id="yellowPoly">
+<LineStyle>
+<color>7f00ffff</color>
+<width>4</width>
+</LineStyle>
+<PolyStyle>
+<color>7f00ff00</color>
+</PolyStyle>
+</Style>
+<Placemark><styleUrl>#yellowPoly</styleUrl>
+<LineString>
+<extrude>1</extrude>
+<tesselate>1</tesselate>
+<altitudeMode>absolute</altitudeMode>
+<coordinates>
+30 51.8066, -100 36.0005 
+</coordinates>
+</LineString></Placemark>
+ 
+</Document></kml>

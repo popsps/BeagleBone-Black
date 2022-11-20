@@ -6,6 +6,9 @@
 #define	CONSUMER	"Consumer"
 #endif
 
+/**
+ * sudo apt-get -y install libgpiod-dev
+*/
 int main(int argc, char **argv)
 {
 	char *chipname = "gpiochip0";
