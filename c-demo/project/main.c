@@ -57,15 +57,15 @@ int main(int argc, char* argv[]) {
   main_thread = pthread_self();
   shell_print(BBLACK, "[THREAD%ld-MAIN]: Final Project", main_thread);
   init_work_space();
-  init_threads();
-  FILE* fp = fopen("./data/scores.dat", "a+");
-  fprintf(fp, "2,afew,afew,234,234m234\n");
-  fprintf(fp, "4,hrtht,htre,543,bs345\n");
-  destroy_threads();
+  // init_threads();
+
+  // destroy_threads();
+  b_log(INFO, "[THREAD%ld-TEMPERATURE]: mv=%.2f C=%.2f F=%.2f", main_thread, 432, 432.432, 34.3432);
   return 0;
 }
 void init_work_space() {
   struct stat st = {0};
+  logger_init();
   if (stat("./data", &st)) {
     shell_print(BBLACK, "[THREAD%ld-MAIN]: Instantiating the Data Directory", main_thread);
     mkdir("./data", 0700);
@@ -143,8 +143,11 @@ void* handle_temperature_sensor(void* ptr) {
   millivolts = analog_input_value / 4096.0f * 1800;
   temp_c = (millivolts - 500) / 10.0;
   temp_f = (temp_c * 9 / 5) + 32;
+  return NULL;
 }
 void* handle_gps_sensor(void* ptr) { return NULL; }
 void* logger_handler(void* ptr) {
-  shell_print(KDEF, "[THREAD%ld-TEMPERATURE]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
+  // shell_print(KDEF, "[THREAD%ld-TEMPERATURE]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
+  b_log(INFO, "[THREAD%ld-TEMPERATURE]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
+  return NULL;
 }

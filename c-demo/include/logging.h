@@ -29,6 +29,10 @@
 
 // typedef enum COLOR_ENUM { KNRM = "\x1B[0m", KRED = "\x1B[31m" } COLOR;
 
+typedef enum LOG_LEVEL_ENUM { INFO = 0, ERROR = 1, WARN = 2, DEBUG = 3 } LOG_LEVEL;
+
 void shell_write(const char* color, const char* fmt, ...);
 
 void shell_print(const char* color, const char* fmt, ...);
+void logger_init();
+void b_log(LOG_LEVEL log_level, const char* fmt, ...);

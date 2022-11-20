@@ -1,5 +1,7 @@
 #include "logging.h"
 
+FILE* fp;
+
 /**
  * write to STD_OUT using write
  * async signal safe
@@ -28,8 +30,7 @@ void shell_print(const char* color, const char* fmt, ...) {
   current_time = time(0);
   utcTimeInfo = gmtime(&current_time);
   char timeInfoBuffer[25] = {0};
-  strftime(timeInfoBuffer, sizeof(timeInfoBuffer), "%Y-%m-%d %H:%M:%S",
-           utcTimeInfo);
+  strftime(timeInfoBuffer, sizeof(timeInfoBuffer), "%Y-%m-%d %H:%M:%S", utcTimeInfo);
 
   char buffer[256] = {0};
   char output[512] = {0};
@@ -43,5 +44,58 @@ void shell_print(const char* color, const char* fmt, ...) {
   else
     sprintf(output, "%s%s  INFO  %s\n" KNRM, color, timeInfoBuffer, buffer);
   printf("%s", output);
+  fflush(stdout);
+}
+
+void logger_init() { fp = fopen("./data/scores.dat", "a+"); }
+/**
+ * write to STD_OUT using write
+ * async signal safe
+ **/
+void b_log(LOG_LEVEL log_level, const char* fmt, ...) {
+  time_t current_time;
+  struct tm* utcTimeInfo;
+  current_time = time(0);
+  utcTimeInfo = gmtime(&current_time);
+  char timeInfoBuffer[25] = {0};
+  strftime(timeInfoBuffer, sizeof(timeInfoBuffer), "%Y-%m-%d %H:%M:%S", utcTimeInfo);
+  const char* color = {0};
+  const char* level = {0};
+  switch (log_level) {
+    case INFO:
+      color = KDEF;
+      level = "INFO";
+      break;
+    case ERROR:
+      color = BRED;
+      level = "ERROR";
+      break;
+    case WARN:
+      color = BYELLOW;
+      level = "WARN";
+      break;
+    case DEBUG:
+      color = BBLACK;
+      level = "DEBUG";
+      break;
+    default:
+      color = KDEF;
+      level = "INFO";
+      break;
+  }
+  char buffer[256] = {0};
+  char shell_output[512] = {0};
+  char file_output[512] = {0};
+  va_list _args;
+  va_start(_args, fmt);
+  vsnprintf(buffer, sizeof(buffer), fmt, _args);
+  va_end(_args);
+  if (!color)
+    sprintf(shell_output, "%s  %s  %s\n" KNRM, timeInfoBuffer, level, buffer);
+  else
+    sprintf(shell_output, "%s%s  %s  %s\n" KNRM, color, timeInfoBuffer, level, buffer);
+  sprintf(file_output, "%s  %s  %s\n", timeInfoBuffer, level, buffer);
+  fprintf(stdout, "%s", shell_output);
+  fprintf(fp, "%s", file_output);
   fflush(stdout);
 }
