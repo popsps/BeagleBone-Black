@@ -1,8 +1,8 @@
-all: lab4 lab4-test
+all: main main-test
 
 INC_DIR = ../include
 
-CFLAG = -pthread -g -O3 -Wall -Wno-unused-result -Werror -std=gnu99 -I$(INC_DIR)
+CFLAG = -pthread -g -O3 -Wall -Wno-unused-result -Wno-unused-variable -Werror -std=gnu99 -I$(INC_DIR)
 CC = gcc
 
 CFLAG-TEST = -static -pthread -g -O3 -Wall -Wno-unused-result -Werror -std=gnu99 -I$(INC_DIR)
@@ -12,17 +12,17 @@ DEPS =  $(INC_DIR)/pins.h $(INC_DIR)/bbsignal.c $(INC_DIR)/gpio.c $(INC_DIR)/log
 DEPS-TEST =  $(INC_DIR)/pins.h $(INC_DIR)/bbsignal.c $(INC_DIR)/gpio-stub.c $(INC_DIR)/logging.c
 
 # run acutal program that will be shiped into the embded device
-lab4: lab4.c $(DEPS)
+main: main.c $(DEPS)
 	$(CC) $(CFLAG) -o $@ $^
 
 # run the stub version on armvf compiler. This will be used for testing and cross-compilations.
-lab4-semi-test: lab4.c $(DEPS-TEST)
+main-semi-test: main.c $(DEPS-TEST)
 	$(CC) $(CFLAG) -o $@ $^
 
 # run the stub version on armvf compiler. This will be used for testing and cross-compilations.
-lab4-test: lab4.c $(DEPS-TEST)
+main-test: main.c $(DEPS-TEST)
 	$(CC-TEST) $(CFLAG-TEST) -o $@ $^
 
 
 clean:
-	rm -rf lab4 lab4-semi-test lab4-test
+	rm -rf main main-semi-test main-test

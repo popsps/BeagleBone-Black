@@ -95,3 +95,15 @@ char* gpio_get_direction(unsigned int gpio) {
     return res;
   }
 }
+
+int read_analog(int pin) {
+  int value = 0;
+  char path[200];
+  snprintf(path, sizeof(path), LDR_PATH "%d_raw", pin);
+  FILE* file = fopen(path, "r");
+  if (file == NULL) {
+    return -1;
+  }
+  int res = fscanf(file, "%d", &value);
+  return value;
+}
