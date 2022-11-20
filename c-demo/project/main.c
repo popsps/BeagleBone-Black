@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -12,7 +14,6 @@
 #include "gpio.h"
 #include "logging.h"
 #include "pins.h"
-
 
 #define TEN_MS 10000
 #define HUNDRED_MS 100000
@@ -33,28 +34,35 @@ static uint64_t counter = 0;
 static int isRunning = 0;
 static int isStartStopButtonPressed = 0;
 static int isResetButtonPressed = 0;
-static pthread_t timer_thread, action_thread, terminal_thread;
+static pthread_t temperature_thread, gps_thread, logger_thread;
 
-void* handle_timer(void* ptr);
-void* handle_terminal(void* ptr);
-void* handle_action(void* ptr);
+void* handle_temperature_sensor(void* ptr);
+void* handle_gps_sensor(void* ptr);
+void* logger_handler(void* ptr);
 
 void toggle_running();
 void toggle_lights();
 void reset_timer();
+void init_thread();
+void init_work_space();
 
 pthread_rwlock_t isRunning_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 pthread_rwlock_t counter_rwlock = PTHREAD_RWLOCK_INITIALIZER;
-double readTemperature() {
-    int fd = op
-}
+
 int main(int argc, char* argv[]) {
   pthread_t current_thread = pthread_self();
-  shell_print(BBLACK, "[THREAD%ld-MAIN]: lab4 Stopwatch", current_thread);
+  shell_print(BBLACK, "[THREAD%ld-MAIN]: Final Project", current_thread);
+  init_work_space();
+  init_threads();
 
   return 0;
 }
-
+void init_work_space() {}
+void init_thread() {
+  pthread_create(&temperature_thread, NULL, handle_temperature_sensor, NULL);
+  pthread_create(&gps_thread, NULL, handle_gps_sensor, NULL);
+  pthread_create(&logger_thread, NULL, logger_handler, NULL);
+}
 void clean_up() {
   gpio_unexport(START_LIGHT_PIN);
   gpio_unexport(STOP_LIGHT_PIN);
@@ -109,3 +117,7 @@ void sig_handler(int sig) {
     shell_write(BPURPLE, "[THREAD%ld]: Recived SIGUSR1", current_thread);
   }
 }
+
+void* handle_temperature_sensor(void* ptr) {}
+void* handle_gps_sensor(void* ptr) {}
+void* logger_handler(void* ptr) {}
