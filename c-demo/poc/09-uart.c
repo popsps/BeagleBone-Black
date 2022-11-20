@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
   tcsetattr(file, TCSANOW, &options);
   // send the string plus the null character
   printf("sending %s\n", argv[1]);
-  count = write(file, argv[1], strlen(argv[1] + 1));
+  // count = write(file, argv[1], strlen(argv[1] + 1));
   count = fprintf(fp, "%s", argv[1]);
   if (count < 0) {
     perror("UART Failed to write to the output.\n");
