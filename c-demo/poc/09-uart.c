@@ -48,6 +48,7 @@ int main(int argc, char* argv[]) {
     return -2;
   }
   file = open("/dev/ttyO4", O_RDWR | O_NOCTTY | O_NDELAY);
+  FILE* fp = fopen("/dev/ttyO4", "r+");
   if (file < 0) {
     perror("UART: Failed to open the device.\n");
     return -1;
@@ -59,8 +60,9 @@ int main(int argc, char* argv[]) {
   tcflush(file, TCIFLUSH);
   tcsetattr(file, TCSANOW, &options);
   // send the string plus the null character
-  printf("sending %s", argv[1]);
+  printf("sending %s\n", argv[1]);
   count = write(file, argv[1], strlen(argv[1] + 1));
+  count = fprintf(fp, "%s", argv[1]);
   if (count < 0) {
     perror("UART Failed to write to the output.\n");
     return -1;
