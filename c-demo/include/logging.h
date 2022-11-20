@@ -35,4 +35,5 @@ void shell_write(const char* color, const char* fmt, ...);
 
 void shell_print(const char* color, const char* fmt, ...);
 void logger_init();
+void logger_destroy();
 void b_log(LOG_LEVEL log_level, const char* fmt, ...);

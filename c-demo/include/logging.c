@@ -48,6 +48,7 @@ void shell_print(const char* color, const char* fmt, ...) {
 }
 
 void logger_init() { fp = fopen("./data/scores.dat", "a+"); }
+void logger_destroy() { fclose(fp); }
 /**
  * write to STD_OUT using write
  * async signal safe
