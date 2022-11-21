@@ -22,8 +22,8 @@
 
 #define TEMP_SENSOR_PIN 1
 
-#define ON_LIGHT P9_11
-#define OFF_LIGHT P9_12
+#define ON_LIGHT P9_24
+#define OFF_LIGHT P9_23
 #define ON_OFF_BUTTON_PIN P9_15
 
 void clean_up();
