@@ -67,6 +67,8 @@ void init_work_space() {
     b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Data Directory", main_thread);
     mkdir("./data", 0700);
   }
+  clean_up();
+  initialize();
 }
 void init_threads() {
   pthread_create(&temperature_thread, NULL, handle_temperature_sensor, NULL);
