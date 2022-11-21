@@ -67,6 +67,8 @@ void init_work_space() {
     b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Data Directory", main_thread);
     mkdir("./data", 0700);
   }
+  // init signal handler for SIGUSR1, SIGINT, and SIGTSTP
+  register_signal_handler(sig_handler);
   clean_up();
   initialize();
 }
