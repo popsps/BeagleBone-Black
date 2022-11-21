@@ -188,8 +188,8 @@ void* handle_actions(void* ptr) {
     if (_on_off_button_pressed && !on_off_button_pressed) {
       on_off_button_pressed = 1;
       pthread_rwlock_wrlock(&isOn_rwlock);
-      toggle_lights();
       toggle_running();
+      toggle_lights();
       if (isOn) {
         b_log(DEBUG, "[THREAD%ld-ACTION]: application is started.", action_thread);
       } else {
