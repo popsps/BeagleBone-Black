@@ -40,11 +40,10 @@ static pthread_t main_thread, action_thread, temperature_thread, gps_thread, log
 void* handle_temperature_sensor(void* ptr);
 void* handle_gps_sensor(void* ptr);
 void* handle_actions(void* ptr);
-void* logger_handler(void* ptr);
+void* handle_logger(void* ptr);
 
 void toggle_lights();
 void toggle_running();
-void reset_timer();
 void init_thread();
 void init_work_space();
 void init_threads();
@@ -75,41 +74,36 @@ void init_threads() {
   pthread_create(&temperature_thread, NULL, handle_temperature_sensor, NULL);
   pthread_create(&action_thread, NULL, handle_actions, NULL);
   pthread_create(&gps_thread, NULL, handle_gps_sensor, NULL);
-  pthread_create(&logger_thread, NULL, logger_handler, NULL);
+  pthread_create(&logger_thread, NULL, handle_logger, NULL);
 }
 void destroy_threads() {
   pthread_join(temperature_thread, NULL);
   pthread_join(gps_thread, NULL);
   pthread_join(logger_thread, NULL);
+  pthread_join(action_thread, NULL);
 }
 void clean_up() {
-  gpio_unexport(START_LIGHT_PIN);
-  gpio_unexport(STOP_LIGHT_PIN);
-  gpio_unexport(START_STOP_BUTTON_PIN);
-  gpio_unexport(RESET_BUTTON_PIN);
+  gpio_unexport(ON_LIGHT);
+  gpio_unexport(OFF_LIGHT);
+  gpio_unexport(ON_OFF_BUTTON_PIN);
 }
 void unset_pins() {
-  gpio_set_value(START_LIGHT_PIN, LOW);
-  gpio_set_value(STOP_LIGHT_PIN, LOW);
-  gpio_set_value(START_STOP_BUTTON_PIN, LOW);
-  gpio_set_value(RESET_BUTTON_PIN, LOW);
+  gpio_set_value(ON_LIGHT, LOW);
+  gpio_set_value(OFF_LIGHT, LOW);
+  gpio_set_value(ON_OFF_BUTTON_PIN, LOW);
 }
 void initialize() {
-  gpio_export(STOP_LIGHT_PIN);
-  gpio_set_direction(STOP_LIGHT_PIN, OUTPUT_PIN);
-  gpio_set_value(STOP_LIGHT_PIN, HIGH);
+  gpio_export(ON_LIGHT);
+  gpio_set_direction(ON_LIGHT, OUTPUT_PIN);
+  gpio_set_value(ON_LIGHT, HIGH);
 
-  gpio_export(START_LIGHT_PIN);
-  gpio_set_direction(START_LIGHT_PIN, OUTPUT_PIN);
-  gpio_set_value(START_LIGHT_PIN, LOW);
+  gpio_export(OFF_LIGHT);
+  gpio_set_direction(OFF_LIGHT, OUTPUT_PIN);
+  gpio_set_value(OFF_LIGHT, LOW);
 
-  gpio_export(START_STOP_BUTTON_PIN);
-  gpio_set_direction(START_STOP_BUTTON_PIN, INPUT_PIN);
-  gpio_set_value(START_STOP_BUTTON_PIN, LOW);
-
-  gpio_export(RESET_BUTTON_PIN);
-  gpio_set_direction(RESET_BUTTON_PIN, INPUT_PIN);
-  gpio_set_value(RESET_BUTTON_PIN, LOW);
+  gpio_export(ON_OFF_BUTTON_PIN);
+  gpio_set_direction(ON_OFF_BUTTON_PIN, INPUT_PIN);
+  gpio_set_value(ON_OFF_BUTTON_PIN, LOW);
 }
 
 /**
@@ -137,6 +131,9 @@ void sig_handler(int sig) {
   }
 }
 
+/**
+ * handle logic for the temperature sensor
+ */
 void* handle_temperature_sensor(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the TEMPERATURE THREAD...", temperature_thread);
   while (1) {
@@ -146,26 +143,38 @@ void* handle_temperature_sensor(void* ptr) {
     millivolts = analog_input_value / 4096.0f * 1800;
     temp_c = (millivolts - 500) / 10.0;
     temp_f = (temp_c * 9 / 5) + 32;
+    sleep(1);
   }
   return NULL;
 }
+/**
+ * handle logic for the gps sensor
+ */
 void* handle_gps_sensor(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the GPS THREAD...", gps_thread);
   while (1) {
+    sleep(1);
   }
   return NULL;
 }
-void* logger_handler(void* ptr) {
+
+/**
+ * handle logic for the logging and writing to cvs file
+ */
+void* handle_logger(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the LOGGER THREAD...", logger_thread);
   while (1) {
     pthread_rwlock_rdlock(&temp_rwlock);
     b_log(INFO, "[THREAD%ld-TEMPERATURE]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
     pthread_rwlock_unlock(&temp_rwlock);
+    sleep(1);
   }
-  sleep(1);
   return NULL;
 }
 
+/**
+ * handle logic for user actions
+ */
 void* handle_actions(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the ACTION THREAD...", action_thread);
   while (1) {
@@ -190,6 +199,11 @@ void* handle_actions(void* ptr) {
   }
   return NULL;
 }
+/**
+ * toggling the lights
+ * green indicates that the application is on and logs gps and temperature data
+ * red indicates that the application is off
+ */
 void toggle_lights() {
   if (isOn) {
     gpio_set_value(OFF_LIGHT, LOW);
@@ -199,4 +213,7 @@ void toggle_lights() {
     gpio_set_value(ON_LIGHT, LOW);
   }
 }
+/**
+ * toggle on/off the application
+ */
 void toggle_running() { isOn = !isOn; }
