@@ -65,3 +65,5 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+c-demo/poc/test.txt
+c-demo/project/data/log.txt
