@@ -31,7 +31,7 @@ void initialize();
 void unset_signal();
 void sig_handler(int sig);
 
-static int isOn = 0;
+static int isOn = 1;
 static int on_off_button_pressed = 0;
 static int isResetButtonPressed = 0;
 static double millivolts, temp_c, temp_f = 0;
@@ -62,17 +62,13 @@ int main(int argc, char* argv[]) {
 }
 void init_work_space() {
   struct stat st = {0};
-  printf("here 1\n");
   logger_init();
   if (stat("./data", &st)) {
     b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Data Directory", main_thread);
     mkdir("./data", 0700);
   }
-  printf("here 2\n");
   clean_up();
-  printf("here 3\n");
   initialize();
-  printf("here 4\n");
 }
 void init_threads() {
   pthread_create(&temperature_thread, NULL, handle_temperature_sensor, NULL);
