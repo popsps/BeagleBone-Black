@@ -54,15 +54,14 @@ pthread_rwlock_t temp_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 
 int main(int argc, char* argv[]) {
   main_thread = pthread_self();
-  b_log(INFO, "[THREAD%ld-MAIN]: Final Project", main_thread);
   init_work_space();
-  // init_threads();
-
-  // destroy_threads();
-  b_log(INFO, "[THREAD%ld-TEMPERATURE]: mv=%.2f C=%.2f F=%.2f", main_thread, 432, 432.432, 34.3432);
+  b_log(DEBUG, "[THREAD%ld-MAIN]: Final Project", main_thread);
+  init_threads();
+  destroy_threads();
   return 0;
 }
 void init_work_space() {
+  printf("here 1\n");
   struct stat st = {0};
   logger_init();
   if (stat("./data", &st)) {

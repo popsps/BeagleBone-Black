@@ -47,7 +47,7 @@ void shell_print(const char* color, const char* fmt, ...) {
   fflush(stdout);
 }
 
-void logger_init() { fp = fopen("./data/scores.dat", "a+"); }
+void logger_init() { fp = fopen("./data/log.txt", "a+"); }
 void logger_destroy() { fclose(fp); }
 /**
  * write to STD_OUT using write
@@ -97,6 +97,7 @@ void b_log(LOG_LEVEL log_level, const char* fmt, ...) {
     sprintf(shell_output, "%s%s  %s  %s\n" KNRM, color, timeInfoBuffer, level, buffer);
   sprintf(file_output, "%s  %s  %s\n", timeInfoBuffer, level, buffer);
   fprintf(stdout, "%s", shell_output);
-  fprintf(fp, "%s", file_output);
   fflush(stdout);
+  fprintf(fp, "%s", file_output);
+  fflush(fp);
 }
