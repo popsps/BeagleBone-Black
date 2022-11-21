@@ -61,7 +61,6 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 void init_work_space() {
-  printf("here 1\n");
   struct stat st = {0};
   logger_init();
   if (stat("./data", &st)) {
