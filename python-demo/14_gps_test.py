@@ -8,5 +8,5 @@ while (1):
         pass
     NMEA = serial.readline()
     print(NMEA)
-    print(NMEA.decode())
     print(str(NMEA))
+    print(NMEA.decode('ascii'))
