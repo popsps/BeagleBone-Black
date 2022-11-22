@@ -48,32 +48,48 @@ int main(int argc, char* argv[]) {
     return -2;
   }
   file = open("/dev/ttyO4", O_RDWR | O_NOCTTY | O_NDELAY);
-  FILE* fp = fopen("/dev/ttyO4", "r+");
+  // FILE* fp = fopen("/dev/ttyO4", "r+");
   if (file < 0) {
     perror("UART: Failed to open the device.\n");
     return -1;
   }
   struct termios options;
   tcgetattr(file, &options);
-  options.c_cflag = B1152000 | CS8 | CREAD | CLOCAL;
-  options.c_iflag = IGNPAR | ICRNL;
-  tcflush(file, TCIFLUSH);
-  tcsetattr(file, TCSANOW, &options);
+  // options.c_cflag = B1152000 | CS8 | CREAD | CLOCAL;
+  // Set up the communications options:
+  // 9600 baud, 8-bit, enable receiver, no modem control lines
+  options.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
+  options.c_iflag = IGNPAR | ICRNL;    // ignore partity errors, CR -> newline
+  tcflush(file, TCIFLUSH);             // discard file information not transmitted
+  tcsetattr(file, TCSANOW, &options);  // changes occur immmediately
   // send the string plus the null character
-  printf("sending %s:%d\n", argv[1], strlen(argv[1] + 1));
+  // printf("sending %s:%d\n", argv[1], strlen(argv[1] + 1));
   // count = write(file, argv[1], strlen(argv[1]) + 1);
   // count = fprintf(f 09p, "\n");
-  count = fprintf(fp, "%s", argv[1]);
-
-  if (count < 0) {
-    perror("UART Failed to write to the output.\n");
+  // count = fprintf(fp, "%s", argv[1]);
+  unsigned char transmit[18] = "Hello BeagleBone!";  // the string to send
+  if ((count = write(file, &transmit, 18)) < 0) {    // send the string
+    perror("Failed to write to the output\n");
     return -1;
   }
-  fseek(fp, 0, SEEK_SET);
+  usleep(100000);
+  // fseek(fp, 0, SEEK_SET);
+  unsigned char receive[100];  // declare a buffer for receiving data
   char buffer[1024] = {0};
   printf("Reading from UART:\n");
   count = 0;
   int i = 0;
+  count = read(file, (void*)receive, 100);
+  if (count < 0) {  // receive the data
+    perror("Failed to read from the input\n");
+    return -1;
+  }
+  if (count == 0)
+    printf("There was no data available to read!\n");
+  else {
+    printf("The following was read in [%d]: %s\n", count, receive);
+  }
+
   memset(buffer, 0, sizeof(buffer));
   while (1) {
     count = read(file, buffer + i, 1);
@@ -87,7 +103,7 @@ int main(int argc, char* argv[]) {
   }
   printf("buffer read: %s; count: %d\n", buffer, count);
   close(file);
-  fclose(fp);
+  // fclose(fp);
   printf("Finished sending the message, exiting %d.\n", count);
   return 0;
 }
