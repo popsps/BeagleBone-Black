@@ -96,6 +96,7 @@ int main(int argc, char* argv[]) {
     if (buffer[i] == '\n') {
       printf("buffer read: %s; count: %d", buffer, count);
       memset(buffer, 0, sizeof(buffer));
+      i = 0;
     }
     // if (count > 0) {
     //   printf("buffer read count: %c %d\n", buffer[i], count);
