@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
   while (1) {
     count = read(file, buffer + i, 1);
     if (buffer[i] == '\n') {
-      printf("buffer read: %s; count: %d", buffer, count);
+      printf("buffer read: %s", buffer);
       memset(buffer, 0, sizeof(buffer));
       i = 0;
     } else {
