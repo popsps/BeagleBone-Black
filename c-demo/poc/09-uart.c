@@ -62,11 +62,21 @@ int main(int argc, char* argv[]) {
   // send the string plus the null character
   printf("sending %s:%d\n", argv[1], strlen(argv[1] + 1));
   // count = write(file, argv[1], strlen(argv[1]) + 1);
-  // count = fprintf(fp, "\n");
+  // count = fprintf(f 09p, "\n");
   count = fprintf(fp, "%s", argv[1]);
+
   if (count < 0) {
     perror("UART Failed to write to the output.\n");
     return -1;
+  }
+  fseek(fp, 0, SEEK_SET);
+  char buffer[1024] = {0};
+  printf("Reading from UART:\n");
+  while (1) {
+    memset(buffer, 0, sizeof(buffer));
+    fgets(buffer, 1024, fp);
+    printf("buffer: %s\n");
+    sleep(1);
   }
   close(file);
   fclose(fp);
