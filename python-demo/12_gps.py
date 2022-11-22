@@ -144,5 +144,4 @@ while (1):
             GPSData.write(out)
     except Exception as e:
         logging.error(e)
-        GPSData.close()
 GPSData.close()
