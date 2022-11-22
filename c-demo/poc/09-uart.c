@@ -73,9 +73,11 @@ int main(int argc, char* argv[]) {
   char buffer[1024] = {0};
   printf("Reading from UART:\n");
   count = 0;
+  int i = 0;
   memset(buffer, 0, sizeof(buffer));
   while (1) {
-    count = read(file, buffer + count, 1);
+    count = read(file, buffer + i, 1);
+    i += 1;
     if (buffer[count] == '\n') {
       break;
     }
