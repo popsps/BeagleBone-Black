@@ -25,7 +25,8 @@ import time
 # Initialize UART1
 UART.setup("UART1")
 # Initialize Serial Port
-ser = serial.Serial('/dev/ttyO1', 9600)
+# ser = serial.Serial('/dev/ttyO1', 9600)
+ser = serial.Serial('/dev/ttyO4', 9600)
 
 
 class GPS:
