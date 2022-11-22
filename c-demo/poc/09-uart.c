@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
   while (1) {
     memset(buffer, 0, sizeof(buffer));
     fgets(buffer, 1024, fp);
-    printf("buffer: %s\n");
+    printf("buffer: %s\n", buffer);
     sleep(1);
   }
   close(file);
