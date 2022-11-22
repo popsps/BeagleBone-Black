@@ -10,4 +10,3 @@ while (1):
     print(NMEA)
     print(NMEA.decode())
     print(str(NMEA))
-    print(str(NMEA, 'UTF-8'))
