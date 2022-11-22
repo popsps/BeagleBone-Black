@@ -117,7 +117,7 @@ time.sleep(1)
 ser.write(myGPS.GPRMC_GPGGA)
 time.sleep(1)
 print("GPS is Initialized")
-GPSData = open('./GPS_DATA/01.txt', 'w')
+GPSData = open('./GPS_DATA/01.dat', 'w+')
 while (1):
     myGPS.read()
     try:
