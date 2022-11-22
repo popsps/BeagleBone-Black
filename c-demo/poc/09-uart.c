@@ -90,11 +90,12 @@ int main(int argc, char* argv[]) {
   }
 
   unsigned char buffer[1024] = {0};
-  memset(buffer, 0, sizeof(buffer));
+
   while (i < 1024) {
     count = read(file, buffer + i, 1);
     if (buffer[i] == '\n') {
-      break;
+      printf("buffer read: %s; count: %d", buffer, count);
+      memset(buffer, 0, sizeof(buffer));
     }
     // if (count > 0) {
     //   printf("buffer read count: %c %d\n", buffer[i], count);
