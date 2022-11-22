@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
       break;
     }
     if (count > 0) {
-      printf("buffer read count: %d\n", count);
+      printf("buffer read count: %s %d\n", buffer, count);
     }
   }
   printf("buffer read: %s; count: %d\n", buffer, count);
