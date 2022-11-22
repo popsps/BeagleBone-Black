@@ -7,4 +7,4 @@ while (1):
     while serial.inWaiting() == 0:
         pass
     NMEA = serial.readline()
-    print(NMEA.decode())
+    print(NMEA)
