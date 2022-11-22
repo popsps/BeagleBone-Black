@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
   memset(buffer, 0, sizeof(buffer));
   while (i < 1024) {
     count = read(file, buffer + i, 1);
-    if (buffer[count] == '\n') {
+    if (buffer[i] == '\n') {
       break;
     }
     // if (count > 0) {
