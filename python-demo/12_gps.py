@@ -68,7 +68,7 @@ class GPS:
         self.NMEA2: str = ser.readline().decode()
         NMEA1_array = self.NMEA1.split(',')
         NMEA2_array = self.NMEA2.split(',')
-        if (self.NMEA1_array[0] == '$GPRMC'):
+        if (NMEA1_array[0] == '$GPRMC'):
             self.timeUTC = NMEA1_array[1][:-8]+':' + \
                 NMEA1_array[1][-8:-6]+':'+NMEA1_array[1][-6:-4]
             self.latDeg = NMEA1_array[3][:-7]
