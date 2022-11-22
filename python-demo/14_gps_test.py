@@ -8,3 +8,6 @@ while (1):
         pass
     NMEA = serial.readline()
     print(NMEA)
+    print(NMEA.decode())
+    print(str(NMEA))
+    print(str(NMEA, 'UTF-8'))
