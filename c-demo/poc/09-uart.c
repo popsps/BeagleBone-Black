@@ -75,7 +75,6 @@ int main(int argc, char* argv[]) {
   usleep(100000);
   // fseek(fp, 0, SEEK_SET);
   unsigned char receive[100];  // declare a buffer for receiving data
-  char buffer[1024] = {0};
   printf("Reading from UART:\n");
   count = 0;
   int i = 0;
@@ -90,15 +89,16 @@ int main(int argc, char* argv[]) {
     printf("The following was read in [%d]: %s\n", count, receive);
   }
 
+  unsigned char buffer[1024] = {0};
   memset(buffer, 0, sizeof(buffer));
-  while (1) {
+  while (i < 1024) {
     count = read(file, buffer + i, 1);
     if (buffer[count] == '\n') {
       break;
     }
-    if (count > 0) {
-      printf("buffer read count: %c %d\n", buffer[i], count);
-    }
+    // if (count > 0) {
+    //   printf("buffer read count: %c %d\n", buffer[i], count);
+    // }
     i += count;
   }
   printf("buffer read: %s; count: %d\n", buffer, count);
