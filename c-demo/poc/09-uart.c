@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
   count = 0;
   memset(buffer, 0, sizeof(buffer));
   while (1) {
-    count = read(file, buffer + count, 1024);
+    count = read(file, buffer + count, 1);
     if (buffer[count] == '\n') {
       break;
     }
