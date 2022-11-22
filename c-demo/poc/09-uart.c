@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
       break;
     }
     if (count > 0) {
-      printf("buffer read count: %s %d\n", buffer[i], count);
+      printf("buffer read count: %c %d\n", buffer[i], count);
     }
     i += count;
   }
