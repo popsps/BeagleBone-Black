@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
   unsigned char buffer[1024] = {0};
 
   while (1) {
-    count = read(file, buffer + i, 1);
+    count = read(file, buffer + i, 1024);
     if (buffer[i] == '\n') {
       printf("buffer read: %s", buffer);
       memset(buffer, 0, sizeof(buffer));
