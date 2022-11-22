@@ -47,8 +47,8 @@ int main(int argc, char* argv[]) {
     printf("Please pass a message string to send, exiting!\n");
     return -2;
   }
-  file = open("/dev/ttyO4", O_RDWR | O_NOCTTY | O_NDELAY);
-  FILE* fp = fopen("/dev/ttyO4", "r+");
+  file = open("/dev/ttyO1", O_RDWR | O_NOCTTY | O_NDELAY);
+  FILE* fp = fopen("/dev/ttyO1", "r+");
   if (file < 0) {
     perror("UART: Failed to open the device.\n");
     return -1;
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
   // send the string plus the null character
   printf("sending %s:%d\n", argv[1], strlen(argv[1] + 1));
   // count = write(file, argv[1], strlen(argv[1]) + 1);
-  count = fprintf(fp, "\n");
+  // count = fprintf(fp, "\n");
   count = fprintf(fp, "%s", argv[1]);
   if (count < 0) {
     perror("UART Failed to write to the output.\n");
