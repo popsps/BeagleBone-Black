@@ -72,15 +72,16 @@ int main(int argc, char* argv[]) {
   fseek(fp, 0, SEEK_SET);
   char buffer[1024] = {0};
   printf("Reading from UART:\n");
+  count = 0;
+  memset(buffer, 0, sizeof(buffer));
   while (1) {
-    memset(buffer, 0, sizeof(buffer));
-    count = read(file, buffer, 1024);
-    printf("buffer read: %s; count: %d\n", buffer, count);
-    // if (fgets(buffer, 1024, fp)) {
-    //   printf("buffer fgets: %s\n", buffer);
-    // }
-    sleep(1);
+    count = read(file, buffer + count, 1024);
+    if (buffer[count] == '\n') {
+      break;
+    }
+    printf("buffer read count: %d\n", count);
   }
+  printf("buffer read: %s; count: %d\n", buffer, count);
   close(file);
   fclose(fp);
   printf("Finished sending the message, exiting %d.\n", count);
