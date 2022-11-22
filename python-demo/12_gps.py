@@ -139,7 +139,8 @@ while (1):
             if myGPS.latHem == 'W':
                 lonDec = -1 * lonDec
             alt = myGPS.altitude
-            out = str(lonDec) + ', ' + str(latDec) + ', ' + alt
+            out = lonDec.decode() + ', ' + latDec.decode() + ', ' + alt.decode() 
+            print(out)
             GPSData.write(out)
     except Exception as e:
         logging.error(e)
