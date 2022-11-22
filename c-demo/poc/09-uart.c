@@ -77,13 +77,13 @@ int main(int argc, char* argv[]) {
   memset(buffer, 0, sizeof(buffer));
   while (1) {
     count = read(file, buffer + i, 1);
-    i += 1;
     if (buffer[count] == '\n') {
       break;
     }
     if (count > 0) {
-      printf("buffer read count: %s %d\n", buffer, count);
+      printf("buffer read count: %s %d\n", buffer[i], count);
     }
+    i += count;
   }
   printf("buffer read: %s; count: %d\n", buffer, count);
   close(file);
