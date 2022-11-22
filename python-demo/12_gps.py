@@ -62,10 +62,10 @@ class GPS:
             pass
         while (ser.inWaiting() == 0):
             pass
-        self.NMEA1: str = ser.readline()
+        self.NMEA1: str = ser.readline().decode()
         while (ser.inWaiting() == 0):
             pass
-        self.NMEA2: str = ser.readline()
+        self.NMEA2: str = ser.readline().decode()
         NMEA1_array = self.NMEA1.split(',')
         NMEA2_array = self.NMEA2.split(',')
         if (self.NMEA1_array[0] == '$GPRMC'):
@@ -139,7 +139,7 @@ while (1):
             if myGPS.latHem == 'W':
                 lonDec = -1 * lonDec
             alt = myGPS.altitude
-            out = lonDec.decode() + ', ' + latDec.decode() + ', ' + alt.decode() 
+            out = str(lonDec) + ', ' + str(latDec) + ', ' + alt
             print(out)
             GPSData.write(out)
     except Exception as e:
