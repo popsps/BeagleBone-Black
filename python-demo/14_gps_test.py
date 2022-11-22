@@ -8,8 +8,7 @@ while (1):
         pass
     try:
         NMEA = serial.readline()
-        print(NMEA)
-        print(type(NMEA))
+        # print(NMEA)
         print(NMEA.decode())
     except Exception as e:
         print(e)
