@@ -6,10 +6,10 @@ while (1):
     print('start reading...')
     while serial.inWaiting() == 0:
         pass
-        try:
-            NMEA = serial.readline()
-            print(NMEA)
-            print(type(NMEA))
-            print(NMEA.decode())
-        except Exception as e:
-            print(e)
+    try:
+        NMEA = serial.readline()
+        print(NMEA)
+        print(type(NMEA))
+        print(NMEA.decode())
+    except Exception as e:
+        print(e)
