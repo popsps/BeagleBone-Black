@@ -79,7 +79,9 @@ int main(int argc, char* argv[]) {
     if (buffer[count] == '\n') {
       break;
     }
-    printf("buffer read count: %d\n", count);
+    if (count > 0) {
+      printf("buffer read count: %d\n", count);
+    }
   }
   printf("buffer read: %s; count: %d\n", buffer, count);
   close(file);
