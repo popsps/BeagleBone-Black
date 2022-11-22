@@ -9,4 +9,4 @@ while (1):
     NMEA = serial.readline()
     print(NMEA)
     print(type(NMEA))
-    print(str(NMEA))
+    print(NMEA.decode())
