@@ -53,6 +53,7 @@ void* handle_logger(void* ptr);
 
 void toggle_lights();
 void toggle_running();
+int str_null_or_blank(char* str);
 void init_thread();
 void init_work_space();
 void clean_work_space();
@@ -324,4 +325,12 @@ char* get_nmea_field(char* nmea, int index) {
   }
   free(nmea_dup);
   return res;
+}
+
+int str_null_or_blank(char* str) {
+  if (str == NULL || str[0] == '\0') {
+    return 1;
+  } else {
+    return 0;
+  }
 }
