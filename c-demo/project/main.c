@@ -227,6 +227,7 @@ void* handle_gps_sensor(void* ptr) {
         pthread_rwlock_unlock(&gps_rwlock);
       }
     } else {
+      printf("sleep\n");
       sleep(1);
     }
     free(nmea);
