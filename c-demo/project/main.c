@@ -231,7 +231,7 @@ void* handle_logger(void* ptr) {
     if (isOn) {
       pthread_rwlock_rdlock(&temp_rwlock);
       b_log(INFO, "[THREAD%ld-LOGGER]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
-      b_log(INFO, "[THREAD%ld-NMEA]: %s, %s, %d", logger_thread, lat, lon, fix);
+      b_log(INFO, "[THREAD%ld-NMEA]: %s, %s, %d", logger_thread, latitude_str, longitude_str, fix);
       pthread_rwlock_unlock(&temp_rwlock);
       pthread_rwlock_rdlock(&gps_rwlock);
       // if GPS is working and its values are valid
