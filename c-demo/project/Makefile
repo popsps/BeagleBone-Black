@@ -2,7 +2,7 @@ all: main main-test
 
 INC_DIR = ../include
 
-CFLAG = -pthread -g -O3 -Wall -Wno-unused-result -Wno-unused-variable -Werror -std=gnu99 -I$(INC_DIR)
+CFLAG = -pthread -g -O3 -Wall -Wno-unused-result -Wno-unused-variable -Wno-stringop-truncation -Werror -std=gnu99 -I$(INC_DIR)
 CC = gcc
 
 CFLAG-TEST = -static -pthread -g -O3 -Wall -Wno-unused-result -Werror -std=gnu99 -I$(INC_DIR)
