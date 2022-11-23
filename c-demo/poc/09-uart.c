@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
   count = 0;
   int c = 0;
   int i = 0;
-
+  fseek(fp, 0, SEEK_SET);
   while (1) {
     // count = read(file, (void*)receive, 1024);
     // c = fread(buffer, 1024, 1, fp);
@@ -98,6 +98,7 @@ int main(int argc, char* argv[]) {
     if (c > 0) {
       printf("buf: [%d]: %s\n", c, buffer);
       memset(buffer, 0, sizeof(buffer));
+      fseek(fp, 0, SEEK_SET);
     }
   }
   memset(buffer, 0, sizeof(buffer));
