@@ -30,7 +30,6 @@ int uart_init(int pin) {
   serials.c_iflag = IGNPAR | ICRNL;  // ignore partity errors, CR -> newline
   tcflush(fd, TCIFLUSH);             // discard file information not transmitted
   tcsetattr(fd, TCSANOW, &serials);  // changes occur immmediately
-  sleep(2);
   return 1;
 }
 
