@@ -163,6 +163,7 @@ void* handle_gps_sensor(void* ptr) {
       b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
       printf("char: %c", nmea[0]);
     }
+    free(nmea);
   }
   return NULL;
 }
