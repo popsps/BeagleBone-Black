@@ -48,6 +48,7 @@ static pthread_t main_thread, action_thread, temperature_thread, gps_thread, log
 
 void* handle_temperature_sensor(void* ptr);
 void* handle_gps_sensor(void* ptr);
+void* handle_gps_pulse(void* ptr);
 void* handle_actions(void* ptr);
 void* handle_logger(void* ptr);
 
@@ -236,8 +237,17 @@ void* handle_gps_sensor(void* ptr) {
  * handle logic for the logging and writing to cvs file
  */
 void* handle_logger(void* ptr) {
-  b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the LOGGER THREAD...", logger_thread);
+  b_log(DEBUG, "[THREAD%ld-LOGGER]: Starting the LOGGER THREAD...", logger_thread);
+  time_t base = time(0);
+  time_t now = base;
   while (1) {
+    now = time(0);
+    // log gps pulse every 7 seconds
+    if (now - base >= 7) {
+      base = now;
+      char gps_status[56] = (fix) ? "GPS getting values" : "GPS is not getting values";
+      b_log(INFO, "[THREAD%ld-LOGGER]: %s", gps_status);
+    }
     pthread_rwlock_rdlock(&isOn_rwlock);
     // debug
     if (isOn) {
@@ -247,7 +257,7 @@ void* handle_logger(void* ptr) {
       pthread_rwlock_rdlock(&gps_rwlock);
       // if GPS is working and its values are valid
       if (fix != 0) {
-        b_log(INFO, "[THREAD%ld-NMEA]: [latitude, longitude, alititude, stat, temp]: %s %s, %s %s, %s %s, %s, %.2f°C",
+        b_log(INFO, "[THREAD%ld-LOGGER]: [latitude, longitude, alititude, stat, temp]: %s %s, %s %s, %s %s, %s, %.2f°C",
               logger_thread, latitude_str, latitude_hem, longitude_str, longitude_hem, altitude_str, altitude_unit,
               number_of_satellites_str, temp_c);
         //  atof(lat), atof(lon)
@@ -267,6 +277,7 @@ void* handle_logger(void* ptr) {
  */
 void* handle_actions(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the ACTION THREAD...", action_thread);
+
   while (1) {
     int _on_off_button_pressed = gpio_get_value(ON_OFF_BUTTON_PIN);
     if (_on_off_button_pressed && !on_off_button_pressed) {
