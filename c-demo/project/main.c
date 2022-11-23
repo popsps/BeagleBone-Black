@@ -189,7 +189,7 @@ void* handle_temperature_sensor(void* ptr) {
 void* handle_gps_sensor(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the GPS THREAD...", gps_thread);
   uart_init(4);
-
+  printf("I'm here handle_gps_sensor\n");
   while (1) {
     char* nmea = serial_read_line();
     if (nmea != NULL && nmea[0] != '\0' && nmea[0] != '\n') {
