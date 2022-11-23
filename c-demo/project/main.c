@@ -225,7 +225,7 @@ void* handle_gps_sensor(void* ptr) {
  */
 void* handle_logger(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the LOGGER THREAD...", logger_thread);
-  while (1) {
+  while (isOn) {
     pthread_rwlock_rdlock(&isOn_rwlock);
     // debug
     if (1) {

@@ -1,22 +1,37 @@
-<kml xmlns="http://www.opengis.net/kml/2.2">
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.0">
 <Document>
-<Style id="yellowPoly">
-<LineStyle>
-<color>7f00ffff</color>
-<width>4</width>
-</LineStyle>
-<PolyStyle>
-<color>7f00ff00</color>
-</PolyStyle>
-</Style>
-<Placemark><styleUrl>#yellowPoly</styleUrl>
-<LineString>
-<extrude>1</extrude>
-<tesselate>1</tesselate>
-<altitudeMode>absolute</altitudeMode>
-<coordinates>
-30 51.8066, -100 36.0005 
-</coordinates>
-</LineString></Placemark>
- 
-</Document></kml>
+<Placemark>
+<name>point 1</name>
+<Point><coordinates> -77.20433666666666, 38.79463833333333,0</coordinates></Point>
+</Placemark>
+<Placemark>
+<name>point 1</name>
+<Point><coordinates> -77.20433666666666, 38.79463666666667,0</coordinates></Point>
+</Placemark>
+<Placemark>
+<name>point 1</name>
+<Point><coordinates> -77.204335, 38.79463666666667,0</coordinates></Point>
+</Placemark>
+<Placemark>
+<name>point 1</name>
+<Point><coordinates> -77.204335, 38.794635,0</coordinates></Point>
+</Placemark>
+<Placemark>
+<name>point 1</name>
+<Point><coordinates> -77.20433666666666, 38.79463333333333,0</coordinates></Point>
+</Placemark>
+<Placemark>
+<name>point 1</name>
+<Point><coordinates> -77.20433666666666, 38.79463166666667,0</coordinates></Point>
+</Placemark>
+<Placemark>
+<name>point 1</name>
+<Point><coordinates> -77.20433666666666, 38.79463,0</coordinates></Point>
+</Placemark>
+<Placemark>
+<name>point 1</name>
+<Point><coordinates> -77.20433666666666, 38.794628333333335,0</coordinates></Point>
+</Placemark>
+</Document>
+</kml>
