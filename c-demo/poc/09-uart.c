@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
 
   while (1) {
     count = read(file, (void*)receive, 1024);
-    c = fread(fp, 1024, (void*)receive);
+    c = fread(fp, 1024, 1, (void*)receive);
     if (count < 0) {  // receive the data
       perror("Failed to read from the input\n");
       return -1;
