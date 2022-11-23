@@ -221,7 +221,7 @@ void* handle_logger(void* ptr) {
       // if GPS is working and its values are valid
       if (fix != 0) {
         //  atof(lat), atof(lon)
-        log_csv(4, latitude_str, latitude_dir, longitude_str, longitude_dir);
+        // log_csv(4, latitude_str, latitude_dir, longitude_str, longitude_dir);
       }
       pthread_rwlock_unlock(&gps_rwlock);
     }
