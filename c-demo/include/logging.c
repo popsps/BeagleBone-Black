@@ -122,7 +122,7 @@ void log_csv(const int n, ...) {
   va_start(arg, n);
   for (size_t i = 0; i < n; i++) {
     char* field = va_arg(arg, char*);
-    strncat(buffer, field, strlen(field));
+    strcat(buffer, field);
     if (i < n - 1) {
       strcat(buffer, ",");
     }
