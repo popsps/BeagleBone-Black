@@ -16,8 +16,7 @@
 int uart_init(int pin) {
   char path[200];
   snprintf(path, sizeof(path), UART_PATH "%d", pin);
-  // fd = open(path, O_RDWR | O_NOCTTY | O_NDELAY);
-  fd = open(path, O_RDWR | O_NOCTTY);
+  fd = open(path, O_RDWR | O_NOCTTY | O_NDELAY);
   if (fd < 0) {
     perror("UART: Failed to open the device.\n");
     return -1;
@@ -30,17 +29,18 @@ int uart_init(int pin) {
   if (cfsetispeed(&serials, B115200) < 0) {
     perror("Input baud rate not successfully set.\n");
   }
-  serials.c_iflag = 0;
+  serials.c_iflag = IGNPAR;
+  serials.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
+  serials.c_iflag = IGNPAR;  // ignore partity errors, CR -> newline
+  // serials.c_iflag = IGNPAR | ICRNL;  // ignore partity errors, CR -> newline
   serials.c_oflag = 0;
   serials.c_lflag = 0;
-  serials.c_cc[VMIN] = 45;  // works for 1
-  serials.c_cc[VTIME] = 0;
+  // serials.c_cc[VMIN] = 45;  // works for 1
+  // serials.c_cc[VTIME] = 0;
   // serials.c_cflag = B1152000 | CS8 | CREAD | CLOCAL;
   // Set up the communications serials:
   // 9600 baud, 8-bit, enable receiver, no modem control lines
-  // serials.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
-  // serials.c_iflag = IGNPAR | ICRNL;  // ignore partity errors, CR -> newline
-  
+
   tcflush(fd, TCIFLUSH);             // discard file information not transmitted
   tcsetattr(fd, TCSANOW, &serials);  // changes occur immmediately
   return 1;
@@ -56,21 +56,26 @@ int uart_close() {
 
 char* serial_read_line() {
   int count = 0;
+  const int max_size = 1024;
   int i = 0;
-  char* buffer = malloc(sizeof(char) * 2024);
+  char* buffer = malloc(sizeof(char) * max_size);
 
-  memset(buffer, 0, sizeof(char) * 2024);
+  memset(buffer, 0, sizeof(char) * max_size);
   // printf("I'm here serial_read_line 1 %s\n", buffer);
-  while (i < 2000 && count < 0) {
-    count = read(fd, (void*)(buffer + i), 1);
+  while (1) {
+    char c;
+    count = read(fd, (void*)(&c), 1);
     // printf("I'm here serial_read_line 2 %s %d\n", buffer, count);
-    if (i > 1976) {
-      printf("I'm here serial_read_line 2 %s\n", buffer);
-    }
-    if (buffer[i] == '\n') {
-      return buffer;
+    if (count <= 0) {
+      sleep(1);
     } else {
-      i += count;
+      if (c == '\n') {
+        printf("I'm here serial_read_line backslash n %s\n", buffer);
+        return buffer[i] = '\0';
+      } else {
+        buffer[i] = c;
+        i += count;
+      }
     }
   }
 
