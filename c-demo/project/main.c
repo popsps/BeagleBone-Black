@@ -71,14 +71,14 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 void init_work_space() {
-  struct stat st = {0};
+  struct stat std, stl = {0};
   // create the data directory
   if (stat("./data", &st)) {
     b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Data Directory", main_thread);
     mkdir("./data", 0700);
   }
   // create the log directory
-  if (stat("./log", &st)) {
+  if (stat("./log", &stl)) {
     b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Log Directory", main_thread);
     mkdir("./data", 0700);
   }
