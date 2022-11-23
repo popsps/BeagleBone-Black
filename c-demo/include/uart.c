@@ -42,11 +42,11 @@ int uart_close() {
 }
 
 char* serial_read_line() {
-  printf("I'm here serial_read_line 1\n");
   int count = 0;
   int i = 0;
   char* buffer = malloc(sizeof(char) * 1024);
   memset(buffer, 0, sizeof(char) * 1024);
+  printf("I'm here serial_read_line 2 %s\n", buffer);
   while (1) {
     count = read(fd, buffer + i, 1);
     if (buffer[i] == '\n') {
