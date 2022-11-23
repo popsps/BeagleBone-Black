@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
   }
   usleep(100000);
   // fseek(fp, 0, SEEK_SET);
-  unsigned char receive[100];  // declare a buffer for receiving data
+  unsigned char receive[1024] = {0};  // declare a buffer for receiving data
   printf("Reading from UART:\n");
   count = 0;
   int i = 0;
@@ -85,10 +85,14 @@ int main(int argc, char* argv[]) {
       perror("Failed to read from the input\n");
       return -1;
     }
-    if (count == 0)
+    if (count == 0) {
       printf("There was no data available to read!\n");
+      memset(receive, 0, sizeof(receive));
+    }
+
     else {
       printf("The following was read in [%d]: %s\n", count, receive);
+      memset(receive, 0, sizeof(receive));
     }
   }
 
