@@ -244,7 +244,7 @@ void* handle_logger(void* ptr) {
     now = time(0);
     // log gps pulse every 7 seconds
     if (now - base >= 7) {
-      char gps_status[24] = {0};
+      char gps_status[40] = {0};
       base = now;
       if (fix) {
         strcpy(gps_status, "GPS getting values");
