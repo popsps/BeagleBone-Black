@@ -80,7 +80,7 @@ void init_work_space() {
   // create the log directory
   if (stat("./log", &stl)) {
     b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Log Directory", main_thread);
-    mkdir("./data", 0700);
+    mkdir("./log", 0700);
   }
   logger_init();
   csv_init();
