@@ -158,12 +158,12 @@ void* handle_gps_sensor(void* ptr) {
   uart_init(4);
 
   while (1) {
-    char* nmea = serial_read_line();
-    if (nmea != NULL && (nmea[0] != '\0' || nmea[0] != '\n')) {
-      b_log(INFO, "[THREAD%ld-NMEA]: %s: ", gps_thread, nmea);
-    }
+    // char* nmea = serial_read_line();
+    // if (nmea != NULL && (nmea[0] != '\0' || nmea[0] != '\n')) {
+    //   b_log(INFO, "[THREAD%ld-NMEA]: %s: ", gps_thread, nmea);
+    // }
 
-    sleep(1);
+    // sleep(1);
   }
   return NULL;
 }
