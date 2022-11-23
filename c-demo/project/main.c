@@ -173,11 +173,9 @@ void* handle_gps_sensor(void* ptr) {
         char* lat = get_nmea_field(nmea, 3);
         char* lon = get_nmea_field(nmea, 5);
         b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
-        b_log(INFO, "[THREAD%ld-NMEA]: %s, %s", gps_thread, lat, lon);
-        // if (lat != NULL && lon != NULL) {
-        //   b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
-        //   b_log(INFO, "[THREAD%ld-NMEA]: %%s, %s", gps_thread, lat, lon);
-        // }
+        if (lat != NULL && lon != NULL) {
+          b_log(INFO, "[THREAD%ld-NMEA]: %s, %s", gps_thread, lat, lon);
+        }
       } else if (strstr(nmea, "$GPGGA") != NULL) {
       }
     }
@@ -265,6 +263,5 @@ char* get_nmea_field(char* nmea, int index) {
     res = token;
   }
   free(nmea_dup);
-  // free(token);
   return res;
 }
