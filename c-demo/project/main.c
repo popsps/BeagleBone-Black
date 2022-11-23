@@ -41,7 +41,6 @@ static char latitude_str[256] = {0};
 static char latitude_dir[24] = {0};
 static char longitude_str[256] = {0};
 static char longitude_dir[24] = {0};
-static char altitude_str[256] = {0};
 static char number_of_satellites_str[256] = {0};
 static int fix = 0;
 static pthread_t main_thread, action_thread, temperature_thread, gps_thread, logger_thread;
