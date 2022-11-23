@@ -62,21 +62,19 @@ char* serial_read_line() {
 
   memset(buffer, 0, sizeof(char) * max_size);
   // printf("I'm here serial_read_line 1 %s\n", buffer);
-  while (1) {
+  while (count <= 0) {
     char c;
     count = read(fd, (void*)(&c), 1);
-    // printf("I'm here serial_read_line 2 %s %d\n", buffer, count);
-    if (count <= 0) {
-      sleep(1);
+    if (c == '\n') {
+      buffer[i] = '\0';
+      return buffer;
     } else {
-      if (c == '\n') {
-        buffer[i] = '\0';
-        return buffer;
-      } else {
-        buffer[i] = c;
-        i += 1;
-      }
+      buffer[i] = c;
+      i += 1;
     }
+  }
+  if (count <= 0) {
+    return NULL;
   }
 }
 
