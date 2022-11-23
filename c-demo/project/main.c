@@ -245,7 +245,7 @@ void* handle_logger(void* ptr) {
         b_log(INFO, "[THREAD%ld-NMEA]: [latitude, longitude, temp]: %s %s, %s %s, %s", logger_thread, latitude_str,
               latitude_dir, longitude_str, longitude_dir, temp_c);
         //  atof(lat), atof(lon)
-        log_csv(4, latitude_str, latitude_dir, longitude_str, longitude_dir, temp_c);
+        // log_csv(4, latitude_str, latitude_dir, longitude_str, longitude_dir, temp_c);
       }
       pthread_rwlock_unlock(&gps_rwlock);
     }
