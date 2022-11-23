@@ -192,7 +192,6 @@ void* handle_gps_sensor(void* ptr) {
   printf("I'm here handle_gps_sensor\n");
   while (1) {
     char* nmea = serial_read_line();
-    printf("I'm here serial_read_line after %s\n", nmea);
     if (nmea != NULL && nmea[0] != '\0' && nmea[0] != '\n') {
       // b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
       // b_log(DEBUG, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
