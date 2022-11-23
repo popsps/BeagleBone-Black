@@ -128,9 +128,8 @@ void log_csv(const int n, ...) {
     }
   }
   va_end(arg);
-  printf("Loggining into csv: %s\n", buffer);
+  // printf("Loggining into csv: %s\n", buffer);
   int count = fprintf(csv_fp, "%s\n", buffer);
-  printf("CSV WRITTEN %d\n", count);
   if (count < 0) {
     perror("Cannot write CSV file\n");
   }
