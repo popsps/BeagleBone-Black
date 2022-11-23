@@ -247,11 +247,10 @@ void* handle_logger(void* ptr) {
       char gps_status[40] = {0};
       base = now;
       if (fix) {
-        strcpy(gps_status, "GPS getting values");
+        b_log(INFO, "[THREAD%ld-LOGGER]: SUCCESSFULLY GETTING GPS PULSE");
       } else {
-        strcpy(gps_status, "GPS is not getting values");
+        b_log(INFO, "[THREAD%ld-LOGGER]: FAILING TO GET GPS PULSE");
       }
-      b_log(INFO, "[THREAD%ld-LOGGER]: GPS PULSE %d", fix);
     }
     pthread_rwlock_rdlock(&isOn_rwlock);
     // debug
