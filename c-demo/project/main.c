@@ -220,13 +220,10 @@ void* handle_gps_sensor(void* ptr) {
         if (!str_null_or_blank(fix_str) && !str_null_or_blank(_number_of_satellites_str) &&
             !str_null_or_blank(_altitude_str) && !str_null_or_blank(_altitude_unit)) {
           pthread_rwlock_wrlock(&gps_rwlock);
-          printf("after GPGGA here 2 copy: %s\n", _number_of_satellites_str);
           strcpy(number_of_satellites_str, _number_of_satellites_str);
           strcpy(altitude_str, _altitude_str);
           strcpy(altitude_unit, _altitude_unit);
-          printf("after GPGGA here 3 copy\n");
           fix = atoi(fix_str);
-          printf("after GPGGA here 4 copy\n");
           // b_log(INFO, "[THREAD%ld-NMEA]: fix: %d %s %s", gps_thread, fix, number_of_satellites_str, altitude_str);
           pthread_rwlock_unlock(&gps_rwlock);
         }
