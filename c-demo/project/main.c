@@ -23,7 +23,7 @@
 
 #define TEMP_SENSOR_PIN 1
 
-#define ON_LIGHT P9_24
+#define ON_LIGHT P9_30
 #define OFF_LIGHT P9_23
 #define ON_OFF_BUTTON_PIN P9_15
 
