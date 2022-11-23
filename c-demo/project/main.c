@@ -226,6 +226,8 @@ void* handle_gps_sensor(void* ptr) {
         // b_log(INFO, "[THREAD%ld-NMEA]: fix: %d %s %s", gps_thread, fix, number_of_satellites_str, altitude_str);
         pthread_rwlock_unlock(&gps_rwlock);
       }
+    } else {
+      sleep(1);
     }
     free(nmea);
   }
