@@ -87,7 +87,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (count > 0) {
-      printf("The following was read in [%d]: %s\n", count, receive);
+      printf("[%d]: %s\n", count, receive);
       memset(receive, 0, sizeof(receive));
     }
   }
