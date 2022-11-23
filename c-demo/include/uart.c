@@ -55,6 +55,8 @@ char* serial_read_line() {
       i += count;
     }
   }
+  printf("I'm here serial_read_line 3 %s\n", buffer);
+  return buffer;
 }
 
 int serial_write(char* payload) {
