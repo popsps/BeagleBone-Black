@@ -48,8 +48,8 @@ int main(int argc, char* argv[]) {
     return -2;
   }
   file = open("/dev/ttyO4", O_RDWR | O_NOCTTY | O_NDELAY);
-  // FILE* fp = fopen("/dev/ttyO4", "r+");
-  FILE* fp = fopen("/dev/ttyO4", "wb+");
+  FILE* fp = fopen("/dev/ttyO4", "r+");
+  // FILE* fp = fopen("/dev/ttyO4", "w+");
   if (file < 0) {
     perror("UART: Failed to open the device.\n");
     return -1;
