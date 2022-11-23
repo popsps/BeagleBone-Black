@@ -213,7 +213,7 @@ void* handle_logger(void* ptr) {
   while (1) {
     pthread_rwlock_rdlock(&isOn_rwlock);
     // debug
-    if (1) {
+    if (isOn) {
       pthread_rwlock_rdlock(&temp_rwlock);
       b_log(INFO, "[THREAD%ld-TEMPERATURE]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
       pthread_rwlock_unlock(&temp_rwlock);
@@ -221,7 +221,7 @@ void* handle_logger(void* ptr) {
       // if GPS is working and its values are valid
       if (fix != 0) {
         //  atof(lat), atof(lon)
-        // log_csv(4, latitude_str, latitude_dir, longitude_str, longitude_dir);
+        log_csv(4, latitude_str, latitude_dir, longitude_str, longitude_dir);
       }
       pthread_rwlock_unlock(&gps_rwlock);
     }
