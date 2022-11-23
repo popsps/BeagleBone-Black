@@ -78,7 +78,6 @@ void init_work_space() {
     mkdir("./data", 0700);
   }
   // create the log directory
-  st = {0};
   if (stat("./log", &st)) {
     b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Log Directory", main_thread);
     mkdir("./data", 0700);
