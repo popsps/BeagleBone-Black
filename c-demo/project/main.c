@@ -213,6 +213,7 @@ void* handle_gps_sensor(void* ptr) {
           pthread_rwlock_unlock(&gps_rwlock);
         }
       } else if (strstr(nmea, "$GPGGA") != NULL) {
+        printf("after GPGGA here 1\n");
         char* fix_str = get_nmea_field(nmea, 6);
         char* _number_of_satellites_str = get_nmea_field(nmea, 7);
         char* _altitude_str = get_nmea_field(nmea, 9);
