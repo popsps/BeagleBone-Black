@@ -71,7 +71,8 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 void init_work_space() {
-  struct stat std, stl = {0};
+  struct stat std = {0};
+  struct stat stl = {0};
   // create the data directory
   if (stat("./data", &std)) {
     b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Data Directory", main_thread);
