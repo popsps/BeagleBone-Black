@@ -78,26 +78,6 @@ char* serial_read_line() {
       }
     }
   }
-
-  if (count < 0) {
-    printf("I'm here serial_read_line 3 %s\n", buffer);
-    perror("Failed to read from the input\n");
-    return NULL;
-  } else {
-    return buffer;
-  }
-  // memset(buffer, 0, sizeof(char) * 1024);
-  // while (1) {
-  //   count = read(fd, buffer + i, 1);
-  //   if (buffer[i] == '\n' || i >= 1024) {
-  //     printf("%s", buffer);
-  //     memset(buffer, 0, sizeof(char) * 1024);
-  //     i = 0;
-  //   } else {
-  //     i += count;
-  //   }
-  // }
-  // printf("I'm here serial_read_line 3 %s\n", buffer);
 }
 
 int serial_write(char* payload) {
