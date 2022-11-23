@@ -76,7 +76,7 @@ void init_work_space() {
     mkdir("./data", 0700);
   }
   logger_init();
-  // csv_init();
+  csv_init();
 
   // init signal handler for SIGUSR1, SIGINT, and SIGTSTP
   register_signal_handler(sig_handler);
