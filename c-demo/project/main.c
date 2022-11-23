@@ -202,8 +202,7 @@ void* handle_gps_sensor(void* ptr) {
         char* lon = get_nmea_field(nmea, 5);
         char* lat_d = get_nmea_field(nmea, 4);
         char* lon_d = get_nmea_field(nmea, 6);
-        if (lat != NULL && lon != NULL) {
-          // b_log(INFO, "[THREAD%ld-NMEA]: %s, %s", gps_thread, lat, lon);
+        if (!str_null_or_blank(lat) && !str_null_or_blank(lon) && !str_null_or_blank(lat_d) && !str_null_or_blank(lon_d)) {
           pthread_rwlock_wrlock(&gps_rwlock);
           memset(latitude_str, 0, sizeof(char) * strlen(latitude_str));
           strcpy(latitude_str, lat);
@@ -218,18 +217,19 @@ void* handle_gps_sensor(void* ptr) {
         char* _number_of_satellites_str = get_nmea_field(nmea, 7);
         char* _altitude_str = get_nmea_field(nmea, 9);
         char* _altitude_unit = get_nmea_field(nmea, 10);
-        pthread_rwlock_wrlock(&gps_rwlock);
-        // b_log(DEBUG, "[THREAD%ld-NMEA]: fix nmea %s", gps_thread, nmea);
-        // b_log(DEBUG, "[THREAD%ld-NMEA]: fix: %s %s %s", gps_thread, fix_str, _number_of_satellites_str, _altitude_str);
-        printf("after GPGGA here 2 copy: %s\n", _number_of_satellites_str);
-        strcpy(number_of_satellites_str, _number_of_satellites_str);
-        strcpy(altitude_str, _altitude_str);
-        strcpy(altitude_unit, _altitude_unit);
-        printf("after GPGGA here 3 copy\n");
-        fix = atoi(fix_str);
-        printf("after GPGGA here 4 copy\n");
-        // b_log(INFO, "[THREAD%ld-NMEA]: fix: %d %s %s", gps_thread, fix, number_of_satellites_str, altitude_str);
-        pthread_rwlock_unlock(&gps_rwlock);
+        if (!str_null_or_blank(fix_str) && !str_null_or_blank(_number_of_satellites_str) &&
+            !str_null_or_blank(_altitude_str) && !str_null_or_blank(_altitude_unit)) {
+          pthread_rwlock_wrlock(&gps_rwlock);
+          printf("after GPGGA here 2 copy: %s\n", _number_of_satellites_str);
+          strcpy(number_of_satellites_str, _number_of_satellites_str);
+          strcpy(altitude_str, _altitude_str);
+          strcpy(altitude_unit, _altitude_unit);
+          printf("after GPGGA here 3 copy\n");
+          fix = atoi(fix_str);
+          printf("after GPGGA here 4 copy\n");
+          // b_log(INFO, "[THREAD%ld-NMEA]: fix: %d %s %s", gps_thread, fix, number_of_satellites_str, altitude_str);
+          pthread_rwlock_unlock(&gps_rwlock);
+        }
       }
     }
     free(nmea);
