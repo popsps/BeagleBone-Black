@@ -246,10 +246,12 @@ void* handle_logger(void* ptr) {
       pthread_rwlock_rdlock(&gps_rwlock);
       // if GPS is working and its values are valid
       if (fix != 0) {
+        printf("log print\n");
         b_log(INFO, "[THREAD%ld-NMEA]: [latitude, longitude, alititude, stat, temp]: %s %s, %s %s, %s %s, %s, %.2f",
               logger_thread, latitude_str, latitude_hem, longitude_str, longitude_hem, altitude_str, altitude_unit,
               number_of_satellites_str, temp_c);
         //  atof(lat), atof(lon)
+        printf("csv print\n");
         log_csv(4, latitude_str, latitude_hem, longitude_str, longitude_hem);
       }
       pthread_rwlock_unlock(&gps_rwlock);
