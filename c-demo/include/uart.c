@@ -46,7 +46,6 @@ char* serial_read_line() {
   int i = 0;
   char* buffer = malloc(sizeof(char) * 1024);
   memset(buffer, 0, sizeof(char) * 1024);
-  printf("I'm here serial_read_line 1 %s\n", buffer);
   while (1 && i < 1024 && count < 0) {
     count = read(fd, buffer + i, 1);
     // printf("I'm here serial_read_line 2 %s %d\n", buffer, count);
@@ -57,10 +56,11 @@ char* serial_read_line() {
     }
   }
   if (count < 0) {
+    printf("I'm here serial_read_line 3 %s\n", buffer);
     perror("Failed to read from the input\n");
     return NULL;
   }
-  printf("I'm here serial_read_line 3 %s\n", buffer);
+  // printf("I'm here serial_read_line 3 %s\n", buffer);
   return buffer;
 }
 
