@@ -186,6 +186,8 @@ void* handle_gps_sensor(void* ptr) {
           b_log(INFO, "[THREAD%ld-NMEA]: fix: %d", gps_thread, fix);
         }
       }
+      b_log(INFO, "[THREAD%ld-NMEA]: nmea at this pint %s", gps_thread, nmea);
+
       free(nmea);
     }
   }
