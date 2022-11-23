@@ -250,7 +250,7 @@ void* handle_logger(void* ptr) {
               logger_thread, latitude_str, latitude_hem, longitude_str, longitude_hem, altitude_str, altitude_unit,
               number_of_satellites_str, temp_c);
         //  atof(lat), atof(lon)
-        // log_csv(4, latitude_str, latitude_hem, longitude_str, longitude_hem);
+        log_csv(4, latitude_str, latitude_hem, longitude_str, longitude_hem);
       }
       pthread_rwlock_unlock(&gps_rwlock);
     }
