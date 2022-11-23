@@ -113,7 +113,7 @@ void b_log(LOG_LEVEL log_level, const char* fmt, ...) {
   fprintf(fp, "%s", file_output);
   fflush(fp);
 }
-void csv_init() { csv_fp = fopen("./data/poc.csv", "a+"); }
+void csv_init() { csv_fp = fopen("./data/pos.txt", "a+"); }
 void cvs_destroy() { fclose(csv_fp); }
 
 void log_csv(const int n, ...) {
