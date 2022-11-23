@@ -128,5 +128,6 @@ void log_csv(const int n, ...) {
     }
   }
   va_end(arg);
+  printf("Loggining into csv: %s\n", buffer);
   fprintf(csv_fp, "%s\n", buffer);
 }
