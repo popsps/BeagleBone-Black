@@ -73,9 +73,7 @@ char* serial_read_line() {
       i += 1;
     }
   }
-  if (count <= 0) {
-    return NULL;
-  }
+  return NULL;
 }
 
 int serial_write(char* payload) {
