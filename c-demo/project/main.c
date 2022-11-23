@@ -72,6 +72,7 @@ int main(int argc, char* argv[]) {
 void init_work_space() {
   struct stat st = {0};
   logger_init();
+  cvs_init();
   if (stat("./data", &st)) {
     b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Data Directory", main_thread);
     mkdir("./data", 0700);

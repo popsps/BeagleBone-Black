@@ -39,6 +39,6 @@ void logger_destroy();
 void b_log(LOG_LEVEL log_level, const char* fmt, ...);
 
 void csv_init();
-void logger_destroy();
+void cvs_destroy();
 
 void log_csv(const int n, ...);
