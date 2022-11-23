@@ -243,7 +243,8 @@ void* handle_logger(void* ptr) {
       // if GPS is working and its values are valid
       if (fix != 0) {
         b_log(INFO, "[THREAD%ld-NMEA]: [latitude, longitude, alititude, stat, temp]: %s %s, %s %s, %s, %s, %.2f",
-              logger_thread, latitude_str, latitude_dir, longitude_str, longitude_dir, altitude_str, stat, temp_c);
+              logger_thread, latitude_str, latitude_dir, longitude_str, longitude_dir, altitude_str,
+              number_of_satellites_str, temp_c);
         //  atof(lat), atof(lon)
         log_csv(4, latitude_str, latitude_dir, longitude_str, longitude_dir);
       }
