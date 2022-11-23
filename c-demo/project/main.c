@@ -182,7 +182,7 @@ void* handle_gps_sensor(void* ptr) {
         } else if (strstr(nmea, "$GPGGA") != NULL) {
           char* fix_str = get_nmea_field(nmea, 6);
           fix = atoi(fix_str);
-          b_log(INFO, "[THREAD%ld-NMEA]: %d", gps_thread, fix);
+          b_log(INFO, "[THREAD%ld-NMEA]: fix: %d", gps_thread, fix);
         }
       }
       free(nmea);
