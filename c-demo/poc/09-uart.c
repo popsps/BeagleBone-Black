@@ -78,21 +78,24 @@ int main(int argc, char* argv[]) {
   printf("Reading from UART:\n");
   count = 0;
   int i = 0;
-  count = read(file, (void*)receive, 100);
-  if (count < 0) {  // receive the data
-    perror("Failed to read from the input\n");
-    return -1;
-  }
-  if (count == 0)
-    printf("There was no data available to read!\n");
-  else {
-    printf("The following was read in [%d]: %s\n", count, receive);
+
+  while (1) {
+    count = read(file, (void*)receive, 100);
+    if (count < 0) {  // receive the data
+      perror("Failed to read from the input\n");
+      return -1;
+    }
+    if (count == 0)
+      printf("There was no data available to read!\n");
+    else {
+      printf("The following was read in [%d]: %s\n", count, receive);
+    }
   }
 
   unsigned char buffer[1024] = {0};
 
   while (1) {
-    count = read(file, buffer + i, 1024);
+    count = read(file, buffer + i, 1);
     if (buffer[i] == '\n') {
       printf("buffer read: %s", buffer);
       memset(buffer, 0, sizeof(buffer));
