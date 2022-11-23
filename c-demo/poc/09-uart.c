@@ -77,23 +77,24 @@ int main(int argc, char* argv[]) {
   // fseek(fp, 0, SEEK_SET);
   unsigned char receive[1024] = {0};  // declare a buffer for receiving data
   unsigned char buffer[1024] = {0};
+  unsigned char output[1024] = {0};
   printf("Reading from UART:\n");
   count = 0;
   int c = 0;
   int i = 0;
-  file = open("test.txt", O_RDONLY);
-  while (1) {
-    count = read(file, (void*)receive, 5);
-    if (count < 0) {  // receive the data
-      perror("Failed to read from the input\n");
-      return -1;
-    }
-
-    if (count > 0) {
-      printf("rec: [%d]: %s\n", count, receive);
-      memset(receive, 0, sizeof(receive));
-    }
-  }
+  // while (1) {
+  //   count = read(file, (void*)buffer, 5);
+  //   if (count < 0) {  // receive the data
+  //     perror("Failed to read from the input\n");
+  //     return -1;
+  //   }
+  //   if (count > 0) {
+  //     printf("rec: [%d]: %s\n", count, receive);
+  //     snprintf(output, sizeof(output), LDR_PATH "%s%s", output, buffer);
+  //     strncat(output, buffer, strlen(buffer));
+  //     memset(buffer, 0, sizeof(buffer));
+  //   }
+  // }
   memset(buffer, 0, sizeof(buffer));
   while (1) {
     count = read(file, buffer + i, 1);
@@ -104,9 +105,6 @@ int main(int argc, char* argv[]) {
     } else {
       i += count;
     }
-    // if (count > 0) {
-    //   printf("buffer read count: %c %d\n", buffer[i], count);
-    // }
   }
   printf("buffer read: %s; count: %d\n", buffer, count);
   close(file);
