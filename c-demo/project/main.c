@@ -192,6 +192,7 @@ void* handle_gps_sensor(void* ptr) {
   sleep(2);
   while (1) {
     char* nmea = serial_read_line();
+    printf("after\n");
     if (nmea != NULL && nmea[0] != '\0' && nmea[0] != '\n') {
       // b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
       // b_log(DEBUG, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
@@ -226,7 +227,7 @@ void* handle_gps_sensor(void* ptr) {
         // b_log(INFO, "[THREAD%ld-NMEA]: fix: %d %s %s", gps_thread, fix, number_of_satellites_str, altitude_str);
         pthread_rwlock_unlock(&gps_rwlock);
       }
-    } 
+    }
     free(nmea);
   }
   return NULL;
