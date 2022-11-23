@@ -199,7 +199,7 @@ void* handle_gps_sensor(void* ptr) {
         char* lat_d = get_nmea_field(nmea, 4);
         char* lon_d = get_nmea_field(nmea, 6);
         if (lat != NULL && lon != NULL) {
-          b_log(INFO, "[THREAD%ld-NMEA]: %s, %s", gps_thread, lat, lon);
+          // b_log(INFO, "[THREAD%ld-NMEA]: %s, %s", gps_thread, lat, lon);
           pthread_rwlock_wrlock(&gps_rwlock);
           strcpy(latitude_str, lat);
           strcpy(longitude_str, lon);
@@ -211,7 +211,7 @@ void* handle_gps_sensor(void* ptr) {
         char* fix_str = get_nmea_field(nmea, 6);
         pthread_rwlock_wrlock(&gps_rwlock);
         fix = atoi(fix_str);
-        b_log(INFO, "[THREAD%ld-NMEA]: fix: %d", gps_thread, fix);
+        // b_log(INFO, "[THREAD%ld-NMEA]: fix: %d", gps_thread, fix);
         pthread_rwlock_unlock(&gps_rwlock);
       }
       free(nmea);
