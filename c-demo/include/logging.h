@@ -35,10 +35,10 @@ void shell_write(const char* color, const char* fmt, ...);
 
 void shell_print(const char* color, const char* fmt, ...);
 void logger_init();
-void logger_destroy();
+void logger_close();
 void b_log(LOG_LEVEL log_level, const char* fmt, ...);
 
 void csv_init();
-void cvs_destroy();
+void cvs_close();
 
 void log_csv(const int n, ...);

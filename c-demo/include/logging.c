@@ -59,7 +59,7 @@ void logger_init() {
   sprintf(path, "./data/%s.log", dateInfoBuffer);
   fp = fopen(path, "a+");
 }
-void logger_destroy() { fclose(fp); }
+void logger_close() { fclose(fp); }
 
 /**
  * write to STD_OUT using write
@@ -114,7 +114,7 @@ void b_log(LOG_LEVEL log_level, const char* fmt, ...) {
   fflush(fp);
 }
 void csv_init() { csv_fp = fopen("./data/pos.txt", "a+"); }
-void cvs_destroy() { fclose(csv_fp); }
+void cvs_close() { fclose(csv_fp); }
 
 void log_csv(const int n, ...) {
   char buffer[1024] = {0};

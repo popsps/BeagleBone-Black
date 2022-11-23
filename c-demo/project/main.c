@@ -53,6 +53,7 @@ void toggle_lights();
 void toggle_running();
 void init_thread();
 void init_work_space();
+void clean_work_space();
 void init_threads();
 void destroy_threads();
 char* get_nmea_field(char* nmea, int index);
@@ -82,6 +83,10 @@ void init_work_space() {
   register_signal_handler(sig_handler);
   clean_up();
   initialize();
+}
+void clean_work_space() {
+  logger_close();
+  cvs_close();
 }
 void init_threads() {
   pthread_create(&temperature_thread, NULL, handle_temperature_sensor, NULL);
@@ -131,12 +136,14 @@ void sig_handler(int sig) {
     shell_write(BPURPLE, "[THREAD%ld]: Recived SIGINT", current_thread);
     unset_pins();
     unset_pins();
+    clean_work_space();
     shell_write(BPURPLE, "[THREAD%ld]: Pins are cleaned up.", current_thread);
     _exit(EXIT_SUCCESS);
   } else if (sig == SIGTSTP) {
     shell_write(BPURPLE, "[THREAD%ld]: Recived SIGTSTP", current_thread);
     unset_pins();
     unset_pins();
+    clean_work_space();
     shell_write(BPURPLE, "[THREAD%ld]: Pins are cleaned up.", current_thread);
     _exit(EXIT_SUCCESS);
   } else if (sig == SIGUSR1) {
