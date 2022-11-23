@@ -54,7 +54,7 @@ void logger_init() {
   current_time = time(0);
   utcTimeInfo = gmtime(&current_time);
   char dateInfoBuffer[25] = {0};
-  char path[25] = {0};
+  char path[40] = {0};
   strftime(dateInfoBuffer, sizeof(dateInfoBuffer), "%Y-%m-%d", utcTimeInfo);
   sprintf(path, "./data/%s.log", dateInfoBuffer);
   fp = fopen(path, "a+");
