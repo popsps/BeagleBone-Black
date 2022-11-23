@@ -245,8 +245,9 @@ void* handle_logger(void* ptr) {
     // log gps pulse every 7 seconds
     if (now - base >= 7) {
       base = now;
-      char gps_status[56] = (fix) ? "GPS getting values" : "GPS is not getting values";
+      char* gps_status = (fix) ? "GPS getting values" : "GPS is not getting values";
       b_log(INFO, "[THREAD%ld-LOGGER]: %s", gps_status);
+      free(gps_status);
     }
     pthread_rwlock_rdlock(&isOn_rwlock);
     // debug
