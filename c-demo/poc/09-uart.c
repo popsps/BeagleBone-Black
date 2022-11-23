@@ -85,12 +85,8 @@ int main(int argc, char* argv[]) {
       perror("Failed to read from the input\n");
       return -1;
     }
-    if (count == 0) {
-      printf("There was no data available to read!\n");
-      memset(receive, 0, sizeof(receive));
-    }
 
-    else {
+    if (count > 0) {
       printf("The following was read in [%d]: %s\n", count, receive);
       memset(receive, 0, sizeof(receive));
     }
