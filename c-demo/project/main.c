@@ -225,10 +225,10 @@ void* handle_gps_sensor(void* ptr) {
  */
 void* handle_logger(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the LOGGER THREAD...", logger_thread);
-  while (isOn) {
+  while (1) {
     pthread_rwlock_rdlock(&isOn_rwlock);
     // debug
-    if (1) {
+    if (isOn) {
       pthread_rwlock_rdlock(&temp_rwlock);
       b_log(INFO, "[THREAD%ld-TEMPERATURE]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
       pthread_rwlock_unlock(&temp_rwlock);
