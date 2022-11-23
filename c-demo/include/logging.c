@@ -1,6 +1,7 @@
 #include "logging.h"
 
 FILE* fp;
+FILE* csv_fp;
 
 /**
  * write to STD_OUT using write
@@ -49,6 +50,7 @@ void shell_print(const char* color, const char* fmt, ...) {
 
 void logger_init() { fp = fopen("./data/log.txt", "a+"); }
 void logger_destroy() { fclose(fp); }
+
 /**
  * write to STD_OUT using write
  * async signal safe
@@ -100,4 +102,22 @@ void b_log(LOG_LEVEL log_level, const char* fmt, ...) {
   fflush(stdout);
   fprintf(fp, "%s", file_output);
   fflush(fp);
+}
+
+void csv_init() { csv_fp = fopen("./data/pos.csv", "a+"); }
+void logger_destroy() { fclose(csv_fp); }
+
+void log_csv(const int n, ...) {
+  char buffer[1024] = {0};
+  va_list arg;
+  va_start(arg, n);
+  for (size_t i = 0; i < n; i++) {
+    char* field = va_arg(arg, char*);
+    strncat(buffer, field, strlen(field));
+    if (i < n - 1) {
+      strcat(buffer, ",");
+    }
+  }
+  va_end(arg);
+  fprintf(csv_fp, "%s\n", buffer);
 }

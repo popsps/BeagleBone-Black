@@ -84,3 +84,10 @@ int main(int argc, char* argv[]) {
   fclose(my_csv);
   return 0;
 }
+
+char* substr(char* src, int i, int j) {
+  char* res = malloc(sizeof(char) * j);
+  memcpy(res, src + i, j);
+  res[j] = '\0';
+  return res;
+}

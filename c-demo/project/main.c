@@ -37,7 +37,10 @@ static int on_off_button_pressed = 0;
 static int isResetButtonPressed = 0;
 static double millivolts, temp_c, temp_f = 0;
 static char latitude_str[256];
+static char latitude_dir[24];
 static char longitude_str[256];
+static char longitude_dir[24];
+static char altitude_str[256];
 static int fix = 0;
 static pthread_t main_thread, action_thread, temperature_thread, gps_thread, logger_thread;
 
@@ -56,6 +59,7 @@ char* get_nmea_field(char* nmea, int index);
 
 pthread_rwlock_t isOn_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 pthread_rwlock_t temp_rwlock = PTHREAD_RWLOCK_INITIALIZER;
+pthread_rwlock_t gps_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 
 int main(int argc, char* argv[]) {
   main_thread = pthread_self();
@@ -171,20 +175,28 @@ void* handle_gps_sensor(void* ptr) {
     char* nmea = serial_read_line();
     if (nmea != NULL && nmea[0] != '\0' && nmea[0] != '\n') {
       // b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
-      b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
+      b_log(DEBUG, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
       // if NMEA is GPRMC
       if (strstr(nmea, "$GPRMC") != NULL) {
         char* lat = get_nmea_field(nmea, 3);
         char* lon = get_nmea_field(nmea, 5);
+        char* lat_d = get_nmea_field(nmea, 4);
+        char* lon_d = get_nmea_field(nmea, 6);
         if (lat != NULL && lon != NULL) {
           b_log(INFO, "[THREAD%ld-NMEA]: %s, %s", gps_thread, lat, lon);
-          b_log(INFO, "[THREAD%ld-NMEA]: %f, %f", gps_thread, atof(lat), atof(lon));
+          pthread_rwlock_wrlock(&gps_rwlock);
+          strcpy(latitude_str, lat);
+          strcpy(longitude_str, lon);
+          strcpy(latitude_dir, lat_d);
+          strcpy(longitude_dir, lon_d);
+          pthread_rwlock_unlock(&gps_rwlock);
         }
       } else if (strstr(nmea, "$GPGGA") != NULL) {
         char* fix_str = get_nmea_field(nmea, 6);
-        // b_log(INFO, "[THREAD%ld-NMEA]: fix_str: %s", gps_thread, fix_str);
+        pthread_rwlock_wrlock(&gps_rwlock);
         fix = atoi(fix_str);
         b_log(INFO, "[THREAD%ld-NMEA]: fix: %d", gps_thread, fix);
+        pthread_rwlock_unlock(&gps_rwlock);
       }
       free(nmea);
     }
@@ -199,10 +211,18 @@ void* handle_logger(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the LOGGER THREAD...", logger_thread);
   while (1) {
     pthread_rwlock_rdlock(&isOn_rwlock);
-    if (isOn) {
+    // debug
+    if (1) {
       pthread_rwlock_rdlock(&temp_rwlock);
       b_log(INFO, "[THREAD%ld-TEMPERATURE]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
       pthread_rwlock_unlock(&temp_rwlock);
+      pthread_rwlock_rdlock(&gps_rwlock);
+      // if GPS is working and its values are valid
+      if (fix != 0) {
+        //  atof(lat), atof(lon)
+        log_csv(4, latitude_str, latitude_dir, longitude_str, longitude_dir);
+      }
+      pthread_rwlock_unlock(&gps_rwlock);
     }
     pthread_rwlock_unlock(&isOn_rwlock);
     sleep(1);
