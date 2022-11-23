@@ -60,16 +60,37 @@ int uart_close() {
   return status;
 }
 
+// char* serial_read_line() {
+//   int count = 0;
+//   // printf("I'm here serial_read_line 1 %s\n", buffer);
+//   while (count <= 0 && i < MAX_SIZE) {
+//     char c;
+//     count = read(fd, (void*)(&c), 1);
+//     if (count <= 0) {
+//       printf("count %d %c\n", count, c);
+//     }
+//     if (c == '\n') {
+//       char* message = strdup(buffer);
+//       message[i] = '\0';
+//       memset(buffer, 0, sizeof(char) * MAX_SIZE);
+//       return message;
+//     } else {
+//       buffer[i] = c;
+//       i += 1;
+//     }
+//   }
+//   return NULL;
+// }
 char* serial_read_line() {
   int count = 0;
   // printf("I'm here serial_read_line 1 %s\n", buffer);
-  while (count <= 0 && i < MAX_SIZE) {
+  while (1) {
     char c;
     count = read(fd, (void*)(&c), 1);
     if (count <= 0) {
       printf("count %d %c\n", count, c);
-    }
-    if (c == '\n') {
+      sleep(1);
+    } else if (c == '\n') {
       char* message = strdup(buffer);
       message[i] = '\0';
       memset(buffer, 0, sizeof(char) * MAX_SIZE);
