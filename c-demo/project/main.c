@@ -181,13 +181,11 @@ void* handle_gps_sensor(void* ptr) {
           b_log(INFO, "[THREAD%ld-NMEA]: %f, %f", gps_thread, atof(lat), atof(lon));
         } else if (strstr(nmea, "$GPGGA") != NULL) {
           char* fix_str = get_nmea_field(nmea, 6);
-          b_log(INFO, "[THREAD%ld-NMEA]: fix_str: %s", gps_thread, fix_str);
-          fix = atoi(fix_str);
+          // b_log(INFO, "[THREAD%ld-NMEA]: fix_str: %s", gps_thread, fix_str);
+          // fix = atoi(fix_str);
           b_log(INFO, "[THREAD%ld-NMEA]: fix: %d", gps_thread, fix);
         }
       }
-      b_log(INFO, "[THREAD%ld-NMEA]: nmea at this pint %s", gps_thread, nmea);
-
       free(nmea);
     }
   }
