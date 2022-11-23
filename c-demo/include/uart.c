@@ -90,7 +90,6 @@ char* serial_read_line() {
     char c;
     count = read(fd, (void*)(&c), 1);
     if (count <= 0) {
-      printf("count %d %c\n", count, c);
       sleep(1);
     } else if (c == '\n') {
       buffer[i + 1] = '\0';
