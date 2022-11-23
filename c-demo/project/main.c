@@ -84,10 +84,10 @@ void init_work_space() {
   initialize();
 }
 void init_threads() {
-  pthread_create(&temperature_thread, NULL, handle_temperature_sensor, NULL);
-  pthread_create(&action_thread, NULL, handle_actions, NULL);
-  pthread_create(&gps_thread, NULL, handle_gps_sensor, NULL);
-  pthread_create(&logger_thread, NULL, handle_logger, NULL);
+  // pthread_create(&temperature_thread, NULL, handle_temperature_sensor, NULL);
+  // pthread_create(&action_thread, NULL, handle_actions, NULL);
+  // pthread_create(&gps_thread, NULL, handle_gps_sensor, NULL);
+  // pthread_create(&logger_thread, NULL, handle_logger, NULL);
 }
 void destroy_threads() {
   pthread_join(temperature_thread, NULL);
