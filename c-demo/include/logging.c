@@ -113,7 +113,7 @@ void b_log(LOG_LEVEL log_level, const char* fmt, ...) {
   fprintf(fp, "%s", file_output);
   fflush(fp);
 }
-void csv_init() { csv_fp = fopen("./data/poc.cvs", "a+"); }
+void csv_init() { csv_fp = fopen("./data/poc.csv", "a+"); }
 void cvs_destroy() { fclose(csv_fp); }
 
 void log_csv(const int n, ...) {
@@ -122,7 +122,7 @@ void log_csv(const int n, ...) {
   va_start(arg, n);
   for (size_t i = 0; i < n; i++) {
     char* field = va_arg(arg, char*);
-    strcat(buffer, field);
+    strncat(buffer, field, strlen(field));
     if (i < n - 1) {
       strcat(buffer, ",");
     }
