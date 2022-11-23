@@ -48,7 +48,17 @@ void shell_print(const char* color, const char* fmt, ...) {
   fflush(stdout);
 }
 
-void logger_init() { fp = fopen("./data/log.txt", "a+"); }
+void logger_init() {
+  time_t current_time;
+  struct tm* utcTimeInfo;
+  current_time = time(0);
+  utcTimeInfo = gmtime(&current_time);
+  char dateInfoBuffer[25] = {0};
+  char path[25] = {0};
+  strftime(dateInfoBuffer, sizeof(dateInfoBuffer), "%Y-%m-%d", utcTimeInfo);
+  sprintf(path, "./data/%s.log", dateInfoBuffer);
+  fp = fopen(path, "a+");
+}
 void logger_destroy() { fclose(fp); }
 
 /**
