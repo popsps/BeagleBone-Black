@@ -175,7 +175,7 @@ void* handle_gps_sensor(void* ptr) {
         nmea_dup = strdup(nmea);
         char* lon = get_nmea_field(nmea_dup, 5);
         b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
-        b_log(INFO, "[THREAD%ld-NMEA]: %%s, %s", gps_thread, lat, lon);
+        b_log(INFO, "[THREAD%ld-NMEA]: %s, %s", gps_thread, lat, lon);
         free(nmea_dup);
         // if (lat != NULL && lon != NULL) {
         //   b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
