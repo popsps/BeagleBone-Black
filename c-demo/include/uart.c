@@ -16,18 +16,31 @@
 int uart_init(int pin) {
   char path[200];
   snprintf(path, sizeof(path), UART_PATH "%d", pin);
-  fd = open(path, O_RDWR | O_NOCTTY | O_NDELAY);
+  // fd = open(path, O_RDWR | O_NOCTTY | O_NDELAY);
+  fd = open(path, O_RDWR | O_NOCTTY);
   if (fd < 0) {
     perror("UART: Failed to open the device.\n");
     return -1;
   }
   struct termios serials;
-  tcgetattr(fd, &serials);
+  if (tcgetattr(fd, &serials) != 0) {
+    perror("Unable to retrieve port attributes.\n");
+    return -1;
+  }
+  if (cfsetispeed(&serials, B115200) < 0) {
+    perror("Input baud rate not successfully set.\n");
+  }
+  serials.c_iflag = 0;
+  serials.c_oflag = 0;
+  serials.c_lflag = 0;
+  serials.c_cc[VMIN] = 45;  // works for 1
+  serials.c_cc[VTIME] = 0;
   // serials.c_cflag = B1152000 | CS8 | CREAD | CLOCAL;
   // Set up the communications serials:
   // 9600 baud, 8-bit, enable receiver, no modem control lines
-  serials.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
-  serials.c_iflag = IGNPAR | ICRNL;  // ignore partity errors, CR -> newline
+  // serials.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
+  // serials.c_iflag = IGNPAR | ICRNL;  // ignore partity errors, CR -> newline
+  
   tcflush(fd, TCIFLUSH);             // discard file information not transmitted
   tcsetattr(fd, TCSANOW, &serials);  // changes occur immmediately
   return 1;
