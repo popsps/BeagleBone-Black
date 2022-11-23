@@ -41,4 +41,5 @@ void b_log(LOG_LEVEL log_level, const char* fmt, ...);
 void csv_init();
 void cvs_close();
 
-void log_csv(const int n, ...);
+// void log_csv(const int n, ...);
+void log_csv(const char* fmt, ...);

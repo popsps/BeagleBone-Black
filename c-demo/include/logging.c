@@ -116,17 +116,18 @@ void b_log(LOG_LEVEL log_level, const char* fmt, ...) {
 void csv_init() { csv_fp = fopen("./data/pos.csv", "a+"); }
 void cvs_close() { fclose(csv_fp); }
 
-void log_csv(const int n, ...) {
+void log_csv(const char* fmt, ...) {
   char buffer[1024] = {0};
   va_list arg;
-  va_start(arg, n);
-  for (size_t i = 0; i < n; i++) {
-    char* field = va_arg(arg, char*);
-    strcat(buffer, field);
-    if (i < n - 1) {
-      strcat(buffer, ",");
-    }
-  }
+  va_start(arg, fmt);
+  // for (size_t i = 0; i < n; i++) {
+  //   char* field = va_arg(arg, char*);
+  //   strcat(buffer, field);
+  //   if (i < n - 1) {
+  //     strcat(buffer, ",");
+  //   }
+  // }
+  vsnprintf(buffer, sizeof(buffer), fmt, arg);
   va_end(arg);
   // printf("Loggining into csv: %s\n", buffer);
   int count = fprintf(csv_fp, "%s\n", buffer);
