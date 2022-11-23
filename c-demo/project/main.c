@@ -266,6 +266,5 @@ char* get_nmea_field(char* nmea, int index) {
   }
   free(nmea_dup);
   free(token);
-  free(seperator);
   return res;
 }
