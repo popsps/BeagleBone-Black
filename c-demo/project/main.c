@@ -211,9 +211,11 @@ void* handle_gps_sensor(void* ptr) {
         }
       } else if (strstr(nmea, "$GPGGA") != NULL) {
         char* fix_str = get_nmea_field(nmea, 6);
+        char* _number_of_satellites_str = get_nmea_field(nmea, 7);
+        char* _altitude_str = get_nmea_field(nmea, 9);
         pthread_rwlock_wrlock(&gps_rwlock);
-        number_of_satellites_str = get_nmea_field(nmea, 7);
-        altitude_str = get_nmea_field(nmea, 9);
+        strcpy(number_of_satellites_str, _number_of_satellites_str);
+        strcpy(altitude_str, _altitude_str);
         fix = atoi(fix_str);
         // b_log(INFO, "[THREAD%ld-NMEA]: fix: %d", gps_thread, fix);
         pthread_rwlock_unlock(&gps_rwlock);
