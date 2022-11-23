@@ -37,10 +37,11 @@ static int on_off_button_pressed = 0;
 static int isResetButtonPressed = 0;
 static double millivolts, temp_c, temp_f = 0;
 static char altitude_str[256] = {0};
+static char altitude_unit[256] = {0};
 static char latitude_str[256] = {0};
-static char latitude_dir[24] = {0};
+static char latitude_hem[24] = {0};
 static char longitude_str[256] = {0};
-static char longitude_dir[24] = {0};
+static char longitude_hem[24] = {0};
 static char number_of_satellites_str[256] = {0};
 static int fix = 0;
 static pthread_t main_thread, action_thread, temperature_thread, gps_thread, logger_thread;
@@ -204,19 +205,21 @@ void* handle_gps_sensor(void* ptr) {
           pthread_rwlock_wrlock(&gps_rwlock);
           strcpy(latitude_str, lat);
           strcpy(longitude_str, lon);
-          strcpy(latitude_dir, lat_d);
-          strcpy(longitude_dir, lon_d);
+          strcpy(latitude_hem, lat_d);
+          strcpy(longitude_hem, lon_d);
           pthread_rwlock_unlock(&gps_rwlock);
         }
       } else if (strstr(nmea, "$GPGGA") != NULL) {
         char* fix_str = get_nmea_field(nmea, 6);
         char* _number_of_satellites_str = get_nmea_field(nmea, 7);
         char* _altitude_str = get_nmea_field(nmea, 9);
+        char* _altitude_unit = get_nmea_field(nmea, 10);
         pthread_rwlock_wrlock(&gps_rwlock);
         // b_log(DEBUG, "[THREAD%ld-NMEA]: fix nmea %s", gps_thread, nmea);
         // b_log(DEBUG, "[THREAD%ld-NMEA]: fix: %s %s %s", gps_thread, fix_str, _number_of_satellites_str, _altitude_str);
         strcpy(number_of_satellites_str, _number_of_satellites_str);
         strcpy(altitude_str, _altitude_str);
+        strcpy(altitude_unit, _altitude_unit);
         fix = atoi(fix_str);
         // b_log(INFO, "[THREAD%ld-NMEA]: fix: %d %s %s", gps_thread, fix, number_of_satellites_str, altitude_str);
         pthread_rwlock_unlock(&gps_rwlock);
@@ -242,11 +245,11 @@ void* handle_logger(void* ptr) {
       pthread_rwlock_rdlock(&gps_rwlock);
       // if GPS is working and its values are valid
       if (fix != 0) {
-        b_log(INFO, "[THREAD%ld-NMEA]: [latitude, longitude, alititude, stat, temp]: %s %s, %s %s, %s, %s, %.2f",
-              logger_thread, latitude_str, latitude_dir, longitude_str, longitude_dir, altitude_str,
+        b_log(INFO, "[THREAD%ld-NMEA]: [latitude, longitude, alititude, stat, temp]: %s %s, %s %s, %s %s, %s, %.2f",
+              logger_thread, latitude_str, latitude_hem, longitude_str, longitude_hem, altitude_str, altitude_unit,
               number_of_satellites_str, temp_c);
         //  atof(lat), atof(lon)
-        log_csv(4, latitude_str, latitude_dir, longitude_str, longitude_dir);
+        log_csv(4, latitude_str, latitude_hem, longitude_str, longitude_hem);
       }
       pthread_rwlock_unlock(&gps_rwlock);
     }
