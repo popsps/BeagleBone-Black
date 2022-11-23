@@ -251,7 +251,7 @@ void* handle_logger(void* ptr) {
       } else {
         strcpy(gps_status, "GPS is not getting values");
       }
-      b_log(INFO, "[THREAD%ld-LOGGER]: %s", gps_status)
+      b_log(INFO, "[THREAD%ld-LOGGER]: %s", gps_status);
     }
     pthread_rwlock_rdlock(&isOn_rwlock);
     // debug
