@@ -219,7 +219,7 @@ void* handle_gps_sensor(void* ptr) {
         strcpy(number_of_satellites_str, _number_of_satellites_str);
         strcpy(altitude_str, _altitude_str);
         fix = atoi(fix_str);
-        // b_log(INFO, "[THREAD%ld-NMEA]: fix: %d", gps_thread, fix);
+        b_log(INFO, "[THREAD%ld-NMEA]: fix: %d %s %s", gps_thread, fix, number_of_satellites_str, altitude_str);
         pthread_rwlock_unlock(&gps_rwlock);
       }
       free(nmea);
@@ -238,7 +238,7 @@ void* handle_logger(void* ptr) {
     // debug
     if (isOn) {
       pthread_rwlock_rdlock(&temp_rwlock);
-      b_log(DEBUG, "[THREAD%ld-LOGGER]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
+      // b_log(DEBUG, "[THREAD%ld-LOGGER]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
       pthread_rwlock_unlock(&temp_rwlock);
       pthread_rwlock_rdlock(&gps_rwlock);
       // if GPS is working and its values are valid
