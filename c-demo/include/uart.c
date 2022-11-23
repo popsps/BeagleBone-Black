@@ -62,12 +62,12 @@ char* serial_read_line() {
   //   perror("Failed to read from the input\n");
   //   return NULL;
   // }
-  memset(buffer, 0, sizeof(buffer));
+  memset(buffer, 0, sizeof(char) * 1024);
   while (1) {
     count = read(fd, buffer + i, 1);
     if (buffer[i] == '\n') {
       printf("%s", buffer);
-      memset(buffer, 0, sizeof(buffer));
+      memset(buffer, 0, sizeof(char) * 1024);
       i = 0;
     } else {
       i += count;
