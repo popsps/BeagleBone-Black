@@ -203,6 +203,7 @@ void* handle_gps_sensor(void* ptr) {
         if (lat != NULL && lon != NULL) {
           // b_log(INFO, "[THREAD%ld-NMEA]: %s, %s", gps_thread, lat, lon);
           pthread_rwlock_wrlock(&gps_rwlock);
+          memset(latitude_str, 0, sizeof(char) * strlen(latitude_str));
           strcpy(latitude_str, lat);
           strcpy(longitude_str, lon);
           strcpy(latitude_hem, lat_d);
@@ -249,7 +250,7 @@ void* handle_logger(void* ptr) {
               logger_thread, latitude_str, latitude_hem, longitude_str, longitude_hem, altitude_str, altitude_unit,
               number_of_satellites_str, temp_c);
         //  atof(lat), atof(lon)
-        log_csv(4, latitude_str, latitude_hem, longitude_str, longitude_hem);
+        // log_csv(4, latitude_str, latitude_hem, longitude_str, longitude_hem);
       }
       pthread_rwlock_unlock(&gps_rwlock);
     }
