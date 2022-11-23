@@ -70,7 +70,6 @@ char* serial_read_line() {
       sleep(1);
     } else {
       if (c == '\n') {
-        printf("I'm here serial_read_line backslash n %s\n", buffer);
         buffer[i] = '\0';
         return buffer;
       } else {
