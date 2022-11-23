@@ -81,24 +81,17 @@ int main(int argc, char* argv[]) {
   count = 0;
   int c = 0;
   int i = 0;
-  fseek(fp, 0, SEEK_SET);
+  file = open("test.txt", O_RDONLY);
   while (1) {
-    // count = read(file, (void*)receive, 1024);
-    // c = fread(buffer, 1024, 1, fp);
-    c = fread(buffer, 1, sizeof(buffer), fp);
-    // if (count < 0) {  // receive the data
-    //   perror("Failed to read from the input\n");
-    //   return -1;
-    // }
+    count = read(file, (void*)receive, 5);
+    if (count < 0) {  // receive the data
+      perror("Failed to read from the input\n");
+      return -1;
+    }
 
-    // if (count > 0) {
-    //   printf("rec: [%d]: %s\n", count, receive);
-    //   memset(receive, 0, sizeof(receive));
-    // }
-    if (c > 0) {
-      printf("buf: [%d]: %s\n", c, buffer);
-      memset(buffer, 0, sizeof(buffer));
-      fseek(fp, 0, SEEK_SET);
+    if (count > 0) {
+      printf("rec: [%d]: %s\n", count, receive);
+      memset(receive, 0, sizeof(receive));
     }
   }
   memset(buffer, 0, sizeof(buffer));
