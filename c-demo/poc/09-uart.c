@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
     return -2;
   }
   file = open("/dev/ttyO4", O_RDWR | O_NOCTTY | O_NDELAY);
-  // FILE* fp = fopen("/dev/ttyO4", "r+");
+  FILE* fp = fopen("/dev/ttyO4", "r+");
   if (file < 0) {
     perror("UART: Failed to open the device.\n");
     return -1;
@@ -75,25 +75,30 @@ int main(int argc, char* argv[]) {
   usleep(100000);
   // fseek(fp, 0, SEEK_SET);
   unsigned char receive[1024] = {0};  // declare a buffer for receiving data
+  unsigned char buffer[1024] = {0};
   printf("Reading from UART:\n");
   count = 0;
+  int c = 0;
   int i = 0;
 
   while (1) {
     count = read(file, (void*)receive, 1024);
+    c = fread(fp, 1024, (void*)receive);
     if (count < 0) {  // receive the data
       perror("Failed to read from the input\n");
       return -1;
     }
 
     if (count > 0) {
-      printf("[%d]: %s\n", count, receive);
+      printf("rec: [%d]: %s\n", count, receive);
       memset(receive, 0, sizeof(receive));
     }
+    if (c > 0) {
+      printf("buf: [%d]: %s\n", c, buffer);
+      memset(buffer, 0, sizeof(buffer));
+    }
   }
-
-  unsigned char buffer[1024] = {0};
-
+  memset(buffer, 0, sizeof(buffer));
   while (1) {
     count = read(file, buffer + i, 1);
     if (buffer[i] == '\n') {
