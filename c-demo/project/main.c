@@ -225,7 +225,9 @@ void* handle_gps_sensor(void* ptr) {
         strcpy(number_of_satellites_str, _number_of_satellites_str);
         strcpy(altitude_str, _altitude_str);
         strcpy(altitude_unit, _altitude_unit);
+        printf("after GPGGA here 3 copy\n");
         fix = atoi(fix_str);
+        printf("after GPGGA here 4 copy\n");
         // b_log(INFO, "[THREAD%ld-NMEA]: fix: %d %s %s", gps_thread, fix, number_of_satellites_str, altitude_str);
         pthread_rwlock_unlock(&gps_rwlock);
       }
