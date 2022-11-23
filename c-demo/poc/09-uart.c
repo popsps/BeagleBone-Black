@@ -109,6 +109,7 @@ int main(int argc, char* argv[]) {
   printf("buffer read: %s; count: %d\n", buffer, count);
   close(file);
   // fclose(fp);
+  // printf("char: %hhX; len: %d\n", nmea[0], strlen(nmea));
   printf("Finished sending the message, exiting %d.\n", count);
   return 0;
 }

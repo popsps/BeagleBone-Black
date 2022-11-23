@@ -49,6 +49,7 @@ void init_thread();
 void init_work_space();
 void init_threads();
 void destroy_threads();
+char* get_nmea_field(char* nmea, int index);
 
 pthread_rwlock_t isOn_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 pthread_rwlock_t temp_rwlock = PTHREAD_RWLOCK_INITIALIZER;
@@ -140,12 +141,18 @@ void sig_handler(int sig) {
 void* handle_temperature_sensor(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the TEMPERATURE THREAD...", temperature_thread);
   while (1) {
-    // read analog input AIN{1}
-    int analog_input_value = read_analog(TEMP_SENSOR_PIN);
-    // convert analog input to temperature value
-    millivolts = analog_input_value / 4096.0f * 1800;
-    temp_c = (millivolts - 500) / 10.0;
-    temp_f = (temp_c * 9 / 5) + 32;
+    pthread_rwlock_rdlock(&isOn_rwlock);
+    if (isOn) {
+      pthread_rwlock_wrlock(&temp_rwlock);
+      // read analog input AIN{1}
+      int analog_input_value = read_analog(TEMP_SENSOR_PIN);
+      // convert analog input to temperature value
+      millivolts = analog_input_value / 4096.0f * 1800;
+      temp_c = (millivolts - 500) / 10.0;
+      temp_f = (temp_c * 9 / 5) + 32;
+      pthread_rwlock_unlock(&temp_rwlock);
+    }
+    pthread_rwlock_unlock(&isOn_rwlock);
     sleep(1);
   }
   return NULL;
@@ -160,8 +167,17 @@ void* handle_gps_sensor(void* ptr) {
   while (1) {
     char* nmea = serial_read_line();
     if (nmea != NULL && nmea[0] != '\0' && nmea[0] != '\n') {
-      b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
-      // printf("char: %hhX; len: %d\n", nmea[0], strlen(nmea));
+      // b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
+      // if NMEA is GPRMC
+      if (strstr(nmea, "$GPRMC") != NULL) {
+        char* lat = get_nmea_field(nmea, 3);
+        char* lon = get_nmea_field(nmea, 5);
+        if (lat != NULL && lon != NULL) {
+          b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
+          b_log(INFO, "[THREAD%ld-NMEA]: %%s, %s", gps_thread, lat, lon);
+        }
+      } else if (strstr(nmea, "$GPGGA") != NULL) {
+      }
     }
     free(nmea);
   }
@@ -231,3 +247,19 @@ void toggle_lights() {
  * toggle on/off the application
  */
 void toggle_running() { isOn = !isOn; }
+
+char* get_nmea_field(char* nmea, int index) {
+  char* seperator = ",";
+  char* token;
+  char* res = NULL;
+  int count = 0;
+  token = strtok(nmea, seperator);
+  while (token != NULL && count < index) {
+    token = strtok(NULL, seperator);
+    count++;
+  }
+  if (token != NULL && count == index) {
+    res = token;
+  }
+  return res;
+}
