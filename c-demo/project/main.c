@@ -72,8 +72,15 @@ int main(int argc, char* argv[]) {
 }
 void init_work_space() {
   struct stat st = {0};
+  // create the data directory
   if (stat("./data", &st)) {
     b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Data Directory", main_thread);
+    mkdir("./data", 0700);
+  }
+  // create the log directory
+  st = NULL;
+  if (stat("./log", &st)) {
+    b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Log Directory", main_thread);
     mkdir("./data", 0700);
   }
   logger_init();
