@@ -221,6 +221,7 @@ void* handle_gps_sensor(void* ptr) {
         pthread_rwlock_wrlock(&gps_rwlock);
         // b_log(DEBUG, "[THREAD%ld-NMEA]: fix nmea %s", gps_thread, nmea);
         // b_log(DEBUG, "[THREAD%ld-NMEA]: fix: %s %s %s", gps_thread, fix_str, _number_of_satellites_str, _altitude_str);
+        printf("after GPGGA here 2 copy\n");
         strcpy(number_of_satellites_str, _number_of_satellites_str);
         strcpy(altitude_str, _altitude_str);
         strcpy(altitude_unit, _altitude_unit);
@@ -249,12 +250,10 @@ void* handle_logger(void* ptr) {
       pthread_rwlock_rdlock(&gps_rwlock);
       // if GPS is working and its values are valid
       if (fix != 0) {
-        printf("log print\n");
         b_log(INFO, "[THREAD%ld-NMEA]: [latitude, longitude, alititude, stat, temp]: %s %s, %s %s, %s %s, %s, %.2f",
               logger_thread, latitude_str, latitude_hem, longitude_str, longitude_hem, altitude_str, altitude_unit,
               number_of_satellites_str, temp_c);
         //  atof(lat), atof(lon)
-        printf("csv print\n");
         log_csv(4, latitude_str, latitude_hem, longitude_str, longitude_hem);
       }
       pthread_rwlock_unlock(&gps_rwlock);
