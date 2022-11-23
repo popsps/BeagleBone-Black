@@ -11,6 +11,9 @@
 !Makefile
 # ignore understand files
 *.und
+
+# Log file
+*.log
 ############################ CUSTOM ############################
 
 # Prerequisites

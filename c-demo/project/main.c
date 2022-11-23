@@ -36,6 +36,9 @@ static int isOn = 1;
 static int on_off_button_pressed = 0;
 static int isResetButtonPressed = 0;
 static double millivolts, temp_c, temp_f = 0;
+static char latitude_str[256];
+static char longitude_str[256];
+static int fix = 0;
 static pthread_t main_thread, action_thread, temperature_thread, gps_thread, logger_thread;
 
 void* handle_temperature_sensor(void* ptr);
@@ -175,93 +178,97 @@ void* handle_gps_sensor(void* ptr) {
         b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
         if (lat != NULL && lon != NULL) {
           b_log(INFO, "[THREAD%ld-NMEA]: %s, %s", gps_thread, lat, lon);
+          b_log(INFO, "[THREAD%ld-NMEA]: %f, %f", gps_thread, atof(lat), atof(lon));
+        } else if (strstr(nmea, "$GPGGA") != NULL) {
+          b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
+          char* fix_str = get_nmea_field(nmea, 6);
+          fix = atoi(fix_str);
+          b_log(INFO, "[THREAD%ld-NMEA]: %d", gps_thread, fix);
         }
-      } else if (strstr(nmea, "$GPGGA") != NULL) {
       }
+      free(nmea);
     }
-    free(nmea);
+    return NULL;
   }
-  return NULL;
-}
 
-/**
- * handle logic for the logging and writing to cvs file
- */
-void* handle_logger(void* ptr) {
-  b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the LOGGER THREAD...", logger_thread);
-  while (1) {
-    pthread_rwlock_rdlock(&isOn_rwlock);
-    if (isOn) {
-      pthread_rwlock_rdlock(&temp_rwlock);
-      b_log(INFO, "[THREAD%ld-TEMPERATURE]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
-      pthread_rwlock_unlock(&temp_rwlock);
-    }
-    pthread_rwlock_unlock(&isOn_rwlock);
-    sleep(1);
-  }
-  return NULL;
-}
-
-/**
- * handle logic for user actions
- */
-void* handle_actions(void* ptr) {
-  b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the ACTION THREAD...", action_thread);
-  while (1) {
-    int _on_off_button_pressed = gpio_get_value(ON_OFF_BUTTON_PIN);
-    if (_on_off_button_pressed && !on_off_button_pressed) {
-      on_off_button_pressed = 1;
-      pthread_rwlock_wrlock(&isOn_rwlock);
-      toggle_running();
-      toggle_lights();
+  /**
+   * handle logic for the logging and writing to cvs file
+   */
+  void* handle_logger(void* ptr) {
+    b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the LOGGER THREAD...", logger_thread);
+    while (1) {
+      pthread_rwlock_rdlock(&isOn_rwlock);
       if (isOn) {
-        b_log(DEBUG, "[THREAD%ld-ACTION]: application is started.", action_thread);
-      } else {
-        b_log(DEBUG, "[THREAD%ld-ACTION]: application is stopped.", action_thread);
+        pthread_rwlock_rdlock(&temp_rwlock);
+        b_log(INFO, "[THREAD%ld-TEMPERATURE]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
+        pthread_rwlock_unlock(&temp_rwlock);
       }
       pthread_rwlock_unlock(&isOn_rwlock);
+      sleep(1);
     }
-    if (!_on_off_button_pressed) {
-      on_off_button_pressed = 0;
-    }
-    // Read buttons every 10ms
-    usleep(TEN_MS);
+    return NULL;
   }
-  return NULL;
-}
-/**
- * toggling the lights
- * green indicates that the application is on and logs gps and temperature data
- * red indicates that the application is off
- */
-void toggle_lights() {
-  if (isOn) {
-    gpio_set_value(OFF_LIGHT, LOW);
-    gpio_set_value(ON_LIGHT, HIGH);
-  } else {
-    gpio_set_value(OFF_LIGHT, HIGH);
-    gpio_set_value(ON_LIGHT, LOW);
-  }
-}
-/**
- * toggle on/off the application
- */
-void toggle_running() { isOn = !isOn; }
 
-char* get_nmea_field(char* nmea, int index) {
-  char* nmea_dup = strdup(nmea);
-  char* seperator = ",";
-  char* token;
-  char* res = NULL;
-  int count = 0;
-  token = strtok(nmea_dup, seperator);
-  while (token != NULL && count < index) {
-    token = strtok(NULL, seperator);
-    count++;
+  /**
+   * handle logic for user actions
+   */
+  void* handle_actions(void* ptr) {
+    b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the ACTION THREAD...", action_thread);
+    while (1) {
+      int _on_off_button_pressed = gpio_get_value(ON_OFF_BUTTON_PIN);
+      if (_on_off_button_pressed && !on_off_button_pressed) {
+        on_off_button_pressed = 1;
+        pthread_rwlock_wrlock(&isOn_rwlock);
+        toggle_running();
+        toggle_lights();
+        if (isOn) {
+          b_log(DEBUG, "[THREAD%ld-ACTION]: application is started.", action_thread);
+        } else {
+          b_log(DEBUG, "[THREAD%ld-ACTION]: application is stopped.", action_thread);
+        }
+        pthread_rwlock_unlock(&isOn_rwlock);
+      }
+      if (!_on_off_button_pressed) {
+        on_off_button_pressed = 0;
+      }
+      // Read buttons every 10ms
+      usleep(TEN_MS);
+    }
+    return NULL;
   }
-  if (token != NULL && count == index) {
-    res = token;
+  /**
+   * toggling the lights
+   * green indicates that the application is on and logs gps and temperature data
+   * red indicates that the application is off
+   */
+  void toggle_lights() {
+    if (isOn) {
+      gpio_set_value(OFF_LIGHT, LOW);
+      gpio_set_value(ON_LIGHT, HIGH);
+    } else {
+      gpio_set_value(OFF_LIGHT, HIGH);
+      gpio_set_value(ON_LIGHT, LOW);
+    }
   }
-  free(nmea_dup);
-  return res;
-}
+  /**
+   * toggle on/off the application
+   */
+  void toggle_running() { isOn = !isOn; }
+
+  char* get_nmea_field(char* nmea, int index) {
+    char* nmea_dup = strdup(nmea);
+    char* seperator = ",";
+    char* token;
+    char* res = NULL;
+    int count = 0;
+    token = strtok(nmea_dup, seperator);
+    while (token != NULL && count < index) {
+      token = strtok(NULL, seperator);
+      count++;
+    }
+    if (token != NULL && count == index) {
+      res = token;
+    }
+    free(nmea_dup);
+    return res;
+  }
