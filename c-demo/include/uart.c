@@ -10,7 +10,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#define MAX_SIZE 1024;
+#define MAX_SIZE 1024
 int i = 0;
 char* buffer;
 
