@@ -64,7 +64,7 @@ pthread_rwlock_t gps_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 int main(int argc, char* argv[]) {
   main_thread = pthread_self();
   init_work_space();
-  b_log(DEBUG, "[THREAD%ld-MAIN]: Final Project", main_thread);
+  b_log(DEBUG, "[THREAD%ld-MAIN]: Starting High Altitude Balloon Data Logger", main_thread);
   init_threads();
   destroy_threads();
   return 0;
