@@ -170,13 +170,10 @@ void* handle_gps_sensor(void* ptr) {
       // b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
       // if NMEA is GPRMC
       if (strstr(nmea, "$GPRMC") != NULL) {
-        char* nmea_dup = strdup(nmea);
-        char* lat = get_nmea_field(nmea_dup, 3);
-        nmea_dup = strdup(nmea);
-        char* lon = get_nmea_field(nmea_dup, 5);
+        char* lat = get_nmea_field(nmea, 3);
+        char* lon = get_nmea_field(nmea, 5);
         b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
         b_log(INFO, "[THREAD%ld-NMEA]: %s, %s", gps_thread, lat, lon);
-        free(nmea_dup);
         // if (lat != NULL && lon != NULL) {
         //   b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
         //   b_log(INFO, "[THREAD%ld-NMEA]: %%s, %s", gps_thread, lat, lon);
@@ -254,11 +251,12 @@ void toggle_lights() {
 void toggle_running() { isOn = !isOn; }
 
 char* get_nmea_field(char* nmea, int index) {
+  char* nmea_dup = strdup(nmea);
   char* seperator = ",";
   char* token;
   char* res = NULL;
   int count = 0;
-  token = strtok(nmea, seperator);
+  token = strtok(nmea_dup, seperator);
   while (token != NULL && count < index) {
     token = strtok(NULL, seperator);
     count++;
@@ -266,5 +264,8 @@ char* get_nmea_field(char* nmea, int index) {
   if (token != NULL && count == index) {
     res = token;
   }
+  free(nmea_dup);
+  free(token);
+  free(seperator);
   return res;
 }
