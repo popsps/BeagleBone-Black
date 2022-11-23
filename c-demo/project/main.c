@@ -83,8 +83,8 @@ void init_work_space() {
     b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Log Directory", main_thread);
     mkdir("./log", 0700);
   }
-  logger_init();
   csv_init();
+  logger_init();
 
   // init signal handler for SIGUSR1, SIGINT, and SIGTSTP
   register_signal_handler(sig_handler);
