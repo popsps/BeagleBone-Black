@@ -65,7 +65,7 @@ char* serial_read_line() {
   memset(buffer, 0, sizeof(char) * 1024);
   while (1) {
     count = read(fd, buffer + i, 1);
-    if (buffer != NULL && buffer[i] == '\n') {
+    if (buffer[i] == '\n' || i >= count) {
       printf("%s", buffer);
       memset(buffer, 0, sizeof(char) * 1024);
       i = 0;
