@@ -14,6 +14,7 @@
 #include "gpio.h"
 #include "logging.h"
 #include "pins.h"
+#include "uart.h"
 
 #define TEN_MS 10000
 #define HUNDRED_MS 100000
@@ -154,7 +155,14 @@ void* handle_temperature_sensor(void* ptr) {
  */
 void* handle_gps_sensor(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the GPS THREAD...", gps_thread);
+  uart_init(4);
+
   while (1) {
+    char* nmea = serial_read_line();
+    if (nmea != NULL && (nmea[0] != '\0' || nmea[0] != '\n')) {
+      b_log(INFO, "[THREAD%ld-NMEA]: %s: ", gps_thread, nmea);
+    }
+
     sleep(1);
   }
   return NULL;

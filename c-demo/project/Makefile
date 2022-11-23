@@ -8,7 +8,7 @@ CC = gcc
 CFLAG-TEST = -static -pthread -g -O3 -Wall -Wno-unused-result -Werror -std=gnu99 -I$(INC_DIR)
 CC-TEST = arm-linux-gnueabihf-gcc
 
-DEPS =  $(INC_DIR)/pins.h $(INC_DIR)/bbsignal.c $(INC_DIR)/gpio.c $(INC_DIR)/logging.c
+DEPS =  $(INC_DIR)/pins.h $(INC_DIR)/bbsignal.c $(INC_DIR)/gpio.c $(INC_DIR)/uart.c $(INC_DIR)/logging.c
 DEPS-TEST =  $(INC_DIR)/pins.h $(INC_DIR)/bbsignal.c $(INC_DIR)/gpio-stub.c $(INC_DIR)/logging.c
 
 # run acutal program that will be shiped into the embded device

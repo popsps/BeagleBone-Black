@@ -16,7 +16,8 @@
         "sched.h": "c",
         "stdint.h": "c",
         "termio.h": "c",
-        "stdarg.h": "c"
+        "stdarg.h": "c",
+        "uart.h": "c"
     },
     "C_Cpp.default.compilerPath": "/usr/arm-linux-gnueabihf/include"
 }

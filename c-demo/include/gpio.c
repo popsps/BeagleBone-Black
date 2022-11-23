@@ -96,6 +96,9 @@ char* gpio_get_direction(unsigned int gpio) {
   }
 }
 
+/**
+ * read analog inputs from pin 1,2,3,4
+ */
 int read_analog(int pin) {
   int value = 0;
   char path[200];
@@ -107,3 +110,4 @@ int read_analog(int pin) {
   int res = fscanf(file, "%d", &value);
   return value;
 }
+
