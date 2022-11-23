@@ -241,17 +241,6 @@ void* handle_logger(void* ptr) {
   time_t base = time(0);
   time_t now = base;
   while (1) {
-    now = time(0);
-    // log gps pulse every 7 seconds
-    if (now - base >= 7) {
-      char gps_status[40] = {0};
-      base = now;
-      if (fix) {
-        b_log(INFO, "[THREAD%ld-LOGGER]: SUCCESSFULLY GETTING GPS PULSE");
-      } else {
-        b_log(INFO, "[THREAD%ld-LOGGER]: FAILING TO GET GPS PULSE");
-      }
-    }
     pthread_rwlock_rdlock(&isOn_rwlock);
     // debug
     if (isOn) {
@@ -267,6 +256,17 @@ void* handle_logger(void* ptr) {
         //  atof(lat), atof(lon)
         log_csv("%s,%s,%s,%s,%s,%s,%s,%.2f", latitude_str, latitude_hem, longitude_str, longitude_hem, altitude_str,
                 altitude_unit, number_of_satellites_str, temp_c);
+      }
+      now = time(0);
+      // log gps pulse every 7 seconds
+      if (now - base >= 7) {
+        char gps_status[40] = {0};
+        base = now;
+        if (fix) {
+          b_log(INFO, "[THREAD%ld-LOGGER]: SUCCESSFULLY GETTING GPS PULSE");
+        } else {
+          b_log(INFO, "[THREAD%ld-LOGGER]: FAILING TO GET GPS PULSE");
+        }
       }
       pthread_rwlock_unlock(&gps_rwlock);
     }

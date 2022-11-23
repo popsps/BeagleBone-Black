@@ -113,7 +113,17 @@ void b_log(LOG_LEVEL log_level, const char* fmt, ...) {
   fprintf(fp, "%s", file_output);
   fflush(fp);
 }
-void csv_init() { csv_fp = fopen("./data/pos.csv", "a+"); }
+void csv_init() {
+  time_t current_time;
+  struct tm* utcTimeInfo;
+  current_time = time(0);
+  utcTimeInfo = gmtime(&current_time);
+  char dateInfoBuffer[25] = {0};
+  char path[40] = {0};
+  strftime(dateInfoBuffer, sizeof(dateInfoBuffer), "%Y-%m-%d", utcTimeInfo);
+  sprintf(path, "./data/%s.csv", dateInfoBuffer);
+  csv_fp = fopen(path, "a+");
+}
 void cvs_close() { fclose(csv_fp); }
 
 void log_csv(const char* fmt, ...) {
