@@ -42,6 +42,7 @@ int uart_close() {
 }
 
 char* serial_read_line() {
+  printf("I'm here serial_read_line\n");
   int count = 0;
   int i = 0;
   char* buffer = malloc(sizeof(char) * 1024);
