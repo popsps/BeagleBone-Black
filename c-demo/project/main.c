@@ -169,27 +169,26 @@ void* handle_gps_sensor(void* ptr) {
 
   while (1) {
     char* nmea = serial_read_line();
-     b_log(INFO, "[THREAD%ld-NMEA]:", gps_thread);
     if (nmea != NULL && nmea[0] != '\0' && nmea[0] != '\n') {
       // b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
       b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
       // if NMEA is GPRMC
-      // if (strstr(nmea, "$GPRMC") != NULL) {
-      //   char* lat = get_nmea_field(nmea, 3);
-      //   char* lon = get_nmea_field(nmea, 5);
-      //   if (lat != NULL && lon != NULL) {
-      //     b_log(INFO, "[THREAD%ld-NMEA]: %s, %s", gps_thread, lat, lon);
-      //     b_log(INFO, "[THREAD%ld-NMEA]: %f, %f", gps_thread, atof(lat), atof(lon));
-      //   } else if (strstr(nmea, "$GPGGA") != NULL) {
-      //     char* fix_str = get_nmea_field(nmea, 6);
-      //     fix = atoi(fix_str);
-      //     b_log(INFO, "[THREAD%ld-NMEA]: %d", gps_thread, fix);
-      //   }
-      // }
-      // free(nmea);
+      if (strstr(nmea, "$GPRMC") != NULL) {
+        char* lat = get_nmea_field(nmea, 3);
+        char* lon = get_nmea_field(nmea, 5);
+        if (lat != NULL && lon != NULL) {
+          b_log(INFO, "[THREAD%ld-NMEA]: %s, %s", gps_thread, lat, lon);
+          b_log(INFO, "[THREAD%ld-NMEA]: %f, %f", gps_thread, atof(lat), atof(lon));
+        } else if (strstr(nmea, "$GPGGA") != NULL) {
+          char* fix_str = get_nmea_field(nmea, 6);
+          fix = atoi(fix_str);
+          b_log(INFO, "[THREAD%ld-NMEA]: %d", gps_thread, fix);
+        }
+      }
+      free(nmea);
     }
-    return NULL;
   }
+  return NULL;
 }
 
 /**
