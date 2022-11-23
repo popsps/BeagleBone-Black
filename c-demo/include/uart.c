@@ -71,10 +71,11 @@ char* serial_read_line() {
     } else {
       if (c == '\n') {
         printf("I'm here serial_read_line backslash n %s\n", buffer);
-        return buffer[i] = '\0';
+        buffer[i] = '\0';
+        return buffer;
       } else {
         buffer[i] = c;
-        i += count;
+        i += 1;
       }
     }
   }
