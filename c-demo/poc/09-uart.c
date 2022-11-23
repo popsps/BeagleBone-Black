@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
   int i = 0;
 
   while (1) {
-    count = read(file, (void*)receive, 100);
+    count = read(file, (void*)receive, 1024);
     if (count < 0) {  // receive the data
       perror("Failed to read from the input\n");
       return -1;
