@@ -172,7 +172,7 @@ void* handle_gps_sensor(void* ptr) {
       if (strstr(nmea, "$GPRMC") != NULL) {
         char* nmea_dup = strdup(nmea);
         char* lat = get_nmea_field(nmea_dup, 3);
-        char* nmea_dup = strdup(nmea);
+        nmea_dup = strdup(nmea);
         char* lon = get_nmea_field(nmea_dup, 5);
         b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
         b_log(INFO, "[THREAD%ld-NMEA]: %%s, %s", gps_thread, lat, lon);
