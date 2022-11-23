@@ -263,9 +263,9 @@ void* handle_logger(void* ptr) {
         char gps_status[40] = {0};
         base = now;
         if (fix) {
-          b_log(INFO, "[THREAD%ld-LOGGER]: SUCCESSFULLY GETTING GPS PULSE");
+          b_log(WARN, "[THREAD%ld-LOGGER]: SUCCESSFULLY GETTING GPS PULSE");
         } else {
-          b_log(INFO, "[THREAD%ld-LOGGER]: FAILING TO GET GPS PULSE");
+          b_log(WARN, "[THREAD%ld-LOGGER]: FAILING TO GET GPS PULSE");
         }
       }
       pthread_rwlock_unlock(&gps_rwlock);
