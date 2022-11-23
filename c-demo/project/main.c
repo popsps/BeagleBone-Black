@@ -214,6 +214,7 @@ void* handle_gps_sensor(void* ptr) {
         char* _number_of_satellites_str = get_nmea_field(nmea, 7);
         char* _altitude_str = get_nmea_field(nmea, 9);
         pthread_rwlock_wrlock(&gps_rwlock);
+        b_log(DEBUG, "[THREAD%ld-NMEA]: fix nmea %s", nmea);
         b_log(DEBUG, "[THREAD%ld-NMEA]: fix: %s %s %s", gps_thread, fix_str, _number_of_satellites_str, _altitude_str);
         // strcpy(number_of_satellites_str, _number_of_satellites_str);
         // strcpy(altitude_str, _altitude_str);
