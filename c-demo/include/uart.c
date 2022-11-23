@@ -66,6 +66,9 @@ char* serial_read_line() {
   while (count <= 0 && i < MAX_SIZE) {
     char c;
     count = read(fd, (void*)(&c), 1);
+    if (count <= 0) {
+      printf("count %d %c\n", count, c);
+    }
     if (c == '\n') {
       char* message = strdup(buffer);
       message[i] = '\0';
