@@ -238,17 +238,21 @@ void* handle_gps_sensor(void* ptr) {
  */
 void* handle_logger(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-LOGGER]: Starting the LOGGER THREAD...", logger_thread);
-  // time_t base = time(0);
-  // time_t now = base;
+  time_t base = time(0);
+  time_t now = base;
   while (1) {
-    // now = time(0);
+    now = time(0);
     // log gps pulse every 7 seconds
-    // if (now - base >= 7) {
-    //   base = now;
-    //   char* gps_status = (fix) ? "GPS getting values" : "GPS is not getting values";
-    //   b_log(INFO, "[THREAD%ld-LOGGER]: %s", gps_status);
-    //   free(gps_status);
-    // }
+    if (now - base >= 7) {
+      char gps_status[24] = {0};
+      base = now;
+      if (fix) {
+        strcpy(gps_status, "GPS getting values");
+      } else {
+        strcpy(gps_status, "GPS is not getting values");
+      }
+      b_log(INFO, "[THREAD%ld-LOGGER]: %s", gps_status)
+    }
     pthread_rwlock_rdlock(&isOn_rwlock);
     // debug
     if (isOn) {
