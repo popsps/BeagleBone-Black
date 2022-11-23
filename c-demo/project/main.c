@@ -71,12 +71,13 @@ int main(int argc, char* argv[]) {
 }
 void init_work_space() {
   struct stat st = {0};
-  logger_init();
-  csv_init();
   if (stat("./data", &st)) {
     b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Data Directory", main_thread);
     mkdir("./data", 0700);
   }
+  logger_init();
+  // csv_init();
+
   // init signal handler for SIGUSR1, SIGINT, and SIGTSTP
   register_signal_handler(sig_handler);
   clean_up();
