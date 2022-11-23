@@ -11,8 +11,8 @@
 #include <unistd.h>
 
 #define MAX_SIZE 1024
-int i = 0;
-char* buffer;
+// int i = 0;
+// char* buffer;
 
 /**
  * read uart 1, 2, 3, 4
@@ -47,8 +47,8 @@ int uart_init(int pin) {
 
   tcflush(fd, TCIFLUSH);             // discard file information not transmitted
   tcsetattr(fd, TCSANOW, &serials);  // changes occur immmediately
-  buffer = malloc(sizeof(char) * MAX_SIZE);
-  memset(buffer, 0, sizeof(char) * MAX_SIZE);
+  // buffer = malloc(sizeof(char) * MAX_SIZE);
+  // memset(buffer, 0, sizeof(char) * MAX_SIZE);
   return 1;
 }
 
@@ -83,7 +83,9 @@ int uart_close() {
 // }
 char* serial_read_line() {
   int count = 0;
-  // printf("I'm here serial_read_line 1 %s\n", buffer);
+  int i = 0;
+  char* buffer = malloc(sizeof(char) * MAX_SIZE);
+  memset(buffer, 0, sizeof(char) * MAX_SIZE);
   while (1) {
     char c;
     count = read(fd, (void*)(&c), 1);
@@ -91,10 +93,8 @@ char* serial_read_line() {
       printf("count %d %c\n", count, c);
       sleep(1);
     } else if (c == '\n') {
-      char* message = strdup(buffer);
-      message[i] = '\0';
-      memset(buffer, 0, sizeof(char) * MAX_SIZE);
-      return message;
+      buffer[i + 1] = '\0';
+      return buffer;
     } else {
       buffer[i] = c;
       i += 1;
