@@ -51,6 +51,9 @@ char* serial_read_line() {
   while (i < 2000 && count < 0) {
     count = read(fd, (void*)(buffer + i), 1);
     // printf("I'm here serial_read_line 2 %s %d\n", buffer, count);
+    if (i > 1976) {
+      printf("I'm here serial_read_line 2 %s\n", buffer);
+    }
     if (buffer[i] == '\n') {
       return buffer;
     } else {
@@ -68,7 +71,7 @@ char* serial_read_line() {
   // memset(buffer, 0, sizeof(char) * 1024);
   // while (1) {
   //   count = read(fd, buffer + i, 1);
-  //   if (buffer[i] == '\n' || i >= count) {
+  //   if (buffer[i] == '\n' || i >= 1024) {
   //     printf("%s", buffer);
   //     memset(buffer, 0, sizeof(char) * 1024);
   //     i = 0;
