@@ -36,6 +36,7 @@ static int isOn = 1;
 static int on_off_button_pressed = 0;
 static int isResetButtonPressed = 0;
 static double millivolts, temp_c, temp_f = 0;
+static char* nmea;
 static char altitude_str[256] = {0};
 static char altitude_unit[256] = {0};
 static char latitude_str[256] = {0};
@@ -180,7 +181,7 @@ void* handle_temperature_sensor(void* ptr) {
       pthread_rwlock_unlock(&temp_rwlock);
     }
     pthread_rwlock_unlock(&isOn_rwlock);
-    sleep(1);
+    sleep(2);
   }
   return NULL;
 }
@@ -192,7 +193,7 @@ void* handle_gps_sensor(void* ptr) {
   uart_init(4);
   sleep(2);
   while (1) {
-    char* nmea = serial_read_line();
+    nmea = serial_read_line();
     if (nmea != NULL && nmea[0] != '\0' && nmea[0] != '\n') {
       // b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
       // b_log(DEBUG, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
@@ -202,6 +203,7 @@ void* handle_gps_sensor(void* ptr) {
         char* lon = get_nmea_field(nmea, 5);
         char* lat_d = get_nmea_field(nmea, 4);
         char* lon_d = get_nmea_field(nmea, 6);
+        b_log(INFO, "[THREAD%ld-NMEA]: fix: %d %s", gps_thread, nmea);
         if (!str_null_or_blank(lat) && !str_null_or_blank(lon) && !str_null_or_blank(lat_d) && !str_null_or_blank(lon_d)) {
           pthread_rwlock_wrlock(&gps_rwlock);
           memset(latitude_str, 0, sizeof(char) * strlen(latitude_str));
@@ -216,6 +218,7 @@ void* handle_gps_sensor(void* ptr) {
         char* _number_of_satellites_str = get_nmea_field(nmea, 7);
         char* _altitude_str = get_nmea_field(nmea, 9);
         char* _altitude_unit = get_nmea_field(nmea, 10);
+        b_log(INFO, "[THREAD%ld-NMEA]: fix: %d %s", gps_thread, nmea);
         if (!str_null_or_blank(fix_str) && !str_null_or_blank(_number_of_satellites_str) &&
             !str_null_or_blank(_altitude_str) && !str_null_or_blank(_altitude_unit)) {
           pthread_rwlock_wrlock(&gps_rwlock);
@@ -223,7 +226,6 @@ void* handle_gps_sensor(void* ptr) {
           strcpy(altitude_str, _altitude_str);
           strcpy(altitude_unit, _altitude_unit);
           fix = atoi(fix_str);
-          // b_log(INFO, "[THREAD%ld-NMEA]: fix: %d %s %s", gps_thread, fix, number_of_satellites_str, altitude_str);
           pthread_rwlock_unlock(&gps_rwlock);
         }
       }
@@ -263,9 +265,9 @@ void* handle_logger(void* ptr) {
         char gps_status[40] = {0};
         base = now;
         if (fix) {
-          b_log(WARN, "[THREAD%ld-LOGGER]: SUCCESSFULLY GETTING GPS PULSE");
+          b_log(INFO, "[THREAD%ld-LOGGER]: SUCCESSFULLY GETTING GPS PULSE", logger_thread);
         } else {
-          b_log(WARN, "[THREAD%ld-LOGGER]: FAILING TO GET GPS PULSE");
+          b_log(WARN, "[THREAD%ld-LOGGER]: FAILING TO GET GPS PULSE", logger_thread);
         }
       }
       pthread_rwlock_unlock(&gps_rwlock);
