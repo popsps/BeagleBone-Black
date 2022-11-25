@@ -11,8 +11,7 @@
 #include <unistd.h>
 
 #define MAX_SIZE 1024
-// int i = 0;
-// char* buffer;
+int fd;
 
 /**
  * read uart 1, 2, 3, 4
