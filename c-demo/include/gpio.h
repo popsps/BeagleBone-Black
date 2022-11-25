@@ -18,7 +18,6 @@
 
 #define SYSFS_GPIO_DIR "/sys/class/gpio"
 #define LDR_PATH "/sys/bus/iio/devices/iio:device0/in_voltage"
-#define UART_PATH "/dev/ttyO"
 #define POLL_TIMEOUT (3 * 1000) /* 3 seconds */
 #define MAX_BUF 64
 
