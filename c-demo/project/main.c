@@ -203,7 +203,6 @@ void* handle_gps_sensor(void* ptr) {
         char* lon = get_nmea_field(nmea, 5);
         char* lat_d = get_nmea_field(nmea, 4);
         char* lon_d = get_nmea_field(nmea, 6);
-        b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
         if (!str_null_or_blank(lat) && !str_null_or_blank(lon) && !str_null_or_blank(lat_d) && !str_null_or_blank(lon_d)) {
           pthread_rwlock_wrlock(&gps_rwlock);
           memset(latitude_str, 0, sizeof(char) * strlen(latitude_str));
@@ -218,7 +217,6 @@ void* handle_gps_sensor(void* ptr) {
         char* _number_of_satellites_str = get_nmea_field(nmea, 7);
         char* _altitude_str = get_nmea_field(nmea, 9);
         char* _altitude_unit = get_nmea_field(nmea, 10);
-        b_log(INFO, "[THREAD%ld-NMEA]: fix: %d %s", gps_thread, nmea);
         if (!str_null_or_blank(fix_str) && !str_null_or_blank(_number_of_satellites_str) &&
             !str_null_or_blank(_altitude_str) && !str_null_or_blank(_altitude_unit)) {
           pthread_rwlock_wrlock(&gps_rwlock);
