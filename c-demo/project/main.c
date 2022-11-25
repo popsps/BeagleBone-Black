@@ -274,7 +274,8 @@ void* handle_logger(void* ptr) {
         } else {
           b_log(WARN, "[THREAD%ld-LOGGER]: FAILING TO GET GPS PULSE", logger_thread);
           pthread_rwlock_rdlock(&nmea_rwlock);
-          b_log(DEBUG, "[THREAD%ld-LOGGER]: NMEA: [%s].", logger_thread, GPGGA_NMEA);
+          // b_log(DEBUG, "[THREAD%ld-LOGGER]: NMEA: [%s].", logger_thread, GPGGA_NMEA);
+          printf( "[THREAD%ld-LOGGER]: NMEA: [%s]\n", logger_thread, GPGGA_NMEA);
           pthread_rwlock_unlock(&nmea_rwlock);
         }
       }
