@@ -36,7 +36,8 @@ static int isOn = 1;
 static int on_off_button_pressed = 0;
 static int isResetButtonPressed = 0;
 static double millivolts, temp_c, temp_f = 0;
-static char* nmea;
+static char GPRMC_NMEA[256] = {0};
+static char GPGGA_NMEA[256] = {0};
 static char altitude_str[256] = {0};
 static char altitude_unit[256] = {0};
 static char latitude_str[256] = {0};
@@ -193,10 +194,8 @@ void* handle_gps_sensor(void* ptr) {
   uart_init(4);
   sleep(2);
   while (1) {
-    nmea = serial_read_line();
+    char* nmea = serial_read_line();
     if (nmea != NULL && nmea[0] != '\0' && nmea[0] != '\n') {
-      // b_log(INFO, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
-      // b_log(DEBUG, "[THREAD%ld-NMEA]: %s", gps_thread, nmea);
       // if NMEA is GPRMC
       if (strstr(nmea, "$GPRMC") != NULL) {
         char* lat = get_nmea_field(nmea, 3);
@@ -206,6 +205,8 @@ void* handle_gps_sensor(void* ptr) {
         if (!str_null_or_blank(lat) && !str_null_or_blank(lon) && !str_null_or_blank(lat_d) && !str_null_or_blank(lon_d)) {
           pthread_rwlock_wrlock(&gps_rwlock);
           memset(latitude_str, 0, sizeof(char) * strlen(latitude_str));
+          memset(GPRMC_NMEA, 0, sizeof(char) * strlen(GPRMC_NMEA));
+          strcpy(GPRMC_NMEA, nmea);
           strcpy(latitude_str, lat);
           strcpy(longitude_str, lon);
           strcpy(latitude_hem, lat_d);
@@ -220,6 +221,8 @@ void* handle_gps_sensor(void* ptr) {
         if (!str_null_or_blank(fix_str) && !str_null_or_blank(_number_of_satellites_str) &&
             !str_null_or_blank(_altitude_str) && !str_null_or_blank(_altitude_unit)) {
           pthread_rwlock_wrlock(&gps_rwlock);
+          memset(GPGGA_NMEA, 0, sizeof(char) * strlen(GPGGA_NMEA));
+          strcpy(GPGGA_NMEA, nmea);
           strcpy(number_of_satellites_str, _number_of_satellites_str);
           strcpy(altitude_str, _altitude_str);
           strcpy(altitude_unit, _altitude_unit);
@@ -265,7 +268,7 @@ void* handle_logger(void* ptr) {
           b_log(INFO, "[THREAD%ld-LOGGER]: SUCCESSFULLY GETTING GPS PULSE", logger_thread);
         } else {
           b_log(WARN, "[THREAD%ld-LOGGER]: FAILING TO GET GPS PULSE", logger_thread);
-          b_log(DEBUG, "[THREAD%ld-LOGGER]: NMEA: [%s]", logger_thread, nmea);
+          b_log(DEBUG, "[THREAD%ld-LOGGER]: NMEA: [%s]", logger_thread, GPGGA_NMEA);
         }
       }
       pthread_rwlock_unlock(&gps_rwlock);
