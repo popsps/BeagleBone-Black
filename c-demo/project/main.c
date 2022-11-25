@@ -245,7 +245,6 @@ void* handle_logger(void* ptr) {
     // debug
     if (isOn) {
       pthread_rwlock_rdlock(&temp_rwlock);
-      // b_log(DEBUG, "[THREAD%ld-LOGGER]: mv=%.2f C=%.2f F=%.2f", logger_thread, millivolts, temp_c, temp_f);
       pthread_rwlock_unlock(&temp_rwlock);
       pthread_rwlock_rdlock(&gps_rwlock);
       // if GPS is working and its values are valid
@@ -266,6 +265,7 @@ void* handle_logger(void* ptr) {
           b_log(INFO, "[THREAD%ld-LOGGER]: SUCCESSFULLY GETTING GPS PULSE", logger_thread);
         } else {
           b_log(WARN, "[THREAD%ld-LOGGER]: FAILING TO GET GPS PULSE", logger_thread);
+          b_log(DEBUG, "[THREAD%ld-LOGGER]: NMEA: [%s]", logger_thread, nmea);
         }
       }
       pthread_rwlock_unlock(&gps_rwlock);
