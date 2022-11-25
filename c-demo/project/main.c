@@ -67,6 +67,7 @@ char* get_nmea_field(char* nmea, int index);
 pthread_rwlock_t isOn_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 pthread_rwlock_t temp_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 pthread_rwlock_t gps_rwlock = PTHREAD_RWLOCK_INITIALIZER;
+pthread_rwlock_t nmea_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 
 int main(int argc, char* argv[]) {
   main_thread = pthread_self();
@@ -198,6 +199,10 @@ void* handle_gps_sensor(void* ptr) {
     if (nmea != NULL && nmea[0] != '\0' && nmea[0] != '\n') {
       // if NMEA is GPRMC
       if (strstr(nmea, "$GPRMC") != NULL) {
+        pthread_rwlock_wrlock(&nmea_rwlock);
+        memset(GPRMC_NMEA, 0, sizeof(char) * strlen(GPRMC_NMEA));
+        strcpy(GPRMC_NMEA, nmea);
+        pthread_rwlock_unlock(&nmea_rwlock);
         char* lat = get_nmea_field(nmea, 3);
         char* lon = get_nmea_field(nmea, 5);
         char* lat_d = get_nmea_field(nmea, 4);
@@ -205,8 +210,6 @@ void* handle_gps_sensor(void* ptr) {
         if (!str_null_or_blank(lat) && !str_null_or_blank(lon) && !str_null_or_blank(lat_d) && !str_null_or_blank(lon_d)) {
           pthread_rwlock_wrlock(&gps_rwlock);
           memset(latitude_str, 0, sizeof(char) * strlen(latitude_str));
-          memset(GPRMC_NMEA, 0, sizeof(char) * strlen(GPRMC_NMEA));
-          strcpy(GPRMC_NMEA, nmea);
           strcpy(latitude_str, lat);
           strcpy(longitude_str, lon);
           strcpy(latitude_hem, lat_d);
@@ -214,6 +217,10 @@ void* handle_gps_sensor(void* ptr) {
           pthread_rwlock_unlock(&gps_rwlock);
         }
       } else if (strstr(nmea, "$GPGGA") != NULL) {
+        pthread_rwlock_wrlock(&nmea_rwlock);
+        memset(GPGGA_NMEA, 0, sizeof(char) * strlen(GPGGA_NMEA));
+        strcpy(GPGGA_NMEA, nmea);
+        pthread_rwlock_unlock(&nmea_rwlock);
         char* fix_str = get_nmea_field(nmea, 6);
         char* _number_of_satellites_str = get_nmea_field(nmea, 7);
         char* _altitude_str = get_nmea_field(nmea, 9);
@@ -221,8 +228,6 @@ void* handle_gps_sensor(void* ptr) {
         if (!str_null_or_blank(fix_str) && !str_null_or_blank(_number_of_satellites_str) &&
             !str_null_or_blank(_altitude_str) && !str_null_or_blank(_altitude_unit)) {
           pthread_rwlock_wrlock(&gps_rwlock);
-          memset(GPGGA_NMEA, 0, sizeof(char) * strlen(GPGGA_NMEA));
-          strcpy(GPGGA_NMEA, nmea);
           strcpy(number_of_satellites_str, _number_of_satellites_str);
           strcpy(altitude_str, _altitude_str);
           strcpy(altitude_unit, _altitude_unit);
@@ -268,7 +273,9 @@ void* handle_logger(void* ptr) {
           b_log(INFO, "[THREAD%ld-LOGGER]: SUCCESSFULLY GETTING GPS PULSE", logger_thread);
         } else {
           b_log(WARN, "[THREAD%ld-LOGGER]: FAILING TO GET GPS PULSE", logger_thread);
+          pthread_rwlock_rdlock(&nmea_rwlock);
           b_log(DEBUG, "[THREAD%ld-LOGGER]: NMEA: [%s]", logger_thread, GPGGA_NMEA);
+          pthread_rwlock_unlock(&nmea_rwlock);
         }
       }
       pthread_rwlock_unlock(&gps_rwlock);
