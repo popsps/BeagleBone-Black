@@ -233,6 +233,7 @@ void* handle_gps_sensor(void* ptr) {
   while (1) {
     char* nmea = serial_read_line();
     if (nmea != NULL && nmea[0] != '\0' && nmea[0] != '\n') {
+      b_log(DEBUG, "[THREAD%ld-ACTION]: %s", gps_thread, nmea);
       // if NMEA is GPRMC
       if (strstr(nmea, "$GPRMC") != NULL) {
         pthread_rwlock_wrlock(&nmea_rwlock);
