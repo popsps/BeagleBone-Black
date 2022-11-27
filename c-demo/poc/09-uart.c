@@ -94,8 +94,10 @@ int main(int argc, char* argv[]) {
   sleep(1);
   unsigned char transmit[256] = {0};  // the string to send
   strcpy(transmit, UPDATE_200_msec);
+  printf("set configuration %s %d\n", transmit, strlen(transmit) + 1);
   count = write(file, &transmit, strlen(transmit) + 1);
   sleep(1);
+  printf("set configuration %s %d\n", transmit, strlen(transmit) + 1);
   strcpy(transmit, MEAS_200_msec);
   count = write(file, &transmit, strlen(transmit) + 1);
   sleep(1);
