@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
         memset(buffer, 0, sizeof(buffer));
         i = 0;
       } else {
-        i += count;
+        i += 1;
       }
     }
   }
