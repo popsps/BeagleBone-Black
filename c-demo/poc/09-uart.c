@@ -48,8 +48,7 @@ int main(int argc, char* argv[]) {
     return -2;
   }
   file = open("/dev/ttyO4", O_RDWR | O_NOCTTY | O_NDELAY);
-  FILE* fp = fopen("/dev/ttyO4", "r+");
-  // FILE* fp = fopen("/dev/ttyO4", "w+");
+  // FILE* fp = fopen("/dev/ttyO4", "r+");
   if (file < 0) {
     perror("UART: Failed to open the device.\n");
     return -1;
@@ -69,11 +68,12 @@ int main(int argc, char* argv[]) {
   // count = fprintf(f 09p, "\n");
   // count = fprintf(fp, "%s", argv[1]);
   printf("sleep thread for letting uart to catch up...\n");
-  sleep(4);
-  unsigned char transmit[40] = "$PMTK220,1000*1F\r\n";  // the string to send
-  count = write(file, &transmit, 40);
   sleep(1);
-  strcpy(transmit, "$PMTK300,1000,0,0,0,0*1C\r\n");
+  unsigned char transmit[256] = "$PMTK220,1000*1F\r\n";  // the string to send
+  // count = write(file, &transmit, 40);
+  // sleep(1);
+  // strcpy(transmit, "$PMTK300,1000,0,0,0,0*1C\r\n");
+  strcpy(transmit, "$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
   count = write(file, &transmit, 40);
   if (count < 0) {  // send the string
     perror("Failed to write to the output\n");
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
   } else {
     printf("writing serial configuration was successfull.\n");
   }
-  sleep(2);
+  sleep(1);
   usleep(100000);
   // fseek(fp, 0, SEEK_SET);
   unsigned char receive[1024] = {0};  // declare a buffer for receiving data
@@ -91,19 +91,7 @@ int main(int argc, char* argv[]) {
   count = 0;
   int c = 0;
   int i = 0;
-  // while (1) {
-  //   count = read(file, (void*)buffer, 5);
-  //   if (count < 0) {  // receive the data
-  //     perror("Failed to read from the input\n");
-  //     return -1;
-  //   }
-  //   if (count > 0) {
-  //     printf("rec: [%d]: %s\n", count, receive);
-  //     snprintf(output, sizeof(output), LDR_PATH "%s%s", output, buffer);
-  //     strncat(output, buffer, strlen(buffer));
-  //     memset(buffer, 0, sizeof(buffer));
-  //   }
-  // }
+
   memset(buffer, 0, sizeof(buffer));
   while (1) {
     count = read(file, buffer + i, 1);
@@ -136,3 +124,17 @@ int main(int argc, char* argv[]) {
   printf("Finished sending the message, exiting %d.\n", count);
   return 0;
 }
+
+  // while (1) {
+  //   count = read(file, (void*)buffer, 5);
+  //   if (count < 0) {  // receive the data
+  //     perror("Failed to read from the input\n");
+  //     return -1;
+  //   }
+  //   if (count > 0) {
+  //     printf("rec: [%d]: %s\n", count, receive);
+  //     snprintf(output, sizeof(output), LDR_PATH "%s%s", output, buffer);
+  //     strncat(output, buffer, strlen(buffer));
+  //     memset(buffer, 0, sizeof(buffer));
+  //   }
+  // }
