@@ -107,7 +107,9 @@ int main(int argc, char* argv[]) {
       utcTimeInfo = gmtime(&current_time);
       char timeInfoBuffer[25] = {0};
       strftime(timeInfoBuffer, sizeof(timeInfoBuffer), "%Y-%m-%d %H:%M:%S", utcTimeInfo);
-      printf("%s - %s", timeInfoBuffer, buffer);
+      if (buffer != NULL && buffer[0] != '\0') {
+        printf("%s - %s", timeInfoBuffer, buffer);
+      }
       memset(buffer, 0, sizeof(buffer));
       i = 0;
     } else {
