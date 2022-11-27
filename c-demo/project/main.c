@@ -82,12 +82,12 @@ void init_work_space() {
   // create the data directory
   if (stat("./data", &std) == -1) {
     shell_print(BBLACK, "[THREAD%ld-MAIN]: Instantiating the 'data' Directory", main_thread);
-    mkdir("./data", 0700);
+    mkdir("./data", 0755);
   }
   // create the logs directory
   if (stat("./logs", &stl) == -1) {
     shell_print(BBLACK, "[THREAD%ld-MAIN]: Instantiating the 'logs' Directory", main_thread);
-    mkdir("./logs", 0700);
+    mkdir("./logs", 0755);
   }
   csv_init();
   logger_init();
