@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
         strftime(timeInfoBuffer, sizeof(timeInfoBuffer), "%Y-%m-%d %H:%M:%S", utcTimeInfo);
         if (buffer != NULL && buffer[0] != '\0') {
            buffer[i] = '\0';
-          printf("%s - %s", timeInfoBuffer, buffer);
+          printf("%s - %s\n", timeInfoBuffer, buffer);
           // printf("%s", buffer);
         }
         memset(buffer, 0, sizeof(buffer));
