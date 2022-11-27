@@ -71,6 +71,7 @@ int serial_flush() {
   if (status <= 0) {
     perror("UART: Failed to flush the UART buffer.\n");
   }
+  return status;
 }
 
 // char* serial_read_line() {
