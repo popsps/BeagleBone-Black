@@ -68,7 +68,7 @@ int uart_close() {
 
 int serial_flush() {
   int status = tcflush(fd, TCIOFLUSH);
-  if (status <= 0) {
+  if (status < 0) {
     perror("UART: Failed to flush the UART buffer.\n");
   }
   return status;
