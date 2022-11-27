@@ -113,6 +113,7 @@ char* serial_read_line() {
       i += 1;
     }
   }
+  free(buffer);
   return NULL;
 }
 
