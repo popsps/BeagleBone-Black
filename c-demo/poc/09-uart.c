@@ -59,7 +59,8 @@ int main(int argc, char* argv[]) {
   // Set up the communications options:
   // 9600 baud, 8-bit, enable receiver, no modem control lines
   options.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
-  options.c_iflag = IGNPAR | ICRNL;    // ignore partity errors, CR -> newline
+  options.c_iflag = IGNPAR | ICRNL;  // ignore partity errors, CR -> newline
+  // TCIFLUSH flushes data received but not read.
   tcflush(file, TCIFLUSH);             // discard file information not transmitted
   tcsetattr(file, TCSANOW, &options);  // changes occur immmediately
   // send the string plus the null character
@@ -84,6 +85,7 @@ int main(int argc, char* argv[]) {
   //   printf("writing serial configuration was successfull.\n");
   // }
   sleep(2);  // required to make flush work, for some reason
+  // TCIOFLUS flushes both data received but not read, and data written but not transmitted.
   tcflush(file, TCIOFLUSH);
   usleep(100000);
   // fseek(fp, 0, SEEK_SET);
@@ -113,6 +115,7 @@ int main(int argc, char* argv[]) {
           printf("%s - %s\n", timeInfoBuffer, buffer);
           // printf("%s", buffer);
         }
+        tcflush(file, TCIOFLUSH);
         memset(buffer, 0, sizeof(buffer));
         i = 0;
       } else {
