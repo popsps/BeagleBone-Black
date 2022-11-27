@@ -80,8 +80,7 @@ int main(int argc, char* argv[]) {
   // options.c_cflag = B1152000 | CS8 | CREAD | CLOCAL;
   // Set up the communications options:
   // 9600 baud, 8-bit, enable receiver, no modem control lines
-  // options.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
-  options.c_cflag = B57600 | CS8 | CREAD | CLOCAL;
+  options.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
   options.c_iflag = IGNPAR | ICRNL;  // ignore partity errors, CR -> newline
   // TCIFLUSH flushes data received but not read.
   tcflush(file, TCIFLUSH);             // discard file information not transmitted
@@ -91,6 +90,15 @@ int main(int argc, char* argv[]) {
   // count = write(file, argv[1], strlen(argv[1]) + 1);
   // count = fprintf(f 09p, "\n");
   // count = fprintf(fp, "%s", argv[1]);
+
+  speed_t baud_rate = cfgetispeed(&options);
+  printf("current baud rate: %ld", baud_rate);
+  if (cfsetispeed(&options, B57600) < 0) {
+    perror("Input baud rate not successfully set.\n");
+  }
+  baud_rate = cfgetispeed(&options);
+  printf("current baud rate: %ld", baud_rate);
+
   printf("sleep thread for letting uart to catch up...\n");
   sleep(1);
   unsigned char transmit[256] = {0};  // the string to send
