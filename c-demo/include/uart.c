@@ -50,8 +50,8 @@ int uart_init(int pin) {
     perror("Input baud rate not successfully set.\n");
   }
   baud_rate = cfgetispeed(&serials);
-  printf("Initilizing Serial connection with Baud Rate: %ld\n", baud_rate);
-  b_log(DEBUG, "Initilizing Serial connection with Baud Rate: %ld", baud_rate);
+  printf("Initilizing Serial connection with Baud Rate: %d\n", baud_rate);
+  b_log(DEBUG, "Initilizing Serial connection with Baud Rate: %d", baud_rate);
 
   tcflush(fd, TCIFLUSH);             // discard file information not transmitted
   tcsetattr(fd, TCSANOW, &serials);  // changes occur immmediately
