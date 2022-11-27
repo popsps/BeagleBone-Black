@@ -80,7 +80,8 @@ int main(int argc, char* argv[]) {
   // options.c_cflag = B1152000 | CS8 | CREAD | CLOCAL;
   // Set up the communications options:
   // 9600 baud, 8-bit, enable receiver, no modem control lines
-  options.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
+  // options.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
+  options.c_cflag = B57600 | CS8 | CREAD | CLOCAL;
   options.c_iflag = IGNPAR | ICRNL;  // ignore partity errors, CR -> newline
   // TCIFLUSH flushes data received but not read.
   tcflush(file, TCIFLUSH);             // discard file information not transmitted
