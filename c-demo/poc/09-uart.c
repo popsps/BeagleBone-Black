@@ -73,14 +73,14 @@ int main(int argc, char* argv[]) {
   // count = write(file, &transmit, 40);
   // sleep(1);
   // strcpy(transmit, "$PMTK300,1000,0,0,0,0*1C\r\n");
-  strcpy(transmit, "$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
-  count = write(file, &transmit, 40);
-  if (count < 0) {  // send the string
-    perror("Failed to write to the output\n");
-    return -1;
-  } else {
-    printf("writing serial configuration was successfull.\n");
-  }
+  // strcpy(transmit, "$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
+  // count = write(file, &transmit, 40);
+  // if (count < 0) {  // send the string
+  //   perror("Failed to write to the output\n");
+  //   return -1;
+  // } else {
+  //   printf("writing serial configuration was successfull.\n");
+  // }
   sleep(1);
   usleep(100000);
   // fseek(fp, 0, SEEK_SET);
