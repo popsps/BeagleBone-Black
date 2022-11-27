@@ -126,6 +126,7 @@ int main(int argc, char* argv[]) {
     if (count <= 0) {
       sleep(1);
     } else {
+      // NMEA sentences end with \r\n. both \r and \n are considered \n
       if (buffer[i] == '\n') {
         time_t current_time;
         struct tm* utcTimeInfo;
@@ -133,9 +134,9 @@ int main(int argc, char* argv[]) {
         utcTimeInfo = gmtime(&current_time);
         char timeInfoBuffer[25] = {0};
         strftime(timeInfoBuffer, sizeof(timeInfoBuffer), "%Y-%m-%d %H:%M:%S", utcTimeInfo);
-        if (buffer != NULL && buffer[0] != '\n' &&  buffer[0] != '\0') {
+        if (buffer != NULL && buffer[0] != '\n' && buffer[0] != '\0') {
           buffer[i] = '\0';
-          printf("%s - buf[0]: %hhX; buf[i]: %hhX %s\n", timeInfoBuffer, buffer[0], buffer[i], buffer);
+          printf("%s - %s\n", timeInfoBuffer, buffer);
           // printf("%s", buffer);
         }
         // tcflush(file, TCIOFLUSH);
