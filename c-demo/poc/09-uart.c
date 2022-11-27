@@ -73,7 +73,9 @@ int main(int argc, char* argv[]) {
   count = write(file, &transmit, strlen(transmit) + 1);
   sleep(1);
   strcpy(transmit, "$PMTK300,5000,0,0,0,0*18\r\n");
-  // strcpy(transmit, "$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
+  count = write(file, &transmit, strlen(transmit) + 1);
+  sleep(1);
+  strcpy(transmit, "$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
   count = write(file, &transmit, strlen(transmit) + 1);
   if (count < 0) {  // send the string
     perror("Failed to write to the output\n");
@@ -81,7 +83,8 @@ int main(int argc, char* argv[]) {
   } else {
     printf("writing serial configuration was successfull.\n");
   }
-  sleep(3);
+  sleep(2);  // required to make flush work, for some reason
+  tcflush(file, TCIOFLUSH);
   usleep(100000);
   // fseek(fp, 0, SEEK_SET);
   unsigned char receive[1024] = {0};  // declare a buffer for receiving data
