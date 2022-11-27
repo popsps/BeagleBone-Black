@@ -35,13 +35,13 @@ class GPS:
         # This set is used to set the rate the GPS reports
         self.UPDATE_10_sec = "$PMTK220,10000*2F\r\n".encode()  # Update Every 10 Seconds
         self.UPDATE_5_sec = "$PMTK220,5000*1B\r\n".encode()   # Update Every 5 Seconds
-        self.UPDATE_1_sec = "$PMTK220,1000*1F\r\n" .encode()  # Update Every One Second
+        self.UPDATE_1_sec = "$PMTK220,1000*1F\r\n".encode()  # Update Every One Second
         self.UPDATE_200_msec = "$PMTK220,200*2C\r\n".encode()   # Update Every 200 Milliseconds
         # This set is used to set the rate the GPS takes measurements
-        self.MEAS_10_sec = "$PMTK300,10000,0,0,0,0*2C\r\n" .encode()  # Measure every 10 seconds
+        self.MEAS_10_sec = "$PMTK300,10000,0,0,0,0*2C\r\n".encode()  # Measure every 10 seconds
         self.MEAS_5_sec = "$PMTK300,5000,0,0,0,0*18\r\n".encode()   # Measure every 5 seconds
         self.MEAS_1_sec = "$PMTK300,1000,0,0,0,0*1C\r\n".encode()   # Measure once a second
-        self.MEAS_200_msec = "$PMTK300,200,0,0,0,0*2F\r\n" .encode()  # Measure 5 times a second
+        self.MEAS_200_msec = "$PMTK300,200,0,0,0,0*2F\r\n".encode()  # Measure 5 times a second
         # Set the Baud Rate of GPS
         self.BAUD_57600 = "$PMTK251,57600*2C\r\n".encode()   # Set Baud Rate at 57600
         # default

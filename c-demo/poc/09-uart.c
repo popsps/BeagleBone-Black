@@ -56,10 +56,10 @@ int main(int argc, char* argv[]) {
   }
   struct termios options;
   tcgetattr(file, &options);
-  // options.c_cflag = B1152000 | CS8 | CREAD | CLOCAL;
+  options.c_cflag = B1152000 | CS8 | CREAD | CLOCAL;
   // Set up the communications options:
   // 9600 baud, 8-bit, enable receiver, no modem control lines
-  options.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
+  // options.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
   options.c_iflag = IGNPAR | ICRNL;    // ignore partity errors, CR -> newline
   tcflush(file, TCIFLUSH);             // discard file information not transmitted
   tcsetattr(file, TCSANOW, &options);  // changes occur immmediately
@@ -68,13 +68,16 @@ int main(int argc, char* argv[]) {
   // count = write(file, argv[1], strlen(argv[1]) + 1);
   // count = fprintf(f 09p, "\n");
   // count = fprintf(fp, "%s", argv[1]);
-  unsigned char transmit[18] = "Hello BeagleBone!";  // the string to send
-  // if ((count = write(file, &transmit, 18)) < 0) {    // send the string
-  //   perror("Failed to write to the output\n");
-  //   return -1;
-  // } else {
-  //   printf("writing serial configuration was successfull.\n");
-  // }
+  printf("sleep thread for letting uart to catch up...\n");
+  sleep(4);
+  unsigned char transmit[40] = "$PMTK220,5000*1B\r\n";  // the string to send
+  if ((count = write(file, &transmit, 18)) < 0) {       // send the string
+    perror("Failed to write to the output\n");
+    return -1;
+  } else {
+    printf("writing serial configuration was successfull.\n");
+  }
+  sleep(2);
   usleep(100000);
   // fseek(fp, 0, SEEK_SET);
   unsigned char receive[1024] = {0};  // declare a buffer for receiving data
@@ -111,7 +114,7 @@ int main(int argc, char* argv[]) {
         char timeInfoBuffer[25] = {0};
         strftime(timeInfoBuffer, sizeof(timeInfoBuffer), "%Y-%m-%d %H:%M:%S", utcTimeInfo);
         if (buffer != NULL && buffer[0] != '\0') {
-           buffer[i] = '\0';
+          buffer[i] = '\0';
           printf("%s - %s\n", timeInfoBuffer, buffer);
           // printf("%s", buffer);
         }
