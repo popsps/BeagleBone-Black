@@ -70,20 +70,20 @@ int main(int argc, char* argv[]) {
   // count = fprintf(fp, "%s", argv[1]);
   printf("sleep thread for letting uart to catch up...\n");
   sleep(1);
-  // unsigned char transmit[256] = "$PMTK220,5000*1B\r\n";  // the string to send
-  // count = write(file, &transmit, strlen(transmit) + 1);
-  // sleep(1);
-  // strcpy(transmit, "$PMTK300,5000,0,0,0,0*18\r\n");
-  // count = write(file, &transmit, strlen(transmit) + 1);
-  // sleep(1);
+  unsigned char transmit[256] = "$PMTK220,5000*1B\r\n";  // the string to send
+  count = write(file, &transmit, strlen(transmit) + 1);
+  sleep(1);
+  strcpy(transmit, "$PMTK300,5000,0,0,0,0*18\r\n");
+  count = write(file, &transmit, strlen(transmit) + 1);
+  sleep(1);
   // strcpy(transmit, "$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
   // count = write(file, &transmit, strlen(transmit) + 1);
-  // if (count < 0) {  // send the string
-  //   perror("Failed to write to the output\n");
-  //   return -1;
-  // } else {
-  //   printf("writing serial configuration was successfull.\n");
-  // }
+  if (count < 0) {  // send the string
+    perror("Failed to write to the output\n");
+    return -1;
+  } else {
+    printf("writing serial configuration was successfull.\n");
+  }
   sleep(2);  // required to make flush work, for some reason
   // TCIOFLUS flushes both data received but not read, and data written but not transmitted.
   tcflush(file, TCIOFLUSH);
