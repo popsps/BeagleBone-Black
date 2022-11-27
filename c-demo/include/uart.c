@@ -66,6 +66,13 @@ int uart_close() {
   return status;
 }
 
+int serial_flush() {
+  int status = tcflush(fd, TCIOFLUSH);
+  if (status <= 0) {
+    perror("UART: Failed to flush the UART buffer.\n");
+  }
+}
+
 // char* serial_read_line() {
 //   int count = 0;
 //   // printf("I'm here serial_read_line 1 %s\n", buffer);

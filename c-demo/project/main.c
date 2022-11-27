@@ -229,6 +229,9 @@ void* handle_temperature_sensor(void* ptr) {
 void* handle_gps_sensor(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the GPS Thread...", gps_thread);
   uart_init(4);
+  // Set GPS to only send GPRMC and GPGGA NMEA sentences
+  serial_write(GPRMC_GPGGA);
+  serial_flush();
   sleep(2);
   while (1) {
     char* nmea = serial_read_line();
