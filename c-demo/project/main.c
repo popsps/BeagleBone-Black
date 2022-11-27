@@ -98,8 +98,10 @@ void init_work_space() {
   initialize_gpio_pins();
 }
 void clean_work_space() {
+  uart_close();
   logger_close();
   cvs_close();
+  destroy_threads();
 }
 
 /**
