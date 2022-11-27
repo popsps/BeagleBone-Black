@@ -45,11 +45,10 @@ int uart_init(int pin) {
   // Set up the communications serials:
   // 9600 baud, 8-bit, enable receiver, no modem control lines
 
+  // if (cfsetispeed(&serials, B57600) < 0) {
+  //   perror("Input baud rate not successfully set.\n");
+  // }
   speed_t baud_rate = cfgetispeed(&serials);
-  if (cfsetispeed(&serials, B57600) < 0) {
-    perror("Input baud rate not successfully set.\n");
-  }
-  baud_rate = cfgetispeed(&serials);
   b_log(DEBUG, "Initilizing Serial connection with Baud Rate: %d", baud_rate);
 
   tcflush(fd, TCIFLUSH);             // discard file information not transmitted
