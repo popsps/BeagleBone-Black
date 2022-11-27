@@ -103,9 +103,9 @@ int main(int argc, char* argv[]) {
   sleep(1);
   unsigned char transmit[256] = {0};  // the string to send
 
-  // strcpy(transmit, BAUD_57600);
-  // count = write(file, &transmit, strlen(transmit) + 1);
-  // sleep(1);
+  strcpy(transmit, BAUD_57600);
+  count = write(file, &transmit, strlen(transmit) + 1);
+  sleep(1);
 
   strcpy(transmit, UPDATE_200_msec);
   count = write(file, &transmit, strlen(transmit) + 1);
