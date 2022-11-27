@@ -101,7 +101,6 @@ void clean_work_space() {
   uart_close();
   logger_close();
   cvs_close();
-  destroy_threads();
 }
 
 /**
