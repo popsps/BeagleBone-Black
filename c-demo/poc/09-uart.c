@@ -93,9 +93,9 @@ int main(int argc, char* argv[]) {
 
   speed_t baud_rate = cfgetispeed(&options);
   printf("current baud rate: %ld\n", baud_rate);
-  // if (cfsetispeed(&options, B57600) < 0) {
-  //   perror("Input baud rate not successfully set.\n");
-  // }
+  if (cfsetispeed(&options, B57600) < 0) {
+    perror("Input baud rate not successfully set.\n");
+  }
   baud_rate = cfgetispeed(&options);
   printf("current baud rate: %ld\n", baud_rate);
 
