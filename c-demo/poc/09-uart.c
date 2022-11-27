@@ -92,10 +92,11 @@ int main(int argc, char* argv[]) {
   // count = fprintf(fp, "%s", argv[1]);
   printf("sleep thread for letting uart to catch up...\n");
   sleep(1);
-  unsigned char transmit[256] = "$PMTK220,5000*1B\r\n";  // the string to send
+  unsigned char transmit[256] = {0};  // the string to send
+  strcpy(transmit, UPDATE_200_msec);
   count = write(file, &transmit, strlen(transmit) + 1);
   sleep(1);
-  strcpy(transmit, "$PMTK300,5000,0,0,0,0*18\r\n");
+  strcpy(transmit, MEAS_200_msec);
   count = write(file, &transmit, strlen(transmit) + 1);
   sleep(1);
   // strcpy(transmit, "$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
