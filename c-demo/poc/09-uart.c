@@ -135,7 +135,7 @@ int main(int argc, char* argv[]) {
         strftime(timeInfoBuffer, sizeof(timeInfoBuffer), "%Y-%m-%d %H:%M:%S", utcTimeInfo);
         if (buffer != NULL && buffer[0] != '\0') {
           buffer[i] = '\0';
-          printf("%s - buf[0]: %c; %s\n", timeInfoBuffer, buffer[0], buffer);
+          printf("%s - buf[0]: %x; %s\n", timeInfoBuffer, buffer[0], buffer);
           // printf("%s", buffer);
         }
         // tcflush(file, TCIOFLUSH);
