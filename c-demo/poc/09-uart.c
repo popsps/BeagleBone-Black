@@ -72,6 +72,8 @@ int main(int argc, char* argv[]) {
   if ((count = write(file, &transmit, 18)) < 0) {    // send the string
     perror("Failed to write to the output\n");
     return -1;
+  } else {
+    printf("writing serial configuration was successfull.\n");
   }
   usleep(100000);
   // fseek(fp, 0, SEEK_SET);
@@ -99,7 +101,13 @@ int main(int argc, char* argv[]) {
   while (1) {
     count = read(file, buffer + i, 1);
     if (buffer[i] == '\n') {
-      printf("%s", buffer);
+      time_t current_time;
+      struct tm* utcTimeInfo;
+      current_time = time(0);
+      utcTimeInfo = gmtime(&current_time);
+      char timeInfoBuffer[25] = {0};
+      strftime(timeInfoBuffer, sizeof(timeInfoBuffer), "%Y-%m-%d %H:%M:%S", utcTimeInfo);
+      printf("%s - %s", timeInfoBuffer, buffer);
       memset(buffer, 0, sizeof(buffer));
       i = 0;
     } else {
