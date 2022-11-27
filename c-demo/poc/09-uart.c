@@ -92,12 +92,12 @@ int main(int argc, char* argv[]) {
   // count = fprintf(fp, "%s", argv[1]);
 
   speed_t baud_rate = cfgetispeed(&options);
-  printf("current baud rate: %ld", baud_rate);
+  printf("current baud rate: %ld\n", baud_rate);
   if (cfsetispeed(&options, B57600) < 0) {
     perror("Input baud rate not successfully set.\n");
   }
   baud_rate = cfgetispeed(&options);
-  printf("current baud rate: %ld", baud_rate);
+  printf("current baud rate: %ld\n", baud_rate);
 
   printf("sleep thread for letting uart to catch up...\n");
   sleep(1);
