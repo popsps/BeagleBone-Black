@@ -108,10 +108,10 @@ time.sleep(1)
 # serial port is capable of transferring a maximum of 57600 bits per second
 ser.baudrate = 57600
 # How often it reports
-ser.write(myGPS.UPDATE_5_sec)
+ser.write(myGPS.UPDATE_200_msec)
 time.sleep(1)
 # How often the GPS makes measurements
-ser.write(myGPS.MEAS_5_sec)
+ser.write(myGPS.MEAS_200_msec)
 time.sleep(1)
 # ser.write(myGPS.GPRMC_ONLY)
 ser.write(myGPS.GPRMC_GPGGA)
