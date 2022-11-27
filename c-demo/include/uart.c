@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <logging.h>
 #include <poll.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,6 +44,13 @@ int uart_init(int pin) {
   // serials.c_cflag = B1152000 | CS8 | CREAD | CLOCAL;
   // Set up the communications serials:
   // 9600 baud, 8-bit, enable receiver, no modem control lines
+
+  speed_t baud_rate = cfgetispeed(&serials);
+  if (cfsetispeed(&serials, B57600) < 0) {
+    perror("Input baud rate not successfully set.\n");
+  }
+  baud_rate = cfgetispeed(&serials);
+  b_log(DEBUG, "Initilizing Serial connection with Baud Rate: %ld", baud_rate);
 
   tcflush(fd, TCIFLUSH);             // discard file information not transmitted
   tcsetattr(fd, TCSANOW, &serials);  // changes occur immmediately

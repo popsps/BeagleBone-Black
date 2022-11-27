@@ -27,7 +27,7 @@
 #define OFF_LIGHT P9_23
 #define ON_OFF_BUTTON_PIN P9_15
 
-void clean_up();
+void clean_up_gpio_pins();
 void initialize_gpio_pins();
 void unset_signal();
 void sig_handler(int sig);
@@ -94,7 +94,7 @@ void init_work_space() {
 
   // init signal handler for SIGUSR1, SIGINT, and SIGTSTP
   register_signal_handler(sig_handler);
-  clean_up();
+  clean_up_gpio_pins();
   initialize_gpio_pins();
 }
 void clean_work_space() {
@@ -145,7 +145,7 @@ void destroy_threads() {
   pthread_join(logger_thread, NULL);
   pthread_join(action_thread, NULL);
 }
-void clean_up() {
+void clean_up_gpio_pins() {
   gpio_unexport(ON_LIGHT);
   gpio_unexport(OFF_LIGHT);
   gpio_unexport(ON_OFF_BUTTON_PIN);
