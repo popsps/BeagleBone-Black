@@ -70,8 +70,12 @@ int main(int argc, char* argv[]) {
   // count = fprintf(fp, "%s", argv[1]);
   printf("sleep thread for letting uart to catch up...\n");
   sleep(4);
-  unsigned char transmit[40] = "$PMTK220,5000*1B\r\n";  // the string to send
-  if ((count = write(file, &transmit, 18)) < 0) {       // send the string
+  unsigned char transmit[40] = "$PMTK220,1000*1F\r\n";  // the string to send
+  count = write(file, &transmit, 40);
+  sleep(1);
+  strcpy(transmit, "$PMTK300,1000,0,0,0,0*1C\r\n");
+  count = write(file, &transmit, 40);
+  if (count < 0) {  // send the string
     perror("Failed to write to the output\n");
     return -1;
   } else {
