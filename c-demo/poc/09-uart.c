@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
   } else {
     printf("writing serial configuration was successfull.\n");
   }
-  sleep(1);
+  sleep(3);
   usleep(100000);
   // fseek(fp, 0, SEEK_SET);
   unsigned char receive[1024] = {0};  // declare a buffer for receiving data
