@@ -227,7 +227,7 @@ void* handle_temperature_sensor(void* ptr) {
  * handle logic for the gps sensor
  */
 void* handle_gps_sensor(void* ptr) {
-  b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the GPS Thread...", gps_thread);
+  b_log(DEBUG, "[THREAD%ld-GPS]: Starting the GPS Thread...", gps_thread);
   uart_init(4);
   // Set GPS to only send GPRMC and GPGGA NMEA sentences
   serial_write(GPRMC_GPGGA);
@@ -236,7 +236,7 @@ void* handle_gps_sensor(void* ptr) {
   while (1) {
     char* nmea = serial_read_line();
     if (nmea != NULL && nmea[0] != '\0' && nmea[0] != '\n') {
-      b_log(DEBUG, "[THREAD%ld-ACTION]: %s", gps_thread, nmea);
+      // b_log(DEBUG, "[THREAD%ld-GPS]: %s", gps_thread, nmea);
       // if NMEA is GPRMC
       if (strstr(nmea, "$GPRMC") != NULL) {
         pthread_rwlock_wrlock(&nmea_rwlock);
@@ -312,6 +312,10 @@ void* handle_logger(void* ptr) {
         base = now;
         if (fix) {
           b_log(INFO, "[THREAD%ld-LOGGER]: SUCCESSFULLY GETTING GPS PULSE", logger_thread);
+          pthread_rwlock_rdlock(&nmea_rwlock);
+          b_log(DEBUG, "[THREAD%ld-LOGGER]: -NMEA- %s", logger_thread, GPGGA_NMEA);
+          b_log(DEBUG, "[THREAD%ld-LOGGER]: -NMEA- %s", logger_thread, GPRMC_NMEA);
+          pthread_rwlock_unlock(&nmea_rwlock);
         } else {
           b_log(WARN, "[THREAD%ld-LOGGER]: FAILING TO GET GPS PULSE", logger_thread);
           pthread_rwlock_rdlock(&nmea_rwlock);
