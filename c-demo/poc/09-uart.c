@@ -69,12 +69,12 @@ int main(int argc, char* argv[]) {
   // count = fprintf(f 09p, "\n");
   // count = fprintf(fp, "%s", argv[1]);
   unsigned char transmit[18] = "Hello BeagleBone!";  // the string to send
-  if ((count = write(file, &transmit, 18)) < 0) {    // send the string
-    perror("Failed to write to the output\n");
-    return -1;
-  } else {
-    printf("writing serial configuration was successfull.\n");
-  }
+  // if ((count = write(file, &transmit, 18)) < 0) {    // send the string
+  //   perror("Failed to write to the output\n");
+  //   return -1;
+  // } else {
+  //   printf("writing serial configuration was successfull.\n");
+  // }
   usleep(100000);
   // fseek(fp, 0, SEEK_SET);
   unsigned char receive[1024] = {0};  // declare a buffer for receiving data
@@ -100,20 +100,26 @@ int main(int argc, char* argv[]) {
   memset(buffer, 0, sizeof(buffer));
   while (1) {
     count = read(file, buffer + i, 1);
-    if (buffer[i] == '\n') {
-      time_t current_time;
-      struct tm* utcTimeInfo;
-      current_time = time(0);
-      utcTimeInfo = gmtime(&current_time);
-      char timeInfoBuffer[25] = {0};
-      strftime(timeInfoBuffer, sizeof(timeInfoBuffer), "%Y-%m-%d %H:%M:%S", utcTimeInfo);
-      if (buffer != NULL && buffer[0] != '\0') {
-        printf("%s - %s", timeInfoBuffer, buffer);
-      }
-      memset(buffer, 0, sizeof(buffer));
-      i = 0;
+    if (count <= 0) {
+      sleep(1);
     } else {
-      i += count;
+      if (buffer[i] == '\n') {
+        time_t current_time;
+        struct tm* utcTimeInfo;
+        current_time = time(0);
+        utcTimeInfo = gmtime(&current_time);
+        char timeInfoBuffer[25] = {0};
+        strftime(timeInfoBuffer, sizeof(timeInfoBuffer), "%Y-%m-%d %H:%M:%S", utcTimeInfo);
+        if (buffer != NULL && buffer[0] != '\0') {
+           buffer[i] = '\0';
+          printf("%s - %s", timeInfoBuffer, buffer);
+          // printf("%s", buffer);
+        }
+        memset(buffer, 0, sizeof(buffer));
+        i = 0;
+      } else {
+        i += count;
+      }
     }
   }
   printf("buffer read: %s; count: %d\n", buffer, count);
