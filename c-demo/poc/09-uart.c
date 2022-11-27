@@ -97,8 +97,9 @@ int main(int argc, char* argv[]) {
   printf("set configuration %s %d\n", transmit, strlen(transmit) + 1);
   count = write(file, &transmit, strlen(transmit) + 1);
   sleep(1);
-  printf("set configuration %s %d\n", transmit, strlen(transmit) + 1);
+
   strcpy(transmit, MEAS_200_msec);
+  printf("set configuration %s %d\n", transmit, strlen(transmit) + 1);
   count = write(file, &transmit, strlen(transmit) + 1);
   sleep(1);
   // strcpy(transmit, "$PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n");
