@@ -28,7 +28,7 @@
 #define ON_OFF_BUTTON_PIN P9_15
 
 void clean_up();
-void initialize();
+void initialize_gpio_pins();
 void unset_signal();
 void sig_handler(int sig);
 
@@ -57,7 +57,6 @@ void* handle_logger(void* ptr);
 void toggle_lights();
 void toggle_running();
 int str_null_or_blank(char* str);
-void init_thread();
 void init_work_space();
 void clean_work_space();
 void init_threads();
@@ -81,14 +80,14 @@ void init_work_space() {
   struct stat std = {0};
   struct stat stl = {0};
   // create the data directory
-  if (stat("./data", &std)) {
-    b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Data Directory", main_thread);
+  if (stat("./data", &std) == -1) {
+    shell_print(BBLACK, "[THREAD%ld-MAIN]: Instantiating the 'data' Directory", main_thread);
     mkdir("./data", 0700);
   }
-  // create the log directory
-  if (stat("./log", &stl)) {
-    b_log(DEBUG, "[THREAD%ld-MAIN]: Instantiating the Log Directory", main_thread);
-    mkdir("./log", 0700);
+  // create the logs directory
+  if (stat("./logs", &stl) == -1) {
+    shell_print(BBLACK, "[THREAD%ld-MAIN]: Instantiating the 'logs' Directory", main_thread);
+    mkdir("./logs", 0700);
   }
   csv_init();
   logger_init();
@@ -96,13 +95,45 @@ void init_work_space() {
   // init signal handler for SIGUSR1, SIGINT, and SIGTSTP
   register_signal_handler(sig_handler);
   clean_up();
-  initialize();
+  initialize_gpio_pins();
 }
 void clean_work_space() {
   logger_close();
   cvs_close();
 }
+
+/**
+ * Initilizing 4 threads using Rate Monotonic Scheduling(RMS)
+ * Thread 1 action_thread Priority 99
+ * Thread 2 GPS_thread Priority 80
+ * Thread 3 logger_thread Priority 70
+ * Thread 4 temperature_thread Priority 50
+ *
+ */
 void init_threads() {
+  pthread_attr_t temp_attr, logger_attr, action_attr, gps_attr;
+  struct sched_param temp_param, logger_param, action_param, gps_param;
+
+  pthread_attr_init(&action_attr);
+  pthread_attr_setschedpolicy(&action_attr, SCHED_FIFO);
+  action_param.sched_priority = sched_get_priority_max(SCHED_FIFO);
+  pthread_attr_setschedparam(&action_attr, &action_param);
+
+  pthread_attr_init(&gps_attr);
+  pthread_attr_setschedpolicy(&gps_attr, SCHED_FIFO);
+  gps_param.sched_priority = 80;
+  pthread_attr_setschedparam(&gps_attr, &gps_param);
+
+  pthread_attr_init(&logger_attr);
+  pthread_attr_setschedpolicy(&logger_attr, SCHED_FIFO);
+  logger_param.sched_priority = 70;
+  pthread_attr_setschedparam(&logger_attr, &logger_param);
+
+  pthread_attr_init(&temp_attr);
+  pthread_attr_setschedpolicy(&temp_attr, SCHED_FIFO);
+  temp_param.sched_priority = 70;
+  pthread_attr_setschedparam(&temp_attr, &temp_param);
+
   pthread_create(&temperature_thread, NULL, handle_temperature_sensor, NULL);
   pthread_create(&action_thread, NULL, handle_actions, NULL);
   pthread_create(&gps_thread, NULL, handle_gps_sensor, NULL);
@@ -124,7 +155,11 @@ void unset_pins() {
   gpio_set_value(OFF_LIGHT, LOW);
   gpio_set_value(ON_OFF_BUTTON_PIN, LOW);
 }
-void initialize() {
+
+/**
+ * initialize_gpio_pins GPIO Pins
+ */
+void initialize_gpio_pins() {
   gpio_export(ON_LIGHT);
   gpio_set_direction(ON_LIGHT, OUTPUT_PIN);
   gpio_set_value(ON_LIGHT, HIGH);
@@ -167,6 +202,7 @@ void sig_handler(int sig) {
 
 /**
  * handle logic for the temperature sensor
+ * updates every 2 seconds
  */
 void* handle_temperature_sensor(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the TEMPERATURE THREAD...", temperature_thread);
@@ -191,7 +227,7 @@ void* handle_temperature_sensor(void* ptr) {
  * handle logic for the gps sensor
  */
 void* handle_gps_sensor(void* ptr) {
-  b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the GPS Sensor...", gps_thread);
+  b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the GPS Thread...", gps_thread);
   uart_init(4);
   sleep(2);
   while (1) {
@@ -243,6 +279,7 @@ void* handle_gps_sensor(void* ptr) {
 
 /**
  * handle logic for the logging and writing to cvs file
+ * update every 1 seconds
  */
 void* handle_logger(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-LOGGER]: Starting the LOGGER THREAD...", logger_thread);
@@ -289,6 +326,7 @@ void* handle_logger(void* ptr) {
 
 /**
  * handle logic for user actions
+ * update every 10 MS
  */
 void* handle_actions(void* ptr) {
   b_log(DEBUG, "[THREAD%ld-ACTION]: Starting the ACTION THREAD...", action_thread);
@@ -334,6 +372,10 @@ void toggle_lights() {
  */
 void toggle_running() { isOn = !isOn; }
 
+/**
+ * Get NMEA field
+ * fields are seperated with comma
+ */
 char* get_nmea_field(char* nmea, int index) {
   char* nmea_dup = strdup(nmea);
   char* seperator = ",";
@@ -352,6 +394,9 @@ char* get_nmea_field(char* nmea, int index) {
   return res;
 }
 
+/**
+ * hellper function to check whether an string is null or blank
+ */
 int str_null_or_blank(char* str) {
   if (str == NULL || str[0] == '\0') {
     return 1;

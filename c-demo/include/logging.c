@@ -43,7 +43,7 @@ void shell_print(const char* color, const char* fmt, ...) {
   if (!color)
     sprintf(output, "%s  INFO  %s\n" KNRM, timeInfoBuffer, buffer);
   else
-    sprintf(output, "%s%s  INFO  %s\n" KNRM, color, timeInfoBuffer, buffer);
+    sprintf(output, "%s%s  DEBUG  %s\n" KNRM, color, timeInfoBuffer, buffer);
   printf("%s", output);
   fflush(stdout);
 }
@@ -56,7 +56,7 @@ void logger_init() {
   char dateInfoBuffer[25] = {0};
   char path[40] = {0};
   strftime(dateInfoBuffer, sizeof(dateInfoBuffer), "%Y-%m-%d", utcTimeInfo);
-  sprintf(path, "./log/%s.log", dateInfoBuffer);
+  sprintf(path, "./logs/%s.log", dateInfoBuffer);
   fp = fopen(path, "a+");
 }
 void logger_close() { fclose(fp); }
